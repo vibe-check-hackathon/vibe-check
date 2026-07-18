@@ -179,17 +179,35 @@ founder browsers ── WebRTC ──► LiveKit room ◄── agent (ElevenLab
 
 ### 3.3 The event schema (one stream drives every panel)
 
+All scores and confidences are **0–100 integers** (aligning with the
+`numeric-confidence-trust` branch convention; `"unknown"` only where no evidence
+exists), and `status` values are exactly the card template's lifecycle:
+`intake | research | interview | diligence | decision | closed`.
+
 ```json
 { "type": "transcript.line",  "t": "00:41", "who": "ada",  "text": "..." }
+{ "type": "topic.change",     "topic": "Your two pilot deployments",
+  "index": 2, "total": 6 }
+{ "type": "request.item",     "id": "REQ-001", "ask": "Upload current revenue export",
+  "state": "requested" }
 { "type": "signal.update",    "who": "ada", "sentiment": 84, "tone": 86,
-  "confidence": 85, "expression": "engaged", "signalConfidence": 0.62 }
+  "confidence": 85, "expression": "engaged", "signalConfidence": 62 }
 { "type": "card.update",      "ref": "HYP-001", "state": "supported",
-  "evidence": "INT-001 08:14-10:02" }
+  "trust": 74, "evidence": "INT-001 08:14-10:02" }
 { "type": "model.update",     "party": "founder", "range": [9, 13],
-  "zopa": [9, 12], "lever": "closing_speed", "note": "speed > price signal" }
-{ "type": "status.change",    "status": "decision_ready",
+  "zopa": [9, 12], "confidence": 55, "lever": "closing_speed",
+  "note": "speed > price signal" }
+{ "type": "approval.update",  "gate": "interview_plan", "by": "USR-001",
+  "action": "approved", "bounds": { "reservation": 12, "target": 9 } }
+{ "type": "status.change",    "status": "decision",
   "recommendation": "100K SAFE at 9M cap", "requiresHuman": true }
+{ "type": "outcome.recorded", "result": "term_sheet_signed",
+  "termSheetRef": "TS-001" }
 ```
+
+`topic.change` and `request.item` are the founder-safe events (see role-gated
+fan-out below). `approval.update` records the human gates from Sun's tech spec
+§11; `outcome.recorded` feeds the §12 learning flywheel.
 
 Frontend mapping: `transcript.line` → transcript panel; `signal.update` → meters
 and tile chips; `card.update` → amber event lines + evidence drawer;
@@ -201,10 +219,10 @@ WebSocket makes the demo real without touching the UI.
 **Role-gated fan-out (the founder-view protection):** clients authenticate into
 the WebSocket with a role (`investor` | `founder`). The server filters the
 stream per role — founder clients receive only `transcript.line` (their own
-session), a new `topic.change` event, `request.item` events (document asks),
-and founder-safe `status.change` payloads. `signal.update`, `card.update`,
-`model.update`, and internal recommendation fields are **never sent to founder
-connections** — filtered server-side, so nothing sensitive ever reaches the
+session), `topic.change`, `request.item`, and founder-safe `status.change`
+payloads (status word only, no recommendation). `signal.update`, `card.update`,
+`model.update`, `approval.update`, and internal recommendation fields are
+**never sent to founder connections** — filtered server-side, so nothing sensitive ever reaches the
 founder's browser to be "hidden" by CSS. This also keeps the demo honest: the
 two views can run side by side on stage from the same live stream.
 
