@@ -143,13 +143,15 @@
   .panel h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
   .col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 
-  /* ---------- pipeline stepper (Sun's workflow) ---------- */
-  .steps { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  /* ---------- pipeline stepper (Sun's conceptual pipeline) ---------- */
+  .steps { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
   .step {
     display: inline-flex; align-items: center; gap: 7px;
-    font-size: 11.5px; padding: 5px 11px 5px 6px; border-radius: 999px;
+    font: inherit; font-size: 11.5px; padding: 5px 12px 5px 6px; border-radius: 999px;
+    background: none; cursor: pointer;
     border: 1px solid var(--hairline); color: var(--muted); transition: color 0.3s, border-color 0.3s;
   }
+  .step:hover { background: var(--surface-2); }
   .step .n {
     width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center;
     font-size: 10px; font-weight: 700; background: var(--surface-2); color: var(--muted);
@@ -158,6 +160,20 @@
   .step.done .n { background: var(--good); color: #fff; font-size: 9px; }
   .step.active { color: var(--investor); border-color: rgba(57, 135, 229, 0.55); font-weight: 600; }
   .step.active .n { background: var(--investor); color: #fff; }
+  .step.open { border-color: var(--investor); }
+  .stage-detail {
+    display: none; background: var(--surface-2); border: 1px solid var(--hairline);
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
+    font-size: 12.5px; color: var(--ink-2); line-height: 1.55;
+  }
+  .stage-detail.open { display: block; }
+  .stage-detail b { color: var(--ink); }
+  .sd-row { margin: 4px 0; }
+  .sd-row .k {
+    display: inline-block; min-width: 58px; margin-right: 8px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted);
+  }
 
   /* ---------- video call stage ---------- */
   .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -173,6 +189,14 @@
   }
   .tile.cam-on video { display: block; }
   .tile.cam-on .avatar { display: none; }
+  .cam-btn {
+    position: absolute; bottom: 10px; right: 10px; z-index: 3;
+    font: inherit; font-size: 11px; font-weight: 600;
+    color: rgba(255, 255, 255, 0.85); background: rgba(13, 13, 13, 0.66);
+    backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 7px; padding: 4px 10px; cursor: pointer;
+  }
+  .cam-btn:hover { background: rgba(13, 13, 13, 0.85); }
   .tile[data-p="ada"]  .feed { background: radial-gradient(120% 120% at 30% 20%, #24384f 0%, #16202c 55%, #101418 100%); }
   .tile[data-p="minh"] .feed { background: radial-gradient(120% 120% at 70% 20%, #24402a 0%, #182518 55%, #101410 100%); }
   .tile[data-p="agent"] .feed { background: radial-gradient(140% 200% at 50% 0%, #1f2937 0%, #12151c 60%, #0e0f13 100%); }
@@ -351,26 +375,27 @@
     <div class="panel">
       <h2>Live interview — joint founder call (INT-001)</h2>
       <div class="steps" id="steps">
-        <span class="step"><span class="n">1</span>Intake</span>
-        <span class="step"><span class="n">2</span>Card created</span>
-        <span class="step"><span class="n">3</span>Research</span>
-        <span class="step"><span class="n">4</span>Human approval</span>
-        <span class="step"><span class="n">5</span>Interview &amp; vibe check</span>
-        <span class="step"><span class="n">6</span>Decision</span>
+        <button class="step" data-s="0"><span class="n">1</span>Sourcing</button>
+        <button class="step" data-s="1"><span class="n">2</span>Developing</button>
+        <button class="step" data-s="2"><span class="n">3</span>Matching</button>
       </div>
+      <div class="stage-detail" id="stageDetail"></div>
       <div class="tiles">
         <div class="tile" data-p="ada">
           <div class="feed"></div><div class="scanline"></div>
           <video id="camAda" autoplay muted playsinline></video>
           <div class="avatar">AK</div>
           <div class="readout" id="readAda">Neutral</div>
+          <button class="cam-btn" data-cam="ada">Cam</button>
           <div class="nameplate">Ada Keller <span>CEO</span>
             <span class="wave"><i></i><i></i><i></i><i></i></span></div>
         </div>
         <div class="tile" data-p="minh">
           <div class="feed"></div><div class="scanline"></div>
+          <video id="camMinh" autoplay muted playsinline></video>
           <div class="avatar">MT</div>
           <div class="readout" id="readMinh">Neutral</div>
+          <button class="cam-btn" data-cam="minh">Cam</button>
           <div class="nameplate">Minh Tran <span>CTO</span>
             <span class="wave"><i></i><i></i><i></i><i></i></span></div>
         </div>
@@ -389,8 +414,7 @@
       <div class="controls">
         <button class="ctl primary" id="btnPlay">Play demo</button>
         <button class="ctl" id="btnReset">Restart</button>
-        <button class="ctl" id="btnCam">Enable camera</button>
-        <span class="ctl-note" id="ctlNote">Scripted demo — simulates the live call against the Acme Robotics example card. "Enable camera" puts your real webcam + mic in Ada's tile.</span>
+        <span class="ctl-note" id="ctlNote">Scripted demo against the Acme Robotics example card. Click "Cam" on a founder tile to sit in that seat with your real webcam + mic. Click a pipeline stage for its input/output.</span>
       </div>
     </div>
   </div>
@@ -569,9 +593,25 @@
     document.getElementById("fiDelta").textContent = d2 || "";
   }
 
-  /* ---------- pipeline stepper (Sun's workflow, tech spec §2) ---------- */
+  /* ---------- pipeline stepper (sun/system-architecture.md "Conceptual pipeline") ---------- */
+  const stageData = [
+    { name: "1. Sourcing — gather information about each funding opportunity",
+      input: "Pitch deck, emails, intake forms, CVs, LinkedIn profiles, social media, GitHub repos",
+      output: "1000s of Opportunity Cards with basic info about founders and their ideas",
+      how: "AI agents handle input, do web browsing, and collect facts" },
+    { name: "2. Developing — assess opportunities with agentic research",
+      input: "Investment thesis, historic data set, reference/background checks",
+      output: "Opportunity Cards augmented with negotiation notes, with a draft term sheet for the human VC to sign off",
+      how: "AI research agents running in a loop, applying the investment thesis to assess each opportunity and prioritize which to pursue" },
+    { name: "3. Matching — finalizing the term sheet with live interviews",
+      input: "Founder responses, negotiation notes",
+      output: "Decision to issue the final term sheet, or decline",
+      how: "AI interview agents conduct a live interview with founders, updating the term sheet on the fly" },
+  ];
   const stepEls = Array.from(document.querySelectorAll("#steps .step"));
-  function setSteps(doneCount, activeIdx) {
+  const stageDetail = document.getElementById("stageDetail");
+  let openStage = -1;
+  function setPipeline(doneCount, activeIdx) {
     stepEls.forEach((el, i) => {
       el.classList.toggle("done", i < doneCount);
       el.classList.toggle("active", i === activeIdx);
@@ -579,25 +619,43 @@
       n.textContent = i < doneCount ? "✓" : String(i + 1);
     });
   }
-  setSteps(4, 4); /* default state: intake→approval done, interview running */
+  function toggleStage(i) {
+    openStage = openStage === i ? -1 : i;
+    stepEls.forEach((el, j) => el.classList.toggle("open", j === openStage));
+    if (openStage < 0) { stageDetail.classList.remove("open"); return; }
+    const s = stageData[openStage];
+    stageDetail.innerHTML =
+      `<b>${s.name}</b>` +
+      `<div class="sd-row"><span class="k">Input</span>${s.input}</div>` +
+      `<div class="sd-row"><span class="k">Output</span>${s.output}</div>` +
+      `<div class="sd-row"><span class="k">How</span>${s.how}</div>`;
+    stageDetail.classList.add("open");
+  }
+  stepEls.forEach((el, i) => el.addEventListener("click", () => toggleStage(i)));
+  setPipeline(2, 2); /* default: sourcing + developing done, matching (interview) running */
 
-  /* ---------- real camera + mic (the vibe-checker video input) ---------- */
-  const camBtn = document.getElementById("btnCam");
-  const camVideo = document.getElementById("camAda");
-  const adaTile = document.querySelector('.tile[data-p="ada"]');
-  const adaWaveBars = adaTile.querySelectorAll(".wave i");
-  let camStream = null, audioCtx = null, camRaf = 0;
+  /* ---------- real camera + mic on either founder tile ---------- */
+  const camSeats = {
+    ada:  { video: document.getElementById("camAda"),
+            tile: document.querySelector('.tile[data-p="ada"]'),  meterId: "AdaTone" },
+    minh: { video: document.getElementById("camMinh"),
+            tile: document.querySelector('.tile[data-p="minh"]'), meterId: "MinhTone" },
+  };
+  for (const seat of Object.values(camSeats)) seat.bars = seat.tile.querySelectorAll(".wave i");
+  let camStream = null, audioCtx = null, camRaf = 0, camSeat = null;
 
-  async function enableCamera() {
+  async function enableCamera(name) {
     try {
       camStream = await navigator.mediaDevices.getUserMedia({ video: { width: 960 }, audio: true });
     } catch (err) {
       document.getElementById("ctlNote").textContent = "Camera unavailable (" + err.name + ") — running simulated feed instead.";
       return;
     }
-    camVideo.srcObject = camStream;
-    adaTile.classList.add("cam-on");
-    camBtn.textContent = "Disable camera";
+    camSeat = name;
+    const seat = camSeats[name];
+    seat.video.srcObject = camStream;
+    seat.tile.classList.add("cam-on");
+    seat.tile.querySelector(".cam-btn").textContent = "Stop";
 
     /* live audio level → waveform + Energy/tone meter + speaking outline */
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -613,36 +671,45 @@
       for (let i = 0; i < bins.length; i++) sum += bins[i];
       const level = Math.min(100, Math.round((sum / bins.length) / 1.4));
       smooth = smooth * 0.9 + level * 0.1;
-      adaWaveBars.forEach((b, i) => {
+      seat.bars.forEach((b, i) => {
         const bin = bins[4 + i * 8] || 0;
         b.style.height = Math.max(3, Math.round(bin / 255 * 12)) + "px";
       });
-      meter("AdaTone", Math.round(smooth));
-      adaTile.classList.toggle("speaking", level > 22);
+      meter(seat.meterId, Math.round(smooth));
+      seat.tile.classList.toggle("speaking", level > 22);
       camRaf = requestAnimationFrame(loop);
     })();
   }
   function disableCamera() {
+    if (!camSeat) return;
+    const seat = camSeats[camSeat];
     if (camStream) camStream.getTracks().forEach(t => t.stop());
     if (audioCtx) audioCtx.close();
     cancelAnimationFrame(camRaf);
-    camStream = null; audioCtx = null;
-    camVideo.srcObject = null;
-    adaTile.classList.remove("cam-on", "speaking");
-    adaWaveBars.forEach(b => { b.style.height = ""; });
-    camBtn.textContent = "Enable camera";
+    camStream = null; audioCtx = null; camSeat = null;
+    seat.video.srcObject = null;
+    seat.tile.classList.remove("cam-on", "speaking");
+    seat.bars.forEach(b => { b.style.height = ""; });
+    seat.tile.querySelector(".cam-btn").textContent = "Cam";
   }
-  camBtn.addEventListener("click", () => camStream ? disableCamera() : enableCamera());
+  document.querySelectorAll(".cam-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const target = btn.dataset.cam;
+      if (camSeat === target) { disableCamera(); return; }
+      disableCamera();          /* move the camera between seats */
+      enableCamera(target);
+    });
+  });
 
   /* ---------- scripted demo timeline (full pipeline, then the call) ---------- */
   const script = [
     /* pre-roll: Sun's workflow steps 1-6 before the interview */
     { t: 0.5, who: "System", tile: null, evt: true, txt: "Intake: application, deck, and CVs imported as SRC-001…SRC-005. Opportunity card OPP-2026-0001 created.",
-      fx: () => { setSteps(2, 2); const p = document.getElementById("statusPill"); p.textContent = "Research"; } },
+      fx: () => { setPipeline(1, 1); const p = document.getElementById("statusPill"); p.textContent = "Research"; } },
     { t: 4, who: "System", tile: null, evt: true, txt: "Research agent enriched the card: 14 claims, contradiction CON-001 ($120K vs $80K ARR), gaps GAP-002/003/004, hypotheses HYP-001/002 for the interview.",
-      fx: () => setSteps(3, 3) },
+      fx: () => setPipeline(1, 1) },
     { t: 7.5, who: "System", tile: null, evt: true, txt: "Human investor approved the interview plan and negotiation bounds (reservation $12M, target $9M). Call starting.",
-      fx: () => { setSteps(4, 4); const p = document.getElementById("statusPill"); p.textContent = "Interviewing"; } },
+      fx: () => { setPipeline(2, 2); const p = document.getElementById("statusPill"); p.textContent = "Interviewing"; } },
     /* the live call */
     { t: 10.5, who: "Agent", tile: "agent", txt: "Ada, Minh — thanks for joining. Let's start with the two pilot deployments. What changed between the first and the second?" },
     { t: 14.5, who: "Ada", tile: "ada", txt: "The first took nine days on site. We rebuilt the demonstration capture flow, and the second was live in under two days.",
@@ -674,7 +741,7 @@
     { t: 58.5, who: "Agent", tile: "agent", evt: true, txt: "Recommendation → proceed to term sheet at $9M cap, conditional on GAP-002. Escalating to human investor for approval.",
       fx: () => {
         upd("03:15", "Recommendation: $100K SAFE at $9M cap, full pro-rata — pending human approval and IP diligence.");
-        setSteps(5, 5);
+        setPipeline(3, -1);
         const p = document.getElementById("statusPill");
         p.textContent = "Decision ready"; p.classList.remove("live"); p.style.color = "var(--accent-warm-text)";
       } },
@@ -731,7 +798,7 @@
     document.getElementById("fndResCell").textContent = "unknown";
     document.getElementById("zopaNote").innerHTML = "Estimated ZOPA: <strong>$10M–$12M</strong> · confidence <strong>low</strong> — founder range inferred from deck ask, not yet tested.";
     document.querySelector('[data-l="speed"]').classList.remove("hot");
-    setSteps(4, 4);
+    setPipeline(2, 2);
     const p = document.getElementById("statusPill");
     p.textContent = "Interviewing"; p.classList.add("live"); p.style.color = "";
   }
