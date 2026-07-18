@@ -14,3 +14,9 @@
    - Input: Founder responses, negotitation notes,
    - Output: Decision to issue final term sheet, or decline
    - How: AI interview agents conduct live interview with founders, updating term sheet on the fly
+
+## Opportunity Card
+
+### Format
+
+### Example
