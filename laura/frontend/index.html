@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VibeCheck Studio — Live Interview</title>
+<style>
+  :root {
+    /* light theme (default) — validated light palette */
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --surface-2: #f1f0ec;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --hairline: rgba(11, 11, 11, 0.10);
+    --header-bg: rgba(249, 249, 247, 0.82);
+    --btn-hover: #e9e8e3;
+    --investor: #2a78d6;    /* slot 1 blue  — investor settlement range */
+    --founder: #008300;     /* slot 2 green — founder settlement range */
+    --zopa: #eda100;        /* slot 4 yellow — ZOPA band (direct-labeled) */
+    --accent-warm-text: #9a6a00;  /* amber as *text* needs its own darker step */
+    --accent-warm-border: rgba(154, 106, 0, 0.5);
+    --meter-track: #cde2fb; /* blue ramp step 100 */
+    --good: #006300;
+    --shadow: 0 8px 30px rgba(11, 11, 11, 0.14);
+    --elev: 0 1px 2px rgba(11, 11, 11, 0.04), 0 8px 24px rgba(11, 11, 11, 0.05);
+    --radius: 18px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --surface-2: #222221;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --hairline: rgba(255, 255, 255, 0.10);
+      --header-bg: rgba(13, 13, 13, 0.82);
+      --btn-hover: #2a2a28;
+      --investor: #3987e5;
+      --founder: #008300;
+      --zopa: #c98500;
+      --accent-warm-text: #c98500;
+      --accent-warm-border: rgba(201, 133, 0, 0.6);
+      --meter-track: #0d366b; /* blue ramp step 700 */
+      --good: #0ca30c;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      --elev: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-2: #222221;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --hairline: rgba(255, 255, 255, 0.10);
+    --header-bg: rgba(13, 13, 13, 0.82);
+    --btn-hover: #2a2a28;
+    --investor: #3987e5;
+    --founder: #008300;
+    --zopa: #c98500;
+    --accent-warm-text: #c98500;
+    --accent-warm-border: rgba(201, 133, 0, 0.6);
+    --meter-track: #0d366b;
+    --good: #0ca30c;
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    --elev: none;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--ink); font-size: 15px; line-height: 1.5; transition: background-color 0.3s ease, color 0.3s ease; }
+  a { color: var(--investor); text-decoration: none; }
+
+  /* ---------- header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 28px;
+    background: var(--header-bg);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--hairline);
+    transition: background-color 0.3s ease;
+  }
+  .theme-toggle {
+    font: inherit; font-size: 15px; line-height: 1;
+    width: 32px; height: 32px; display: grid; place-items: center;
+    color: var(--ink-2); background: var(--surface);
+    border: 1px solid var(--hairline); border-radius: 999px; cursor: pointer;
+  }
+  .theme-toggle:hover { background: var(--btn-hover); }
+  .brand { font-weight: 700; letter-spacing: -0.02em; font-size: 17px; }
+  .brand span { color: var(--muted); font-weight: 500; }
+  .opp-ref { color: var(--ink-2); font-size: 13px; }
+  .pill {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px; border: 1px solid var(--hairline);
+    color: var(--ink-2); background: var(--surface);
+  }
+  .pill.live { color: var(--good); border-color: rgba(12, 163, 12, 0.4); }
+  .pill.live::before { content: "●"; margin-right: 6px; animation: blink 1.6s infinite; }
+  @keyframes blink { 50% { opacity: 0.25; } }
+  .spacer { flex: 1; }
+  .deadline { font-size: 13px; color: var(--muted); }
+  .deadline strong { color: var(--ink-2); font-weight: 600; }
+
+  /* ---------- hero overview ---------- */
+  .hero { max-width: 1240px; margin: 0 auto; padding: 56px 28px 8px; text-align: center; }
+  .hero h1 {
+    font-size: clamp(34px, 5vw, 56px); font-weight: 700;
+    letter-spacing: -0.03em; line-height: 1.05;
+  }
+  .hero h1 em { font-style: normal; color: var(--ink-2); }
+  .hero p.lede { margin: 14px auto 0; max-width: 640px; color: var(--ink-2); font-size: 17px; }
+  .pipeline { display: flex; justify-content: center; gap: 10px; margin-top: 28px; flex-wrap: wrap; }
+  .stage {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; border: 1px solid var(--hairline); border-radius: 999px;
+    background: var(--surface); font-size: 13px; color: var(--ink-2);
+  }
+  .stage b { color: var(--ink); font-weight: 600; }
+  .stage.active { border-color: rgba(57, 135, 229, 0.55); }
+  .stage.active b { color: var(--investor); }
+  .chev { color: var(--muted); align-self: center; }
+
+  /* ---------- layout ---------- */
+  .app { max-width: 1240px; margin: 36px auto 80px; padding: 0 28px; display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr); gap: 20px; }
+  @media (max-width: 980px) { .app { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--surface); border: 1px solid var(--hairline);
+    border-radius: var(--radius); padding: 20px; overflow: hidden;
+    box-shadow: var(--elev); transition: background-color 0.3s ease;
+  }
+  .panel h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+  /* ---------- pipeline stepper (Sun's workflow) ---------- */
+  .steps { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .step {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11.5px; padding: 5px 11px 5px 6px; border-radius: 999px;
+    border: 1px solid var(--hairline); color: var(--muted); transition: color 0.3s, border-color 0.3s;
+  }
+  .step .n {
+    width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 10px; font-weight: 700; background: var(--surface-2); color: var(--muted);
+  }
+  .step.done { color: var(--ink-2); }
+  .step.done .n { background: var(--good); color: #fff; font-size: 9px; }
+  .step.active { color: var(--investor); border-color: rgba(57, 135, 229, 0.55); font-weight: 600; }
+  .step.active .n { background: var(--investor); color: #fff; }
+
+  /* ---------- video call stage ---------- */
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tile {
+    position: relative; aspect-ratio: 16 / 10.5; border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--hairline); background: var(--surface-2);
+  }
+  .tile.agent { grid-column: 1 / -1; aspect-ratio: 32 / 7; }
+  .tile .feed { position: absolute; inset: 0; }
+  .tile video {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; transform: scaleX(-1); display: none; background: #000;
+  }
+  .tile.cam-on video { display: block; }
+  .tile.cam-on .avatar { display: none; }
+  .tile[data-p="ada"]  .feed { background: radial-gradient(120% 120% at 30% 20%, #24384f 0%, #16202c 55%, #101418 100%); }
+  .tile[data-p="minh"] .feed { background: radial-gradient(120% 120% at 70% 20%, #24402a 0%, #182518 55%, #101410 100%); }
+  .tile[data-p="agent"] .feed { background: radial-gradient(140% 200% at 50% 0%, #1f2937 0%, #12151c 60%, #0e0f13 100%); }
+  .avatar {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -54%);
+    width: 74px; height: 74px; border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 24px; font-weight: 700; letter-spacing: -0.02em;
+    color: #fff; background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+  }
+  .tile.agent .avatar { width: 56px; height: 56px; font-size: 18px; transform: translate(-50%, -50%); }
+  .tile.speaking { outline: 2px solid var(--investor); outline-offset: -2px; }
+  /* nameplates & readouts sit on video feeds — dark glass in BOTH themes */
+  .nameplate {
+    position: absolute; left: 10px; bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; color: #fff;
+    background: rgba(13, 13, 13, 0.66); backdrop-filter: blur(8px);
+    padding: 5px 10px; border-radius: 8px;
+  }
+  .nameplate span { color: rgba(255, 255, 255, 0.60); font-weight: 500; }
+  .wave { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
+  .wave i { width: 3px; height: 3px; border-radius: 2px; background: #d8d7cf; }
+  .speaking .wave i { animation: wv 0.9s ease-in-out infinite; }
+  .speaking .wave i:nth-child(2) { animation-delay: 0.15s; }
+  .speaking .wave i:nth-child(3) { animation-delay: 0.3s; }
+  .speaking .wave i:nth-child(4) { animation-delay: 0.45s; }
+  @keyframes wv { 0%, 100% { height: 3px; } 50% { height: 12px; } }
+  .readout {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85); background: rgba(13, 13, 13, 0.66); backdrop-filter: blur(8px);
+    padding: 4px 9px; border-radius: 7px; transition: color 0.4s;
+  }
+  .scanline {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.35;
+    background: repeating-linear-gradient(0deg, transparent 0 5px, rgba(255, 255, 255, 0.025) 5px 6px);
+  }
+
+  /* ---------- transcript ---------- */
+  .transcript { display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; scroll-behavior: smooth; }
+  .line { display: grid; grid-template-columns: 46px 86px 1fr; gap: 10px; font-size: 13.5px; opacity: 0; transform: translateY(6px); transition: opacity 0.5s, transform 0.5s; }
+  .line.shown { opacity: 1; transform: none; }
+  .line .t { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .line .who { font-weight: 600; color: var(--ink-2); }
+  .line .txt { color: var(--ink); }
+  .line.evt .txt { color: var(--accent-warm-text); }
+  .line.evt .who { color: var(--accent-warm-text); }
+  .controls { display: flex; gap: 10px; align-items: center; margin-top: 14px; }
+  button.ctl {
+    font: inherit; font-size: 13px; font-weight: 600; color: var(--ink);
+    background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 999px;
+    padding: 7px 18px; cursor: pointer;
+  }
+  button.ctl:hover { background: var(--btn-hover); }
+  button:focus-visible { outline: 2px solid var(--investor); outline-offset: 2px; }
+  button.ctl.primary { background: var(--investor); border-color: transparent; color: #fff; }
+  .ctl-note { font-size: 12px; color: var(--muted); }
+
+  /* ---------- vibe meters ---------- */
+  .founder-block { padding: 12px 0; border-top: 1px solid var(--grid); }
+  .founder-block:first-of-type { border-top: 0; padding-top: 0; }
+  .fhead { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+  .fhead .dotkey { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .fhead b { font-size: 14px; }
+  .fhead span { font-size: 12px; color: var(--muted); }
+  .meter-row { display: grid; grid-template-columns: 92px 1fr 40px; align-items: center; gap: 10px; margin: 7px 0; font-size: 12.5px; }
+  .meter-row .lbl { color: var(--ink-2); }
+  .meter-row .val { color: var(--ink-2); text-align: right; font-variant-numeric: tabular-nums; }
+  .meter { height: 6px; border-radius: 4px; background: var(--meter-track); overflow: hidden; }
+  .meter i { display: block; height: 100%; border-radius: 4px; background: var(--investor); width: 0%; transition: width 0.9s cubic-bezier(0.3, 0.8, 0.3, 1); }
+  .fit-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .stat { background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 12px; padding: 12px 14px; }
+  .stat .lbl { font-size: 12px; color: var(--ink-2); }
+  .stat .num { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; margin-top: 2px; }
+  .stat .delta { font-size: 12px; color: var(--good); font-weight: 600; }
+
+  /* ---------- ZOPA chart ---------- */
+  .zopa-wrap { position: relative; margin-top: 6px; }
+  .zopa-chart { position: relative; height: 132px; }
+  .gridlines { position: absolute; inset: 0 0 22px 0; }
+  .gridlines i { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--grid); }
+  .axis-labels { position: absolute; left: 0; right: 0; bottom: 0; height: 18px; }
+  .axis-labels span { position: absolute; transform: translateX(-50%); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .band {
+    position: absolute; height: 20px; border-radius: 4px;
+    transition: left 0.9s cubic-bezier(0.3, 0.8, 0.3, 1), width 0.9s cubic-bezier(0.3, 0.8, 0.3, 1);
+  }
+  .band .band-lbl {
+    position: absolute; top: 50%; transform: translateY(-50%); white-space: nowrap;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em;
+  }
+  /* investor row (top), zopa row (middle), founder row (bottom) — 2px surface gaps between rows */
+  #bandInvestor { top: 14px; background: var(--investor); }
+  #bandZopa { top: 36px; background: var(--zopa); }
+  #bandFounder { top: 58px; background: var(--founder); }
+  #bandInvestor .band-lbl { right: calc(100% + 8px); color: var(--ink-2); }
+  #bandFounder .band-lbl { left: calc(100% + 8px); color: var(--ink-2); }
+  #bandZopa .band-lbl { left: 50%; transform: translate(-50%, -50%); color: #10100e; }
+  .marker {
+    position: absolute; width: 10px; height: 10px; border-radius: 50%;
+    background: var(--ink); border: 2px solid var(--surface);
+    transform: translate(-50%, -50%); cursor: default;
+    transition: left 0.9s cubic-bezier(0.3, 0.8, 0.3, 1);
+  }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 12px; color: var(--ink-2); }
+  .legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .zopa-note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .zopa-note strong { color: var(--ink-2); font-weight: 600; }
+
+  /* model table + levers */
+  .model-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 4px; }
+  .model-table th { text-align: left; color: var(--muted); font-weight: 500; padding: 5px 8px 5px 0; border-bottom: 1px solid var(--grid); }
+  .model-table td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--grid); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .model-table td:first-child { color: var(--ink); }
+  .levers { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+  .lever {
+    font-size: 11.5px; padding: 4px 11px; border-radius: 999px;
+    border: 1px solid var(--hairline); color: var(--muted); transition: all 0.4s;
+  }
+  .lever.hot { border-color: var(--accent-warm-border); color: var(--accent-warm-text); font-weight: 600; }
+  .updates { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .updates li { font-size: 12.5px; color: var(--ink-2); padding-left: 18px; position: relative; opacity: 0; transform: translateY(5px); transition: opacity 0.5s, transform 0.5s; }
+  .updates li.shown { opacity: 1; transform: none; }
+  .updates li::before { content: "▸"; position: absolute; left: 0; color: var(--accent-warm-text); }
+  .updates li .t { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 6px; }
+
+  /* tooltip */
+  #tip {
+    position: fixed; z-index: 50; pointer-events: none; display: none;
+    background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 10px;
+    padding: 8px 12px; font-size: 12px; color: var(--ink-2); max-width: 260px;
+    box-shadow: var(--shadow);
+  }
+  #tip b { color: var(--ink); display: block; margin-bottom: 2px; }
+
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding-bottom: 40px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">VibeCheck <span>Studio</span></div>
+  <div class="opp-ref">OPP-2026-0001 · Acme Robotics · Pre-seed</div>
+  <span class="pill live" id="statusPill">Interviewing</span>
+  <div class="spacer"></div>
+  <div class="deadline">Decision deadline in <strong>14h 22m</strong></div>
+  <button class="theme-toggle" id="themeToggle" title="Toggle light/dark appearance" aria-label="Toggle light/dark appearance">◐</button>
+</header>
+
+<section class="hero">
+  <h1>The interview is the diligence.<br><em>Watch the deal model update live.</em></h1>
+  <p class="lede">
+    An AI interview agent talks to both founders on a live call, runs the vibe check on every answer,
+    and moves the negotiation model — BATNA, reservation points, and the ZOPA — in real time on the
+    Opportunity Card. The human investor keeps the final call.
+  </p>
+  <div class="pipeline">
+    <div class="stage"><b>Source</b> intake &amp; opportunity cards</div>
+    <div class="chev">›</div>
+    <div class="stage"><b>Develop</b> agentic research &amp; thesis fit</div>
+    <div class="chev">›</div>
+    <div class="stage active"><b>Match</b> live interview &amp; negotiation</div>
+  </div>
+</section>
+
+<main class="app">
+  <!-- left: the call -->
+  <div class="col">
+    <div class="panel">
+      <h2>Live interview — joint founder call (INT-001)</h2>
+      <div class="steps" id="steps">
+        <span class="step"><span class="n">1</span>Intake</span>
+        <span class="step"><span class="n">2</span>Card created</span>
+        <span class="step"><span class="n">3</span>Research</span>
+        <span class="step"><span class="n">4</span>Human approval</span>
+        <span class="step"><span class="n">5</span>Interview &amp; vibe check</span>
+        <span class="step"><span class="n">6</span>Decision</span>
+      </div>
+      <div class="tiles">
+        <div class="tile" data-p="ada">
+          <div class="feed"></div><div class="scanline"></div>
+          <video id="camAda" autoplay muted playsinline></video>
+          <div class="avatar">AK</div>
+          <div class="readout" id="readAda">Neutral</div>
+          <div class="nameplate">Ada Keller <span>CEO</span>
+            <span class="wave"><i></i><i></i><i></i><i></i></span></div>
+        </div>
+        <div class="tile" data-p="minh">
+          <div class="feed"></div><div class="scanline"></div>
+          <div class="avatar">MT</div>
+          <div class="readout" id="readMinh">Neutral</div>
+          <div class="nameplate">Minh Tran <span>CTO</span>
+            <span class="wave"><i></i><i></i><i></i><i></i></span></div>
+        </div>
+        <div class="tile agent" data-p="agent">
+          <div class="feed"></div>
+          <div class="avatar">VC</div>
+          <div class="nameplate">Interview Agent <span>vibe-check@1.0</span>
+            <span class="wave"><i></i><i></i><i></i><i></i></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Transcript &amp; agent events</h2>
+      <div class="transcript" id="transcript"></div>
+      <div class="controls">
+        <button class="ctl primary" id="btnPlay">Play demo</button>
+        <button class="ctl" id="btnReset">Restart</button>
+        <button class="ctl" id="btnCam">Enable camera</button>
+        <span class="ctl-note" id="ctlNote">Scripted demo — simulates the live call against the Acme Robotics example card. "Enable camera" puts your real webcam + mic in Ada's tile.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- right: vibe check + negotiation model -->
+  <div class="col">
+    <div class="panel">
+      <h2>Vibe check — live signals</h2>
+
+      <div class="founder-block">
+        <div class="fhead"><span class="dotkey" style="background:var(--investor)"></span><b>Ada Keller</b><span>CEO · FND-0007</span></div>
+        <div class="meter-row"><span class="lbl">Sentiment</span><span class="meter"><i id="mAdaSent"></i></span><span class="val" id="vAdaSent">–</span></div>
+        <div class="meter-row"><span class="lbl">Energy / tone</span><span class="meter"><i id="mAdaTone"></i></span><span class="val" id="vAdaTone">–</span></div>
+        <div class="meter-row"><span class="lbl">Confidence</span><span class="meter"><i id="mAdaConf"></i></span><span class="val" id="vAdaConf">–</span></div>
+      </div>
+
+      <div class="founder-block">
+        <div class="fhead"><span class="dotkey" style="background:var(--founder)"></span><b>Minh Tran</b><span>CTO · FND-0008</span></div>
+        <div class="meter-row"><span class="lbl">Sentiment</span><span class="meter"><i id="mMinhSent"></i></span><span class="val" id="vMinhSent">–</span></div>
+        <div class="meter-row"><span class="lbl">Energy / tone</span><span class="meter"><i id="mMinhTone"></i></span><span class="val" id="vMinhTone">–</span></div>
+        <div class="meter-row"><span class="lbl">Confidence</span><span class="meter"><i id="mMinhConf"></i></span><span class="val" id="vMinhConf">–</span></div>
+      </div>
+
+      <div class="fit-tiles">
+        <div class="stat">
+          <div class="lbl">Founder–founder fit</div>
+          <div class="num" id="ffFit">–</div>
+          <div class="delta" id="ffDelta"></div>
+        </div>
+        <div class="stat">
+          <div class="lbl">Founder–investor fit</div>
+          <div class="num" id="fiFit">–</div>
+          <div class="delta" id="fiDelta"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Negotiation model — pre-money valuation</h2>
+
+      <div class="zopa-wrap">
+        <div class="zopa-chart" id="zopaChart">
+          <div class="gridlines" id="gridlines"></div>
+          <div class="axis-labels" id="axisLabels"></div>
+          <div class="band" id="bandInvestor"><span class="band-lbl">Investor</span></div>
+          <div class="band" id="bandZopa"><span class="band-lbl">ZOPA</span></div>
+          <div class="band" id="bandFounder"><span class="band-lbl">Founders</span></div>
+          <div class="marker" id="mkInvTarget" style="top:24px"></div>
+          <div class="marker" id="mkFndTarget" style="top:68px"></div>
+        </div>
+        <div class="legend">
+          <span class="key"><span class="sw" style="background:var(--investor)"></span>Investor settlement range</span>
+          <span class="key"><span class="sw" style="background:var(--founder)"></span>Founder settlement range (est.)</span>
+          <span class="key"><span class="sw" style="background:var(--zopa)"></span>ZOPA</span>
+        </div>
+        <div class="zopa-note" id="zopaNote">
+          Estimated ZOPA: <strong>$10M–$12M</strong> · confidence <strong>low</strong> — founder range inferred from deck ask, not yet tested.
+        </div>
+      </div>
+
+      <table class="model-table">
+        <tr><th></th><th>BATNA</th><th>Reservation</th><th>Target</th></tr>
+        <tr><td>Investor</td><td>OPP-2026-0008</td><td>$12M</td><td id="invTargetCell">$9M</td></tr>
+        <tr><td>Founders</td><td>Soft circle + bootstrap</td><td id="fndResCell">unknown</td><td id="fndTargetCell">~$12M</td></tr>
+      </table>
+
+      <div class="levers" id="levers">
+        <span class="lever">valuation</span>
+        <span class="lever">check size</span>
+        <span class="lever">pro-rata</span>
+        <span class="lever" data-l="speed">closing speed</span>
+        <span class="lever">board rights</span>
+        <span class="lever">milestones</span>
+      </div>
+
+      <ul class="updates" id="updates"></ul>
+    </div>
+  </div>
+</main>
+
+<footer>laura/frontend — VibeCheck hackathon demo · data from sun/opportunity-card-example.md (Acme Robotics, fictional)</footer>
+
+<div id="tip"></div>
+
+<script>
+  /* ---------- theme: follow OS until the user chooses, then persist ---------- */
+  (function () {
+    const root = document.documentElement;
+    const saved = localStorage.getItem("vibecheck-theme");
+    if (saved === "light" || saved === "dark") root.dataset.theme = saved;
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      const osDark = matchMedia("(prefers-color-scheme: dark)").matches;
+      const current = root.dataset.theme || (osDark ? "dark" : "light");
+      const next = current === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      localStorage.setItem("vibecheck-theme", next);
+    });
+  })();
+
+  /* ---------- ZOPA chart scale: $6M .. $14M ---------- */
+  const AXIS = { min: 6, max: 14 };
+  const pct = v => ((v - AXIS.min) / (AXIS.max - AXIS.min)) * 100;
+
+  const gridEl = document.getElementById("gridlines");
+  const axEl = document.getElementById("axisLabels");
+  for (let v = AXIS.min; v <= AXIS.max; v += 2) {
+    const g = document.createElement("i");
+    g.style.left = pct(v) + "%";
+    gridEl.appendChild(g);
+    const s = document.createElement("span");
+    s.style.left = pct(v) + "%";
+    s.textContent = "$" + v + "M";
+    axEl.appendChild(s);
+  }
+
+  const bands = {
+    investor: document.getElementById("bandInvestor"),
+    zopa: document.getElementById("bandZopa"),
+    founder: document.getElementById("bandFounder"),
+  };
+  const markers = {
+    inv: document.getElementById("mkInvTarget"),
+    fnd: document.getElementById("mkFndTarget"),
+  };
+
+  function setBand(el, lo, hi) {
+    el.style.left = pct(lo) + "%";
+    el.style.width = Math.max(pct(hi) - pct(lo), 0) + "%";
+    el.style.display = hi > lo ? "block" : "none";
+    el.dataset.lo = lo; el.dataset.hi = hi;
+  }
+  function setModel(m) {
+    setBand(bands.investor, m.inv[0], m.inv[1]);
+    setBand(bands.founder, m.fnd[0], m.fnd[1]);
+    const lo = Math.max(m.inv[0], m.fnd[0]), hi = Math.min(m.inv[1], m.fnd[1]);
+    setBand(bands.zopa, lo, hi);
+    markers.inv.style.left = pct(m.invTarget) + "%";
+    markers.fnd.style.left = pct(m.fndTarget) + "%";
+    markers.inv.dataset.v = m.invTarget; markers.fnd.dataset.v = m.fndTarget;
+  }
+
+  /* initial model — investor $8–12M (target $9M); founders inferred $10–14M (target $12M) */
+  const M0 = { inv: [8, 12], fnd: [10, 14], invTarget: 9, fndTarget: 12 };
+  setModel(M0);
+
+  /* ---------- tooltip ---------- */
+  const tip = document.getElementById("tip");
+  const tipText = {
+    bandInvestor: () => `<b>Investor settlement range</b>$${bands.investor.dataset.lo}M opening → $${bands.investor.dataset.hi}M reservation point. Beyond it, the BATNA (OPP-2026-0008) wins.`,
+    bandFounder: () => `<b>Founder settlement range (estimated)</b>$${bands.founder.dataset.lo}M–$${bands.founder.dataset.hi}M. Inferred, updated live from interview signals.`,
+    bandZopa: () => `<b>Zone of possible agreement</b>$${bands.zopa.dataset.lo}M–$${bands.zopa.dataset.hi}M — where both settlement ranges overlap.`,
+    mkInvTarget: () => `<b>Investor target</b>$${markers.inv.dataset.v}M pre-money (~8% ownership per THESIS-001).`,
+    mkFndTarget: () => `<b>Founder likely target</b>$${markers.fnd.dataset.v}M pre-money, from deck ask and interview signals.`,
+  };
+  for (const id of Object.keys(tipText)) {
+    const el = document.getElementById(id);
+    el.addEventListener("mousemove", e => {
+      tip.innerHTML = tipText[id]();
+      tip.style.display = "block";
+      tip.style.left = Math.min(e.clientX + 14, innerWidth - 280) + "px";
+      tip.style.top = (e.clientY + 14) + "px";
+    });
+    el.addEventListener("mouseleave", () => { tip.style.display = "none"; });
+  }
+
+  /* ---------- meters & readouts ---------- */
+  function meter(id, v) {
+    document.getElementById("m" + id).style.width = v + "%";
+    document.getElementById("v" + id).textContent = v;
+  }
+  function readout(who, txt) { document.getElementById("read" + who).textContent = txt; }
+  function fits(ff, fi, d1, d2) {
+    document.getElementById("ffFit").textContent = ff;
+    document.getElementById("fiFit").textContent = fi;
+    document.getElementById("ffDelta").textContent = d1 || "";
+    document.getElementById("fiDelta").textContent = d2 || "";
+  }
+
+  /* ---------- pipeline stepper (Sun's workflow, tech spec §2) ---------- */
+  const stepEls = Array.from(document.querySelectorAll("#steps .step"));
+  function setSteps(doneCount, activeIdx) {
+    stepEls.forEach((el, i) => {
+      el.classList.toggle("done", i < doneCount);
+      el.classList.toggle("active", i === activeIdx);
+      const n = el.querySelector(".n");
+      n.textContent = i < doneCount ? "✓" : String(i + 1);
+    });
+  }
+  setSteps(4, 4); /* default state: intake→approval done, interview running */
+
+  /* ---------- real camera + mic (the vibe-checker video input) ---------- */
+  const camBtn = document.getElementById("btnCam");
+  const camVideo = document.getElementById("camAda");
+  const adaTile = document.querySelector('.tile[data-p="ada"]');
+  const adaWaveBars = adaTile.querySelectorAll(".wave i");
+  let camStream = null, audioCtx = null, camRaf = 0;
+
+  async function enableCamera() {
+    try {
+      camStream = await navigator.mediaDevices.getUserMedia({ video: { width: 960 }, audio: true });
+    } catch (err) {
+      document.getElementById("ctlNote").textContent = "Camera unavailable (" + err.name + ") — running simulated feed instead.";
+      return;
+    }
+    camVideo.srcObject = camStream;
+    adaTile.classList.add("cam-on");
+    camBtn.textContent = "Disable camera";
+
+    /* live audio level → waveform + Energy/tone meter + speaking outline */
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = audioCtx.createMediaStreamSource(camStream);
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    src.connect(analyser);
+    const bins = new Uint8Array(analyser.frequencyBinCount);
+    let smooth = 0;
+    (function loop() {
+      analyser.getByteFrequencyData(bins);
+      let sum = 0;
+      for (let i = 0; i < bins.length; i++) sum += bins[i];
+      const level = Math.min(100, Math.round((sum / bins.length) / 1.4));
+      smooth = smooth * 0.9 + level * 0.1;
+      adaWaveBars.forEach((b, i) => {
+        const bin = bins[4 + i * 8] || 0;
+        b.style.height = Math.max(3, Math.round(bin / 255 * 12)) + "px";
+      });
+      meter("AdaTone", Math.round(smooth));
+      adaTile.classList.toggle("speaking", level > 22);
+      camRaf = requestAnimationFrame(loop);
+    })();
+  }
+  function disableCamera() {
+    if (camStream) camStream.getTracks().forEach(t => t.stop());
+    if (audioCtx) audioCtx.close();
+    cancelAnimationFrame(camRaf);
+    camStream = null; audioCtx = null;
+    camVideo.srcObject = null;
+    adaTile.classList.remove("cam-on", "speaking");
+    adaWaveBars.forEach(b => { b.style.height = ""; });
+    camBtn.textContent = "Enable camera";
+  }
+  camBtn.addEventListener("click", () => camStream ? disableCamera() : enableCamera());
+
+  /* ---------- scripted demo timeline (full pipeline, then the call) ---------- */
+  const script = [
+    /* pre-roll: Sun's workflow steps 1-6 before the interview */
+    { t: 0.5, who: "System", tile: null, evt: true, txt: "Intake: application, deck, and CVs imported as SRC-001…SRC-005. Opportunity card OPP-2026-0001 created.",
+      fx: () => { setSteps(2, 2); const p = document.getElementById("statusPill"); p.textContent = "Research"; } },
+    { t: 4, who: "System", tile: null, evt: true, txt: "Research agent enriched the card: 14 claims, contradiction CON-001 ($120K vs $80K ARR), gaps GAP-002/003/004, hypotheses HYP-001/002 for the interview.",
+      fx: () => setSteps(3, 3) },
+    { t: 7.5, who: "System", tile: null, evt: true, txt: "Human investor approved the interview plan and negotiation bounds (reservation $12M, target $9M). Call starting.",
+      fx: () => { setSteps(4, 4); const p = document.getElementById("statusPill"); p.textContent = "Interviewing"; } },
+    /* the live call */
+    { t: 10.5, who: "Agent", tile: "agent", txt: "Ada, Minh — thanks for joining. Let's start with the two pilot deployments. What changed between the first and the second?" },
+    { t: 14.5, who: "Ada", tile: "ada", txt: "The first took nine days on site. We rebuilt the demonstration capture flow, and the second was live in under two days.",
+      fx: () => { meter("AdaSent", 78); meter("AdaTone", 72); meter("AdaConf", 80); readout("Ada", "Engaged"); fits("–", "–"); } },
+    { t: 19, who: "Agent", tile: "agent", evt: true, txt: "HYP-001 (learning velocity) → supported. Card updated [INT-001 00:41].",
+      fx: () => upd("00:41", "HYP-001 supported — deployment time cut 9d → 2d, evidence logged.") },
+    { t: 22.5, who: "Agent", tile: "agent", txt: "Your deck states $120K ARR, but the application says $80K. Help me reconcile those." },
+    { t: 26.5, who: "Minh", tile: "minh", txt: "The $120K includes the second pilot that's signed but starts billing next quarter. Contracted today is $80K.",
+      fx: () => { meter("MinhSent", 62); meter("MinhTone", 55); meter("MinhConf", 68); readout("Minh", "Composed"); } },
+    { t: 31, who: "Agent", tile: "agent", evt: true, txt: "CON-001 → resolving. Verified ARR $80K; $120K is contracted-forward. Valuation target held at $9M.",
+      fx: () => upd("01:22", "CON-001 resolving — ARR clarified; request revenue export to verify.") },
+    { t: 35, who: "Agent", tile: "agent", txt: "What matters more to you in this round — valuation, or speed to close?" },
+    { t: 39, who: "Ada", tile: "ada", txt: "Honestly? Speed. We have two warehouses waiting and want to be deploying by September.",
+      fx: () => {
+        meter("AdaSent", 84); meter("AdaTone", 86); meter("AdaConf", 85); readout("Ada", "Animated");
+        document.querySelector('[data-l="speed"]').classList.add("hot");
+        setModel({ inv: [8, 12], fnd: [9, 13], invTarget: 9, fndTarget: 12 });
+        document.getElementById("fndResCell").textContent = "≈$9M (est.)";
+        document.getElementById("zopaNote").innerHTML = "Estimated ZOPA: <strong>$9M–$12M</strong> · confidence <strong>medium</strong> — closing speed is a high-value founder lever.";
+        upd("02:04", "Speed > price signal — founder range re-estimated $9M–$13M; ZOPA widens to $9M–$12M.");
+        fits("82", "74", "▲ 4 this session", "▲ 6 this session");
+      } },
+    { t: 44.5, who: "Agent", tile: "agent", txt: "If we closed in ten days at a $9M cap with full pro-rata, is that a conversation you'd want to have?" },
+    { t: 49, who: "Minh", tile: "minh", txt: "Ten days is… fast. We'd need our counsel to confirm the IP assignment timeline first.",
+      fx: () => { meter("MinhSent", 48); meter("MinhTone", 42); meter("MinhConf", 55); readout("Minh", "Hesitant");
+        upd("02:47", "Hesitation on speed from CTO — IP assignment (GAP-002) confirmed as a real blocker, not a bluff."); } },
+    { t: 54, who: "Ada", tile: "ada", txt: "At nine million with full pro-rata — yes, that's a conversation we want to have.",
+      fx: () => { meter("AdaSent", 88); meter("AdaTone", 82); meter("AdaConf", 88); readout("Ada", "Engaged"); } },
+    { t: 58.5, who: "Agent", tile: "agent", evt: true, txt: "Recommendation → proceed to term sheet at $9M cap, conditional on GAP-002. Escalating to human investor for approval.",
+      fx: () => {
+        upd("03:15", "Recommendation: $100K SAFE at $9M cap, full pro-rata — pending human approval and IP diligence.");
+        setSteps(5, 5);
+        const p = document.getElementById("statusPill");
+        p.textContent = "Decision ready"; p.classList.remove("live"); p.style.color = "var(--accent-warm-text)";
+      } },
+  ];
+
+  const trEl = document.getElementById("transcript");
+  const upEl = document.getElementById("updates");
+  let timers = [];
+
+  function upd(t, txt) {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="t">${t}</span>${txt}`;
+    upEl.appendChild(li);
+    requestAnimationFrame(() => requestAnimationFrame(() => li.classList.add("shown")));
+  }
+  function speak(tileName) {
+    document.querySelectorAll(".tile").forEach(t => t.classList.remove("speaking"));
+    if (tileName) document.querySelector(`.tile[data-p="${tileName}"]`)?.classList.add("speaking");
+  }
+  function fmt(t) {
+    const m = String(Math.floor(t / 60)).padStart(2, "0");
+    const s = String(Math.floor(t % 60)).padStart(2, "0");
+    return m + ":" + s;
+  }
+
+  function play() {
+    reset();
+    script.forEach(step => {
+      timers.push(setTimeout(() => {
+        const line = document.createElement("div");
+        line.className = "line" + (step.evt ? " evt" : "");
+        line.innerHTML = `<span class="t">${fmt(step.t * 4)}</span><span class="who">${step.who}</span><span class="txt">${step.txt}</span>`;
+        trEl.appendChild(line);
+        requestAnimationFrame(() => requestAnimationFrame(() => line.classList.add("shown")));
+        trEl.scrollTop = trEl.scrollHeight;
+        speak(step.tile);
+        if (step.fx) step.fx();
+      }, step.t * 1000));
+    });
+    timers.push(setTimeout(() => speak(null), (script[script.length - 1].t + 4) * 1000));
+  }
+
+  function reset() {
+    timers.forEach(clearTimeout); timers = [];
+    trEl.innerHTML = ""; upEl.innerHTML = "";
+    speak(null);
+    ["AdaSent", "AdaTone", "AdaConf", "MinhSent", "MinhTone", "MinhConf"].forEach(id => {
+      document.getElementById("m" + id).style.width = "0%";
+      document.getElementById("v" + id).textContent = "–";
+    });
+    readout("Ada", "Neutral"); readout("Minh", "Neutral");
+    fits("–", "–");
+    setModel(M0);
+    document.getElementById("fndResCell").textContent = "unknown";
+    document.getElementById("zopaNote").innerHTML = "Estimated ZOPA: <strong>$10M–$12M</strong> · confidence <strong>low</strong> — founder range inferred from deck ask, not yet tested.";
+    document.querySelector('[data-l="speed"]').classList.remove("hot");
+    setSteps(4, 4);
+    const p = document.getElementById("statusPill");
+    p.textContent = "Interviewing"; p.classList.add("live"); p.style.color = "";
+  }
+
+  document.getElementById("btnPlay").addEventListener("click", play);
+  document.getElementById("btnReset").addEventListener("click", reset);
+</script>
+</body>
+</html>
