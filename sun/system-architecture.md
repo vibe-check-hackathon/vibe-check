@@ -22,3 +22,11 @@
 - Negotiation agent. Effectively negotiate optimal terms with founders based on Batna model. Can be deployed to both founder and investor to facilitate fast convergence on mutually agreeable terms.
 
 ## System components
+
+- Opportunity OS. Uses the Opportunity Card as the central, living record for each company, connecting founder profiles, idea research, evidence, confidence, interview findings, negotiation notes, and decisions.
+- Intake and sourcing agents. Create and enrich Opportunity Cards from inbound applications and outbound signals such as pitch decks, GitHub, social media, hackathons, papers, and referrals.
+- Memory and evidence store. Preserves founder history across opportunities, deduplicates sources, tracks the Founder Score over time, and links every material claim to evidence and a trust level.
+- Research and assessment agents. Apply the investment thesis, compare companies and markets, run reference and background checks, and assess founder, market, and idea-versus-market independently.
+- Vibe-check and interview agents. Conduct live founder and team interviews, observe how founders reason and interact, resolve information gaps, and write structured findings back to the Opportunity Card.
+- Negotiation and term-sheet agent. Converts approved recommendations into an annotated draft term sheet, explains the evidence behind proposed terms, and supports honest negotiation between founders and investors.
+- Investor workspace. Prioritizes opportunities, presents recommendations and unresolved risks, exposes the evidence behind each conclusion, and gives the human investor final approval or veto authority.

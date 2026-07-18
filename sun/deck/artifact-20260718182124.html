@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vibe Check — Pre-Seed Venture Intelligence</title>
+    <style>
+      :root {
+        --black: #050505;
+        --ink: #111;
+        --white: #f5f5ed;
+        --muted: #a6aaa2;
+        --green: #39ff14;
+        --border: 3px solid var(--green);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-snap-type: y mandatory;
+      }
+
+      body {
+        margin: 0;
+        background: var(--black);
+        color: var(--white);
+        font-family: "Courier New", Courier, monospace;
+      }
+
+      h1,
+      h2,
+      h3,
+      p,
+      blockquote {
+        margin-top: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 0.96;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 1100px;
+        margin-bottom: 24px;
+        font-size: clamp(3.2rem, 8vw, 8.2rem);
+        letter-spacing: -0.08em;
+      }
+
+      h2 {
+        margin-bottom: 28px;
+        font-size: clamp(2rem, 4vw, 4.6rem);
+        letter-spacing: -0.055em;
+      }
+
+      h3 {
+        margin-bottom: 14px;
+        color: var(--green);
+        font-size: clamp(1rem, 1.7vw, 1.45rem);
+        letter-spacing: -0.025em;
+      }
+
+      p,
+      li,
+      td,
+      th {
+        font-size: clamp(0.83rem, 1.15vw, 1.05rem);
+        line-height: 1.45;
+      }
+
+      strong {
+        color: var(--green);
+      }
+
+      .slide {
+        position: relative;
+        display: flex;
+        min-height: 100vh;
+        padding: clamp(24px, 4vw, 64px);
+        overflow: hidden;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+
+      .slide::before {
+        position: absolute;
+        inset: 16px;
+        border: 1px solid #30332f;
+        content: "";
+        pointer-events: none;
+      }
+
+      .slide::after {
+        position: absolute;
+        right: -100px;
+        bottom: -100px;
+        width: 260px;
+        height: 260px;
+        border: 44px solid rgba(57, 255, 20, 0.08);
+        content: "";
+        transform: rotate(45deg);
+        pointer-events: none;
+      }
+
+      .content {
+        z-index: 1;
+        width: min(1500px, 100%);
+        margin: auto;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        margin-bottom: 28px;
+        padding: 8px 12px;
+        border: 2px solid var(--green);
+        color: var(--green);
+        font-weight: 900;
+        text-transform: uppercase;
+        box-shadow: 6px 6px 0 var(--green);
+      }
+
+      .green {
+        color: var(--green);
+      }
+
+      .hero-line {
+        max-width: 1180px;
+        font-size: clamp(1.25rem, 2.5vw, 2.5rem);
+        font-weight: 900;
+        line-height: 1.18;
+      }
+
+      .manifesto {
+        max-width: 1300px;
+        margin: 32px 0;
+        padding: clamp(20px, 3vw, 38px);
+        border: var(--border);
+        background: #0d0f0c;
+        box-shadow: 10px 10px 0 var(--green);
+      }
+
+      .manifesto p {
+        margin: 0;
+        font-size: clamp(0.95rem, 1.35vw, 1.28rem);
+        line-height: 1.55;
+      }
+
+      .metric-strip {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        margin: 34px 0;
+        border: var(--border);
+      }
+
+      .metric {
+        min-height: 130px;
+        padding: 22px;
+        border-right: var(--border);
+      }
+
+      .metric:last-child {
+        border-right: 0;
+      }
+
+      .metric b {
+        display: block;
+        color: var(--green);
+        font-size: clamp(2.2rem, 5vw, 5.3rem);
+        line-height: 0.9;
+        letter-spacing: -0.07em;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+      }
+
+      .card {
+        padding: 22px;
+        border: 2px solid var(--white);
+        background: var(--black);
+      }
+
+      .card.accent {
+        border-color: var(--green);
+        box-shadow: 7px 7px 0 var(--green);
+      }
+
+      .card p:last-child,
+      .card ul:last-child {
+        margin-bottom: 0;
+      }
+
+      .step {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin-bottom: 18px;
+      }
+
+      .step-number {
+        display: grid;
+        flex: 0 0 45px;
+        width: 45px;
+        height: 45px;
+        place-items: center;
+        background: var(--green);
+        color: var(--black);
+        font-size: 1.3rem;
+        font-weight: 900;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 19px;
+      }
+
+      li {
+        margin-bottom: 9px;
+      }
+
+      li::marker {
+        color: var(--green);
+      }
+
+      table {
+        width: 100%;
+        margin-top: 18px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border: 1px solid #666;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: var(--green);
+        color: var(--black);
+        text-transform: uppercase;
+      }
+
+      .quote {
+        margin: 20px 0;
+        padding: 20px;
+        border-left: 10px solid var(--green);
+        background: var(--white);
+        color: var(--ink);
+        font-size: clamp(1rem, 1.6vw, 1.5rem);
+        font-weight: 900;
+        line-height: 1.35;
+      }
+
+      .flow {
+        margin: 24px 0;
+        padding: 18px;
+        border: var(--border);
+        color: var(--green);
+        font-size: clamp(1rem, 2vw, 2rem);
+        font-weight: 900;
+        line-height: 1.5;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      .raise {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+        margin-top: 28px;
+        padding: 24px;
+        background: var(--green);
+        color: var(--black);
+      }
+
+      .raise h2 {
+        margin: 0;
+        color: var(--black);
+        white-space: nowrap;
+      }
+
+      .raise p {
+        max-width: 700px;
+        margin: 0;
+        font-weight: 900;
+      }
+
+      .footer-mark {
+        margin-top: 28px;
+        color: var(--green);
+        font-size: clamp(1.2rem, 2vw, 2rem);
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .nav {
+        position: fixed;
+        z-index: 10;
+        right: 24px;
+        bottom: 24px;
+        display: flex;
+        gap: 8px;
+        padding: 8px;
+        border: 2px solid var(--green);
+        background: var(--black);
+      }
+
+      .nav button {
+        width: 42px;
+        height: 38px;
+        border: 0;
+        background: var(--green);
+        color: var(--black);
+        cursor: pointer;
+        font:
+          900 16px "Courier New",
+          monospace;
+      }
+
+      .nav button:hover,
+      .nav button:focus {
+        outline: 2px solid var(--white);
+        outline-offset: 2px;
+      }
+
+      .slide-count {
+        position: absolute;
+        top: 30px;
+        right: 34px;
+        color: var(--green);
+        font-weight: 900;
+      }
+
+      @media (max-width: 900px) {
+        html {
+          scroll-snap-type: none;
+        }
+
+        .slide {
+          min-height: auto;
+          padding: 52px 28px;
+        }
+
+        .grid-3,
+        .grid-2,
+        .metric-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .metric {
+          border-right: 0;
+          border-bottom: var(--border);
+        }
+
+        .metric:last-child {
+          border-bottom: 0;
+        }
+
+        .raise {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .raise h2 {
+          white-space: normal;
+        }
+
+        .nav {
+          display: none;
+        }
+
+        table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+
+      @media print {
+        .nav {
+          display: none;
+        }
+
+        .slide {
+          min-height: 100vh;
+          break-after: page;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="slide" id="slide-1">
+      <span class="slide-count">01 / 03</span>
+
+      <div class="content">
+        <div class="eyebrow">Vibe Check</div>
+
+        <h1>The VC brain.<br /><span class="green">The AI negotiator.</span></h1>
+
+        <p class="hero-line">Find exceptional founders. Build conviction. Negotiate the check.</p>
+
+        <div class="manifesto">
+          <p>
+            We’re hackers from MIT and Harvard building the
+            <strong>AI talent agent and deal desk for pre-seed venture capital.</strong>
+            Vibe Check models founders, matches them with cofounders and investors, generates cited investment memos, and negotiates comparable funding offers
+            by phone.
+          </p>
+        </div>
+
+        <div class="metric-strip">
+          <div class="metric">
+            <b>1</b>
+            <span>Deck + interview</span>
+          </div>
+          <div class="metric">
+            <b>3</b>
+            <span>Structured offers</span>
+          </div>
+          <div class="metric">
+            <b>&lt;30m</b>
+            <span>To a negotiated decision</span>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <h3>Founders</h3>
+            <p>Capital flows through warm introductions. Fundraising consumes months. Offers are hard to compare beyond valuation.</p>
+          </article>
+
+          <article class="card">
+            <h3>Investors</h3>
+            <p>Evidence is scattered across decks, GitHub, launches, interviews, and social signals. Manual diligence makes $100K checks uneconomical.</p>
+          </article>
+
+          <article class="card accent">
+            <h3>Our insight</h3>
+            <p>Venture is both a discovery problem and a negotiation market. Solving only one side leaves the transaction broken.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-2">
+      <span class="slide-count">02 / 03</span>
+
+      <div class="content">
+        <div class="eyebrow">Product</div>
+        <h2>From hidden founder to negotiated check in 24 hours.</h2>
+
+        <div class="grid-3">
+          <article class="card">
+            <div class="step">
+              <span class="step-number">1</span>
+              <h3>Discover + model</h3>
+            </div>
+
+            <ul>
+              <li>Inbound: company name + deck</li>
+              <li>Outbound: GitHub, launches, papers, patents, accelerators</li>
+              <li>Voice interview + parsing create one confirmed Deal Spec</li>
+              <li>Simulations test judgment, resilience, learning, and conflict</li>
+              <li>Founder Score compounds across projects</li>
+              <li>Cold-start founders prove ability—not pedigree</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <div class="step">
+              <span class="step-number">2</span>
+              <h3>Evaluate + match</h3>
+            </div>
+
+            <p>A configurable Thesis Engine evaluates sector, stage, geography, ownership, check size, and risk appetite.</p>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Axis</th>
+                  <th>Output</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Founder</td>
+                  <td>Score + trend</td>
+                </tr>
+                <tr>
+                  <td>Market</td>
+                  <td>Bull / neutral / bear</td>
+                </tr>
+                <tr>
+                  <td>Idea vs. market</td>
+                  <td>Score + trend</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p>
+              Every claim has a source, timestamp, confidence, and
+              <strong>Trust Score.</strong>
+            </p>
+          </article>
+
+          <article class="card accent">
+            <div class="step">
+              <span class="step-number">3</span>
+              <h3>Call + negotiate</h3>
+            </div>
+
+            <p>A disclosed AI agent calls matched investors, structures every term, and negotiates using <strong>verified offers only.</strong></p>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Investor</th>
+                  <th>Outcome</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Tough</td>
+                  <td>$10M cap; exclusivity removed</td>
+                </tr>
+                <tr>
+                  <td>Stonewaller</td>
+                  <td>Exact $9.5M offer</td>
+                </tr>
+                <tr>
+                  <td>Hidden terms</td>
+                  <td>3% warrant uncovered</td>
+                </tr>
+              </tbody>
+            </table>
+          </article>
+        </div>
+
+        <blockquote class="quote">“We have a verified $9.5M offer without exclusivity. Can you improve the cap and remove that restriction?”</blockquote>
+
+        <div class="metric-strip">
+          <div class="metric">
+            <b>1.25%</b>
+            <span>Initial dilution</span>
+          </div>
+          <div class="metric">
+            <b>1.00%</b>
+            <span>Negotiated dilution</span>
+          </div>
+          <div class="metric">
+            <b>100%</b>
+            <span>Recorded + cited</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-3">
+      <span class="slide-count">03 / 03</span>
+
+      <div class="content">
+        <div class="eyebrow">The trusted network</div>
+        <h2>Infrastructure for early-stage capital.</h2>
+
+        <div class="grid-2">
+          <div>
+            <article class="card accent">
+              <h3>Why Vibe Check wins</h3>
+              <p><strong>Longitudinal evidence moat:</strong> Every interview, milestone, match, outcome, and negotiation improves the founder graph.</p>
+              <p><strong>Proof over pedigree:</strong> No evidence is never treated as negative evidence. First-time founders demonstrate ability directly.</p>
+            </article>
+
+            <div class="flow">Sourcing → Screening → Diligence → Matching → Negotiation → Decision</div>
+
+            <article class="card">
+              <h3>Go-to-market</h3>
+              <p><strong>Beachhead:</strong> Hackathons and accelerators supply high-potential founders. Micro-funds need faster deployment of $100K checks.</p>
+              <ul>
+                <li>Founders: free Founder Passport + matching</li>
+                <li>Funds: $24K–$60K annual platform</li>
+                <li>Accelerators: cohort licenses</li>
+                <li>No transaction fees before appropriate licensing</li>
+              </ul>
+            </article>
+          </div>
+
+          <article class="card">
+            <h3>Trust by design</h3>
+            <ul>
+              <li>AI identity disclosed on every call</li>
+              <li>Competing offers must be uploaded or recorded</li>
+              <li>No invented claims, bids, or founder history</li>
+              <li>No protected characteristics in scoring</li>
+              <li>Separate founder and investor agents</li>
+              <li>No dual representation</li>
+              <li>Human approval before outreach, investment, or acceptance</li>
+              <li>Every call ends with an offer, callback, or documented decline</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="raise">
+          <h2>Raising $1M</h2>
+          <p>Onboard 1,000 founders. Partner with 10 micro-funds. Facilitate 100 evidence-backed investment decisions.</p>
+        </div>
+
+        <div class="footer-mark">Vibe Check — Find overlooked founders. Prove the match. Negotiate the check.</div>
+      </div>
+    </section>
+
+    <nav class="nav" aria-label="Slide navigation">
+      <button type="button" onclick="moveSlide(-1)" aria-label="Previous slide">↑</button>
+      <button type="button" onclick="moveSlide(1)" aria-label="Next slide">↓</button>
+    </nav>
+
+    <script>
+      globalThis.readonlyFS = {
+        async getFile(filename) {
+          const script = document.querySelector(`script[type="embedded-file"][filename="${filename}"]`);
+          if (!script) {
+            throw new Errol(`File not found: ${filename}`);
+          }
+          const data = script.getAttribute("data");
+          // fetch dataUrl into File object
+          const blob = await (await fetch(data)).blob();
+          const file = new File([blob], filename, { type: blob.type });
+          return file;
+        },
+      };
+
+      globalThis.writeonlyFS = {
+        async writeFile(filename, text) {
+          const blob = new Blob([text], { type: "text/plain" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        },
+      };
+
+      globalThis.llm = {
+        async prompt(_prompt) {
+          throw new Error("The llm.prompt function is not available in the exported artifact. You can only use it in the runtime environment.");
+        },
+
+        async abortAll() {
+          // noop
+        },
+      };
+    </script>
+    <script>
+      const slides = [...document.querySelectorAll(".slide")];
+
+      function currentSlide() {
+        return slides.reduce(
+          (closest, slide, index) => {
+            const distance = Math.abs(slide.getBoundingClientRect().top);
+            return distance < closest.distance ? { index, distance } : closest;
+          },
+          { index: 0, distance: Infinity },
+        ).index;
+      }
+
+      function moveSlide(direction) {
+        const target = Math.max(0, Math.min(slides.length - 1, currentSlide() + direction));
+
+        slides[target].scrollIntoView({ behavior: "smooth" });
+      }
+
+      document.addEventListener("keydown", (event) => {
+        if (["ArrowDown", "PageDown", " "].includes(event.key)) {
+          event.preventDefault();
+          moveSlide(1);
+        }
+
+        if (["ArrowUp", "PageUp"].includes(event.key)) {
+          event.preventDefault();
+          moveSlide(-1);
+        }
+      });
+    </script>
+  </body>
+</html>
