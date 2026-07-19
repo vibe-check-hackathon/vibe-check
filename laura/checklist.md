@@ -1,8 +1,43 @@
-# Implementation Checklist — VibeCheck / Opportunity OS
+# Checklist — VibeCheck / Opportunity OS
 
 Working checklist for the demo build. Owners per the split we agreed: Laura =
 frontend + call stack, Sun = reasoning agents + video/deck, Martin = founder
 scoring + evidence. Ordered by demo value; strike-through nothing — check it.
+
+## Agent handoff brief (read this first if you're an AI agent picking this up)
+
+**Repo rules:** one folder per person; write ONLY in your principal's folder
+(root `AGENTS.md`). Laura's work is all under `laura/`. Commit style: short
+lowercase imperative subject, detail in the body, `Co-Authored-By` trailer.
+
+**What is implemented and working (verified by running it):**
+
+1. `laura/frontend/index.html` — single-file investor UI ("VibeCheck Studio"):
+   opportunity inbox → interview studio; light/dark theming; webcam+mic in
+   either founder seat (mic drives that founder's energy meter); BATNA/ZOPA
+   chart with draggable investor reservation point; decision-ready approval
+   sheet; Sun's Sourcing→Developing→Matching pipeline as the in-app stepper.
+   Two run modes: scripted demo (file://) or live SSE (`http://localhost:4173`).
+2. `laura/pipeline/` — zero-dependency Node (18+, ESM): `sourcing.js` and
+   `developing.js` implement stages 1–2 of `sun/system-architecture.md`;
+   `lib/card.js` serializes cards per `sun/opportunity-card.md`;
+   `lib/events.js` implements the event schema with founder-safe role gating;
+   `serve.js` streams real pipeline + interview events over SSE and handles
+   `POST /approve`. `node run-demo.js` and `node serve.js` both work today.
+3. Config/contracts (change these only deliberately, they are shared):
+   - `laura/pipeline/thesis.json` — ALL fund/evaluation criteria, single source
+     (mapping to Sun's spec: `laura/vc-criteria.md`)
+   - event schema: `laura/stitch-ai-prompt.md` §3.3 — the UI↔agent contract
+   - `sample/research-acme.json` — exact return shape a research agent must
+     produce; `sample/interview-acme.json` — exact events an interview agent
+     must emit. Replace contents, not shapes.
+
+**Not implemented (see backlog below):** LiveKit rooms, Deepgram transcription,
+Claude calls inside the AGENT HOOKs, founder scoring function, GitHub
+verification, ElevenLabs voice, the founder-view page.
+
+**Known cross-team issues:** status-vocab conflict in Sun's files and the
+unmerged `numeric-confidence-trust` branch — details in `laura/note-for-sun.md`.
 
 ## Done ✅
 
