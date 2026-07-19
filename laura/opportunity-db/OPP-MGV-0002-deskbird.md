@@ -25,7 +25,8 @@ and flexible workspace solutions (St. Gallen, Switzerland).
 
 Real deal: $13M Series A co-led by ALSTIN Capital and AXA Venture Partners with
 session.vc, Rivus Capital, and PortfoLion [CLM-001][SRC-002]. The company later
-raised a reported $23M Series B (2025) [CLM-004][SRC-004].
+raised a $23M Series B on 2025-09-24, led by Octopus Ventures with participation
+from Alstin Capital, Neva SGR, AVP, session.vc, and PortfoLion [CLM-004][SRC-007].
 
 ## Founders and Team
 
@@ -57,7 +58,7 @@ raised a reported $23M Series B (2025) [CLM-004][SRC-004].
 | CLM-001 | $13M Series A co-led by ALSTIN + AVP, announced 2023-09-06 | verified | 90/100 | [SRC-002][SRC-006] |
 | CLM-002 | In ALSTIN active portfolio as of 2026-07-19 | verified | 90/100 | [SRC-001] |
 | CLM-003 | 2021 pivot after near-bankruptcy (founder's own account) | claimed | 50/100 | [SRC-003] — self-reported in interview |
-| CLM-004 | $23M Series B (2025) | partially_verified | 55/100 | [SRC-004] podcast description; verify with press release |
+| CLM-004 | $23M Series B announced 2025-09-24, with Alstin Capital participating | verified | 90/100 | [SRC-007] |
 | CLM-005 | Co-founders: Ivan Cossu, Jonas Hess | verified | 80/100 | [SRC-005] |
 | GAP-001 | Current ARR / customer count | open | unknown | Not publicly disclosed |
 
@@ -69,6 +70,7 @@ raised a reported $23M Series B (2025) [CLM-004][SRC-004].
 - **SRC-004:** Startup Insider podcast (2025-10-09) — https://open.spotify.com/episode/1PiZG16jRaQFby2BSUz3rd
 - **SRC-005:** Crunchbase person profile — https://www.crunchbase.com/person/ivan-cossu
 - **SRC-006:** deskbird press release — https://www.deskbird.com/press-releases/series-a-funding
+- **SRC-007:** deskbird Series B press release, 2025-09-24 — https://www.deskbird.com/press-releases/23-million-series-b
 
 ## Interview
 
