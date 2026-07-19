@@ -19,7 +19,7 @@ import {
   type Startup,
 } from "@/lib/data";
 import { loadSyntheticStartups } from "@/lib/synthetic-opportunities";
-import { FileText, Filter, Globe2, LayoutGrid, Lock, Rows, Plus, X, Youtube } from "lucide-react";
+import { FileText, Filter, Globe2, LayoutGrid, Lock, Mic, Rows, Plus, Sparkles, X, Youtube } from "lucide-react";
 
 export const Route = createFileRoute("/board")({
   head: () => ({
@@ -28,9 +28,109 @@ export const Route = createFileRoute("/board")({
   component: BoardPage,
 });
 
+type SortKey = "date" | "money" | "name" | "score" | null;
+type TableFilters = { historical: boolean; synthetic: boolean; realOnly: boolean; syntheticOnly: boolean };
+const NO_FILTERS: TableFilters = { historical: false, synthetic: false, realOnly: false, syntheticOnly: false };
+
 function BoardPage() {
   const [synthetic, setSynthetic] = useState<Startup[]>([]);
   const [selected, setSelected] = useState<Startup | null>(null);
+  const [view, setView] = useState<"kanban" | "table">("kanban");
+  const [sortKey, setSortKey] = useState<SortKey>(null);
+  const [sortDir, setSortDir] = useState<1 | -1>(-1);
+  const [filters, setFilters] = useState<TableFilters>(NO_FILTERS);
+  const [command, setCommand] = useState("");
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [listening, setListening] = useState(false);
+
+  /** Natural-language table commands: "sort by money", "exclude historical", "only synthetic", "reset". */
+  function applyCommand(text: string) {
+    const t = text.toLowerCase();
+    if (!t.trim()) return;
+    if (/reset|clear|show all/.test(t)) {
+      setFilters(NO_FILTERS);
+      setSortKey(null);
+      setFeedback("Reset — showing all deals, original order.");
+      return;
+    }
+    const notes: string[] = [];
+    let sk: SortKey = sortKey;
+    let sd: 1 | -1 = sortDir;
+    if (/date|recent|newest|latest|oldest/.test(t)) {
+      sk = "date";
+      sd = /oldest|asc/.test(t) ? 1 : -1;
+      notes.push(`sorted by date (${sd === -1 ? "newest first" : "oldest first"})`);
+    }
+    if (/money|ask|amount|round size|raise|largest|biggest|smallest/.test(t)) {
+      sk = "money";
+      sd = /smallest|lowest|asc/.test(t) ? 1 : -1;
+      notes.push(`sorted by round size (${sd === -1 ? "largest first" : "smallest first"})`);
+    }
+    if (/name|alphabet/.test(t)) {
+      sk = "name";
+      sd = /z-a|desc|reverse/.test(t) ? -1 : 1;
+      notes.push("sorted by name");
+    }
+    if (/score/.test(t)) {
+      sk = "score";
+      sd = -1;
+      notes.push("sorted by founder score");
+    }
+    const next = { ...filters };
+    if (/(exclude|hide|without|no|remove) (the )?(historical|portfolio|old)/.test(t)) {
+      next.historical = true;
+      notes.push("excluding historical portfolio");
+    }
+    if (/(include|show|with) (the )?historical/.test(t)) {
+      next.historical = false;
+      notes.push("including historical portfolio");
+    }
+    if (/(exclude|hide|without|no|remove) synthetic/.test(t)) {
+      next.synthetic = true;
+      next.syntheticOnly = false;
+      notes.push("excluding synthetic cohort");
+    }
+    if (/only synthetic|synthetic only/.test(t)) {
+      next.syntheticOnly = true;
+      next.realOnly = false;
+      next.synthetic = false;
+      notes.push("synthetic cohort only");
+    }
+    if (/only (real|official)|(real|official) only|official cards/.test(t)) {
+      next.realOnly = true;
+      next.syntheticOnly = false;
+      notes.push("official cards only");
+    }
+    if (!notes.length) {
+      setFeedback('Did not catch a command — try "sort by money", "sort by date oldest", "exclude historical", "only synthetic", "reset".');
+      return;
+    }
+    setSortKey(sk);
+    setSortDir(sd);
+    setFilters(next);
+    setView("table");
+    setFeedback(notes.join(" · "));
+  }
+
+  function startVoice() {
+    const SR = (window as unknown as Record<string, any>).SpeechRecognition ?? (window as unknown as Record<string, any>).webkitSpeechRecognition;
+    if (!SR) {
+      setFeedback("Voice input is not supported in this browser — type the command instead.");
+      return;
+    }
+    const rec = new SR();
+    rec.lang = "en-US";
+    rec.interimResults = false;
+    rec.onresult = (e: { results: { [i: number]: { [j: number]: { transcript: string } } } }) => {
+      const text = e.results[0][0].transcript;
+      setCommand(text);
+      applyCommand(text);
+    };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    setListening(true);
+    rec.start();
+  }
 
   useEffect(() => {
     loadSyntheticStartups().then(setSynthetic).catch(() => {});
@@ -50,6 +150,21 @@ function BoardPage() {
     pipelineStages.map((s) => [s, all.filter((x) => x.stage === s)]),
   ) as never;
 
+  /* Table rows after the AI command bar's filters + sort. */
+  let tableRows = all
+    .filter((s) => !(filters.historical && s.stage === "Portfolio"))
+    .filter((s) => !(filters.synthetic && s.synthetic))
+    .filter((s) => !(filters.syntheticOnly && !s.synthetic))
+    .filter((s) => !(filters.realOnly && (s.synthetic || s.demo)));
+  if (sortKey) {
+    tableRows = [...tableRows].sort((a, b) => {
+      if (sortKey === "name") return a.company.localeCompare(b.company) * sortDir;
+      const av = sortKey === "date" ? parseDateKey(a.submitted) : sortKey === "money" ? parseMoney(a.ask) : (a.founderScore ?? -1);
+      const bv = sortKey === "date" ? parseDateKey(b.submitted) : sortKey === "money" ? parseMoney(b.ask) : (b.founderScore ?? -1);
+      return (av - bv) * sortDir;
+    });
+  }
+
   return (
     <AppShell>
       <PageHeader
@@ -59,20 +174,35 @@ function BoardPage() {
         actions={
           <>
             <div className="flex items-center rounded-md border border-border bg-surface p-0.5">
-              <button className="h-7 px-2 rounded-[5px] bg-background text-[12px] font-medium flex items-center gap-1.5">
+              <button
+                onClick={() => setView("kanban")}
+                className={`h-7 px-2 rounded-[5px] text-[12px] flex items-center gap-1.5 ${view === "kanban" ? "bg-background font-medium" : "text-muted-foreground"}`}
+              >
                 <LayoutGrid className="h-3 w-3" /> Kanban
               </button>
-              <button className="h-7 px-2 rounded-[5px] text-[12px] text-muted-foreground flex items-center gap-1.5">
+              <button
+                onClick={() => setView("table")}
+                className={`h-7 px-2 rounded-[5px] text-[12px] flex items-center gap-1.5 ${view === "table" ? "bg-background font-medium" : "text-muted-foreground"}`}
+              >
                 <Rows className="h-3 w-3" /> Table
               </button>
             </div>
-            <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5">
+            <button
+              onClick={() => {
+                const next = !filters.realOnly;
+                setFilters({ ...filters, realOnly: next, syntheticOnly: false });
+                setView("table");
+                setFeedback(next ? "Official cards only." : "Showing all deals.");
+              }}
+              className={`h-8 rounded-md border px-3 text-[12px] flex items-center gap-1.5 ${filters.realOnly ? "border-primary/50 bg-secondary text-secondary-foreground" : "border-border bg-surface"}`}
+            >
               <Filter className="h-3 w-3" /> Official cards
             </button>
           </>
         }
       />
 
+      {view === "kanban" && (<>
       <div className="px-6 py-5 overflow-x-auto">
         <div className="flex gap-3 min-w-max">
           {pipelineStages.map((stage) => (
@@ -191,9 +321,34 @@ function BoardPage() {
           })}
         </div>
       </Section>
+      </>)}
 
       {/* Table view */}
+      {view === "table" && (
       <Section title="All deals · table">
+        <div className="mb-2 flex items-center gap-2">
+          <div className="flex flex-1 items-center gap-2 rounded-md border border-border bg-card px-2.5 py-1.5">
+            <Sparkles className="h-3.5 w-3.5 shrink-0 text-teal" />
+            <input
+              value={command}
+              onChange={(e) => setCommand(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && applyCommand(command)}
+              placeholder='Tell the table what to do — "sort by money", "sort by date oldest", "exclude historical", "only synthetic", "reset"'
+              className="w-full bg-transparent text-[12.5px] outline-none placeholder:text-muted-foreground/70"
+            />
+          </div>
+          <button onClick={() => applyCommand(command)} className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]">
+            Apply
+          </button>
+          <button
+            onClick={startVoice}
+            title="Speak a command"
+            className={`h-8 w-8 grid place-items-center rounded-md border ${listening ? "border-negative text-negative animate-pulse" : "border-border bg-surface text-muted-foreground"}`}
+          >
+            <Mic className="h-3.5 w-3.5" />
+          </button>
+        </div>
+        {feedback && <div className="mb-2 text-[11px] text-muted-foreground">✓ {feedback}</div>}
         <Card className="p-0 overflow-hidden">
           <table className="w-full text-[12.5px]">
             <thead className="bg-surface border-b border-border text-muted-foreground">
@@ -210,7 +365,7 @@ function BoardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {all.map((s) => (
+              {tableRows.map((s) => (
                 <tr key={s.id} onClick={() => setSelected(s)} className="hover:bg-surface/60 cursor-pointer">
                   <td className="px-4 py-2.5">
                     <div className="flex items-center gap-2.5">
@@ -246,6 +401,7 @@ function BoardPage() {
           </table>
         </Card>
       </Section>
+      )}
 
       {selected && <DealDetail startup={selected} onClose={() => setSelected(null)} />}
     </AppShell>
@@ -287,6 +443,18 @@ function alignmentsFor(target: Startup, pool: Startup[]): { co: Startup; shared:
 }
 
 const PORTFOLIO_POOL = STARTUPS.filter((s) => s.stage === "Portfolio");
+
+/* ---------- table sorting helpers (AI command bar) ---------- */
+function parseMoney(ask: string): number {
+  const m = ask.match(/([\d.]+)\s*M/i);
+  return m ? parseFloat(m[1]) : -1;
+}
+function parseDateKey(submitted: string): number {
+  const full = Date.parse(submitted);
+  if (!Number.isNaN(full)) return full;
+  const year = submitted.match(/^\d{4}$/);
+  return year ? Date.parse(`${submitted}-01-01`) : 0;
+}
 
 /** The five founder-evaluation axes (laura/founder-axis-scoring.md). */
 const FOUNDER_AXES = ["Resilience", "Autonomy", "Curiosity", "Perseverance", "Co-founder fit"] as const;
