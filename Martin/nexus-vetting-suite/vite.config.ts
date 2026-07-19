@@ -689,6 +689,5 @@ export default defineConfig({
   },
   vite: {
     plugins: [lauraOpportunityDb()],
-    base: "/vite-check/",
   },
 });
