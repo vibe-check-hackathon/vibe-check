@@ -49,88 +49,90 @@
 }
 
 /* ------------------------------------------------------------------ */
-/*  Growth Signal palette (sun/color-palette.md)                        */
-/*  Forest #0B3D2E · Emerald #10B981 · Mint #A7F3D0 · Charcoal #111827  */
-/*  · Paper White #F9FAFB. Emerald actions carry charcoal text.         */
+/*  Aubergine & Gold — a quiet, editorial palette.                      */
+/*  Deep plum ink + near-black, with gold as the sparing accent.        */
+/*  Muted, low-glare, soft gradient surfaces. Purple = structure,       */
+/*  gold = the one thing that means "of value".                         */
 /* ------------------------------------------------------------------ */
 :root {
   --radius: 0.5rem;
-  /* Paper White canvas · true white reserved for elevated cards */
-  --background: #f9fafb;
-  --surface: #f2f5f3;
-  --surface-2: #e9efeb;
-  --foreground: #111827; /* Charcoal */
+  /* Warm ivory canvas · true white reserved for elevated cards */
+  --background: #faf8f5;
+  --surface: #f3f0ea;
+  --surface-2: #eae4db;
+  --foreground: #241c30; /* plum-black ink */
   --card: #ffffff;
-  --card-foreground: #111827;
+  --card-foreground: #241c30;
   --popover: #ffffff;
-  --popover-foreground: #111827;
-  /* Emerald action + Forest anchor */
-  --primary: #10b981; /* Emerald */
-  --primary-foreground: #08301f; /* charcoal-green text on emerald (per guide) */
-  --teal: #10b981;
-  --teal-soft: #d1f5e5; /* mint tint for chips */
-  --secondary: #e8f3ee;
-  --secondary-foreground: #0b3d2e; /* Forest */
-  --muted: #eef2f0;
-  --muted-foreground: #5c6b64;
-  --accent: #a7f3d0; /* Mint Tint */
-  --accent-foreground: #0b3d2e;
-  --destructive: #dc2626;
+  --popover-foreground: #241c30;
+  /* Aubergine = primary structure; gold = sparing accent */
+  --primary: #4a3a63; /* muted aubergine */
+  --primary-foreground: #f7f2e9; /* warm cream */
+  --teal: #9b7c3c; /* muted gold (chips / accents) */
+  --teal-soft: #f1e8d3; /* soft gold tint */
+  --secondary: #efeaf1; /* faint lilac */
+  --secondary-foreground: #3b2f50;
+  --muted: #f0ebe4;
+  --muted-foreground: #6f6678; /* muted plum-grey */
+  --accent: #ece3cd; /* soft gold surface */
+  --accent-foreground: #4a3a63;
+  --destructive: #9b3b3b; /* wine */
   --destructive-foreground: #ffffff;
-  --positive: #047857; /* deep emerald — the semantic "yes" */
-  --warning: #b45309; /* amber, off-palette by design (must not read green) */
-  --negative: #dc2626;
-  --border: #e2e8e4;
-  --input: #e2e8e4;
-  --ring: #10b981;
-  /* Sidebar: light mint-tinted paper, Forest text accents */
-  --sidebar: #ecf3ef;
-  --sidebar-foreground: #1b2a24;
-  --sidebar-primary: #10b981;
-  --sidebar-primary-foreground: #08301f;
-  --sidebar-accent: #c9eedc; /* mint active state */
-  --sidebar-accent-foreground: #0b3d2e; /* Forest */
-  --sidebar-border: #dde7e1;
-  --sidebar-ring: #10b981;
+  --positive: #8a6a2e; /* deep gold — the "of value" signal */
+  --warning: #b4622e; /* terracotta */
+  --negative: #9b3b3b; /* wine */
+  --border: #e7e0d6;
+  --input: #e7e0d6;
+  --ring: #9b7c3c; /* gold focus */
+  /* Sidebar: near-black plum rail with gold accents (both themes) */
+  --sidebar: #1c1628;
+  --sidebar-foreground: #d7cfe0;
+  --sidebar-primary: #c6a968; /* gold */
+  --sidebar-primary-foreground: #1c1628;
+  --sidebar-accent: #2a2139; /* active nav bg */
+  --sidebar-accent-foreground: #e7c980; /* gold text */
+  --sidebar-border: #2e2742;
+  --sidebar-ring: #c6a968;
+  --bg-grad: radial-gradient(1200px 620px at 18% -12%, rgba(74, 58, 99, 0.06), transparent 68%);
 }
 
 .dark {
-  /* Charcoal graduates from ink to canvas */
-  --background: #111827;
-  --surface: #161f2e;
-  --surface-2: #1d2838;
-  --foreground: #f3f5f7;
-  --card: #172131;
-  --card-foreground: #f3f5f7;
-  --popover: #172131;
-  --popover-foreground: #f3f5f7;
-  --primary: #34d399; /* brighter emerald for dark */
-  --primary-foreground: #08241a;
-  --teal: #34d399;
-  --teal-soft: #10402f;
-  --secondary: #1f2a3a;
-  --secondary-foreground: #e3f5ec;
-  --muted: #1c2636;
-  --muted-foreground: #93a3ad;
-  --accent: #14503c; /* forest hover/selected */
-  --accent-foreground: #a7f3d0; /* mint text */
-  --destructive: #ef4444;
+  /* Near-black plum canvas */
+  --background: #141019;
+  --surface: #1b1624;
+  --surface-2: #241d30;
+  --foreground: #ece6f0;
+  --card: #1d1727;
+  --card-foreground: #ece6f0;
+  --popover: #1d1727;
+  --popover-foreground: #ece6f0;
+  --primary: #a08fc7; /* soft lavender */
+  --primary-foreground: #171220;
+  --teal: #c6a968; /* gold */
+  --teal-soft: #2a2333;
+  --secondary: #241d30;
+  --secondary-foreground: #e7dff0;
+  --muted: #221b2e;
+  --muted-foreground: #9a90a8;
+  --accent: #2e2540; /* purple hover/selected */
+  --accent-foreground: #e7c980; /* gold */
+  --destructive: #c25b5b;
   --destructive-foreground: #ffffff;
-  --positive: #34d399;
-  --warning: #f59e0b;
-  --negative: #f87171;
-  --border: oklch(1 0 0 / 9%);
+  --positive: #c6a968; /* gold */
+  --warning: #d08a4e;
+  --negative: #c25b5b;
+  --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 12%);
-  --ring: #34d399;
-  /* Forest Green sidebar — institutional anchor (works with light text) */
-  --sidebar: #0b3d2e;
-  --sidebar-foreground: #dcefe6;
-  --sidebar-primary: #34d399;
-  --sidebar-primary-foreground: #06281d;
-  --sidebar-accent: #14503c;
-  --sidebar-accent-foreground: #eafbf2;
-  --sidebar-border: #14432f;
-  --sidebar-ring: #34d399;
+  --ring: #c6a968;
+  --sidebar: #171220;
+  --sidebar-foreground: #d7cfe0;
+  --sidebar-primary: #c6a968;
+  --sidebar-primary-foreground: #171220;
+  --sidebar-accent: #241d30;
+  --sidebar-accent-foreground: #e7c980;
+  --sidebar-border: #2a2333;
+  --sidebar-ring: #c6a968;
+  --bg-grad: radial-gradient(1200px 620px at 18% -12%, rgba(160, 143, 199, 0.10), transparent 68%);
 }
 
 @layer base {
@@ -140,6 +142,8 @@
 
   body {
     background-color: var(--color-background);
+    background-image: var(--bg-grad);
+    background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
