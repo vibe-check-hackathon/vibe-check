@@ -44,9 +44,9 @@ function ApplicationsPage() {
               <Field label="Stage" value={s.stage} icon={<Layers className="h-3 w-3" />} />
             </div>
             <div className="border-t border-border p-5 grid md:grid-cols-2 gap-3">
-              <Ref href="deck.pdf" icon={<FileText className="h-3.5 w-3.5" />} title="Pitch deck v3" hint="SRC-001 · imported" />
+              <Ref href="/sun-deck/code-hike-02.html" popup icon={<FileText className="h-3.5 w-3.5" />} title="Pitch deck v3" hint="SRC-001 · opens in viewer" />
               <Ref href="acme.example" icon={<Globe className="h-3.5 w-3.5" />} title="acme-robotics.example" hint="Website · scraped" />
-              <Ref href="github" icon={<Github className="h-3.5 w-3.5" />} title="github.com/acme-robotics" hint="Product prototype (SRC-004)" />
+              <Ref href="https://github.com/vibe-check-hackathon/vibe-check" icon={<Github className="h-3.5 w-3.5" />} title="github.com/vibe-check-hackathon" hint="Product repository (SRC-004)" />
               <Ref href="data-room" icon={<Users className="h-3.5 w-3.5" />} title="Pilot contracts" hint="SRC-007 · access granted" />
             </div>
             <div className="border-t border-border p-5">
@@ -171,9 +171,24 @@ function Field({ label, value, icon }: { label: string; value: string; icon?: Re
   );
 }
 
-function Ref({ href, icon, title, hint }: { href: string; icon: React.ReactNode; title: string; hint: string }) {
+function Ref({ href, popup, icon, title, hint }: { href: string; popup?: boolean; icon: React.ReactNode; title: string; hint: string }) {
+  const real = href.startsWith("http") || href.startsWith("/");
   return (
-    <a href={"#" + href} className="flex items-center gap-3 rounded-md border border-border p-2.5 hover:border-primary/40 transition-colors">
+    <a
+      href={real ? href : "#" + href}
+      target={real && !popup ? "_blank" : undefined}
+      rel="noreferrer"
+      onClick={
+        popup
+          ? (e) => {
+              // Small pop-up viewer, e.g. the pitch deck (sun's code deck).
+              e.preventDefault();
+              window.open(href, "deck-viewer", "width=1080,height=720,noopener");
+            }
+          : undefined
+      }
+      className="flex items-center gap-3 rounded-md border border-border p-2.5 hover:border-primary/40 transition-colors"
+    >
       <div className="h-7 w-7 rounded-md bg-surface-2 grid place-items-center text-muted-foreground">{icon}</div>
       <div className="min-w-0 flex-1">
         <div className="text-[12.5px] font-medium truncate">{title}</div>

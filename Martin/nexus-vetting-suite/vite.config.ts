@@ -26,6 +26,8 @@ import { sendInterviewInvite } from "../../laura/pipeline/lib/email.js";
 import { getSignedUrl, buildDynamicVariables } from "../../laura/pipeline/lib/interview-agent.js";
 // @ts-expect-error — service key store
 import { serviceStatus, serviceConfig } from "../../laura/pipeline/lib/service-keys.js";
+// @ts-expect-error — adaptive term sheets: thesis base terms adapted by team analysis, every change explained
+import { generateTermSheet, renderTermSheet } from "../../laura/pipeline/lib/term-sheet.js";
 
 /* Serve laura/opportunity-db as /opportunity-db/* directly from the single
  * source of truth — no copied data in public/. The old copy used a cards/
@@ -448,6 +450,44 @@ const lauraOpportunityDb = () => ({
       }));
     });
 
+    // Adaptive term sheets (feeds Martin's annotated-PDF work): POST a team
+    // analysis, get thesis-based terms adapted to it + a per-change
+    // explanation trail + markdown with stable TS-§n anchors for annotation.
+    server.middlewares.use("/term-sheet", (req, res, next) => {
+      if (req.method !== "POST") return next();
+      let body = "";
+      req.on("data", (c: string) => (body += c));
+      req.on("end", () => {
+        res.setHeader("Content-Type", "application/json");
+        try {
+          const analysis = JSON.parse(body || "{}");
+          if (!analysis.company) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: "expected { company, askUsd?, founderScore?, founderScoreConfidence?, trustScore?, contradictions?, gaps?, softFlags?, axisCappedBy? }" }));
+            return;
+          }
+          const result = generateTermSheet(analysis);
+          res.end(JSON.stringify({ ...result, markdown: renderTermSheet(result) }));
+        } catch (e) {
+          res.statusCode = 400;
+          res.end(JSON.stringify({ error: e instanceof Error ? e.message : "invalid json" }));
+        }
+      });
+    });
+    // Sun's decks (pitch deck viewer pop-up) served straight from sun/deck.
+    const SUN_DECK = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "sun", "deck");
+    server.middlewares.use("/sun-deck", async (req, res, next) => {
+      try {
+        const rel = decodeURIComponent((req.url ?? "/").split("?")[0]);
+        const file = join(SUN_DECK, normalize(rel).replace(/^([.\\/])+/, ""));
+        if (!file.startsWith(SUN_DECK)) return next();
+        const data = await readFile(file);
+        res.setHeader("Content-Type", extname(file) === ".html" ? "text/html; charset=utf-8" : extname(file) === ".mp3" ? "audio/mpeg" : MIME[extname(file)] ?? "application/octet-stream");
+        res.end(data);
+      } catch {
+        next();
+      }
+    });
     server.middlewares.use("/opportunity-db", async (req, res, next) => {
       try {
         let rel = decodeURIComponent((req.url ?? "/").split("?")[0]);
