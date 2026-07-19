@@ -3,6 +3,7 @@
   "website": "https://timefold.ai/",
   "channels": {
     "website": "https://timefold.ai/",
+    "github": "https://github.com/timefoldai",
     "linkedinCompanySearch": "https://www.linkedin.com/search/results/companies/?keywords=Timefold"
   },
   "assets": { "logo": "logo.png", "logoSource": "favicon via google s2 service, domain timefold.ai", "fetched": "2026-07-19" },

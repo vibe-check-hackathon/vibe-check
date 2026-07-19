@@ -55,13 +55,14 @@ Thales, and Subaru among enterprise users/customers [CLM-003][SRC-002].
 | CLM-001 | $13M Series A led by Alstin Capital, announced 2026-06-23 | verified | 90/100 | [SRC-002] |
 | CLM-002 | Founders: Maarten Vandenbroucke and Geoffrey De Smet | verified | 80/100 | [SRC-002] |
 | CLM-003 | 4x ARR growth in 2025; enterprise users/customers named by company | claimed | 50/100 | Company announcement [SRC-002]; verify with customers |
-| CLM-004 | Product descends from a battle-tested open-source optimization engine | claimed | 45/100 | Investor quote in company announcement [SRC-002]; verify via GitHub |
+| CLM-004 | Product descends from a battle-tested open-source optimization engine (OptaPlanner continuation) | verified | 85/100 | [SRC-002][SRC-003] public GitHub org, Apache-2.0 solver |
 | GAP-001 | Revenue/ARR amount and cap table | open | unknown | Not publicly disclosed |
 
 ### Sources
 
 - **SRC-001:** ALSTIN Capital portfolio page, fetched 2026-07-19 — https://alstin.capital/portfolio/
 - **SRC-002:** Timefold press release, 2026-06-23 — https://timefold.ai/blog/timefold-raises-series-a
+- **SRC-003:** Timefold public GitHub organization, checked 2026-07-19 — https://github.com/timefoldai (timefold-solver, Apache-2.0, OptaPlanner continuation)
 
 ## Interview
 
