@@ -126,6 +126,36 @@ Caveats encoded in the model:
 - Sub-scores stay separate — never averaged into one founder number without the
   components remaining visible (mirrors the card's never-average rule).
 
+## 5a. Team Complementarity Score — a team-level number, not a founder average
+
+The per-founder psychogram answers "how strong is this individual?" It does **not**
+answer "how strong is this *pair*?" — and §3 above says the pair is where roughly
+two-thirds of failures actually originate. So the team view carries its own score,
+computed from team-level evidence, **never** by averaging the two founders'
+individual scores.
+
+**Team Complementarity Score (0–100)** decomposes into three components, each kept
+visible (same never-average rule as the founder axis):
+
+| Component | What it measures | Evidence source |
+|---|---|---|
+| **Skill complementarity** | Do the co-founders cover *different* critical functions (not duplicate strengths)? | Role split, CVs, who-owns-what in the joint interview |
+| **Decision clarity** | Is there a clear decision-maker for the calls nobody wants to make? | Joint interview: do both describe the *same* decision process? |
+| **Pressure-tested history** | Have they worked together through real conflict, not just an untested relationship? | Shared-history verification; conflict observed under interview pressure |
+
+The headline number is **gated by the weakest component, not the mean** — a
+brilliant skill split with an untested relationship is a documented red-flag
+pattern (§3), so `pressure-tested history` caps the ceiling. On the frontend this
+renders as the **Team overview** tab: the two founders' psychograms overlaid on
+one radar (visualising where they cover for each other vs. overlap), plus the
+complementarity components and the card's Team-dynamic evidence.
+
+For the Acme Robotics example card (FND-0007 Ada × FND-0008 Minh): skill
+complementarity is high (commercial CEO × technical CTO), decision clarity is good
+(both describe the same process), but pressure-tested history is unproven — so the
+team number is deliberately capped and flagged as the key open item, mirroring the
+card's `Team dynamic` row [CLM-004][SRC-005].
+
 ## 6. Honest caveat on the quantified claims
 
 The two most-quantified frameworks here — Founder Institute's **85.1% accuracy**
