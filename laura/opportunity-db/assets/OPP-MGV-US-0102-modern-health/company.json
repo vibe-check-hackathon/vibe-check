@@ -1,0 +1,10 @@
+{
+  "company": "Modern Health",
+  "website": "https://www.modernhealth.com/",
+  "channels": {
+    "website": "https://www.modernhealth.com/",
+    "linkedinCompanySearch": "https://www.linkedin.com/search/results/companies/?keywords=Modern%20Health"
+  },
+  "assets": { "logo": "logo.png", "logoSource": "favicon via google s2 service, domain modernhealth.com", "fetched": "2026-07-19" },
+  "policy": "company-level public assets only; no personal data of founders stored (consent-gated per system design)"
+}

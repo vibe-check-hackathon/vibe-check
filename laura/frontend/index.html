@@ -395,6 +395,8 @@
   .d-close { position: absolute; top: 14px; right: 14px; }
   .d-disclaimer { margin-top: 16px; font-size: 11.5px; color: var(--muted); }
   .db-note { margin-top: 18px; font-size: 12px; color: var(--muted); }
+  .oc-logo { width: 20px; height: 20px; border-radius: 5px; vertical-align: -4px; margin-right: 8px; }
+  .d-logo { width: 28px; height: 28px; border-radius: 7px; vertical-align: -6px; margin-right: 10px; }
   .oc-status { font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--hairline); color: var(--ink-2); }
   .oc-status.acquired { color: var(--good); border-color: rgba(12, 163, 12, 0.4); }
   .oc-status.inactive, .oc-status.unclear { color: var(--muted); }
@@ -1051,7 +1053,8 @@
       <button class="opp-card" data-opp="${esc(o.id)}">
         <div class="oc-top"><span class="oc-id">${esc(o.id)}</span>
           <span class="oc-status ${esc(o.status ?? "")}">${esc(o.status ?? "invested")}</span></div>
-        <h3>${esc(o.company)}</h3>
+        <h3><img class="oc-logo" src="${dbBase()}assets/${esc(o.card.replace(/\.md$/, ""))}/logo.png"
+          alt="" onerror="this.style.display='none'">${esc(o.company)}</h3>
         <p>${esc(o.sector)}${o.location ? " · " + esc(o.location) : ""}</p>
         <div class="axis-chips">
           <span class="chip">${o.interview.locked ? "🔒 interview confidential" : "▶ public interview"}</span>
@@ -1085,7 +1088,8 @@
          studies before the AI interview; the investor interview itself stays 🔒 confidential.</div>`;
     detailModal.innerHTML = `
       <button class="ctl d-close" id="dClose">Close</button>
-      <h3>${esc(o.company)}</h3>
+      <h3><img class="d-logo" src="${dbBase()}assets/${esc(o.card.replace(/\.md$/, ""))}/logo.png"
+        alt="" onerror="this.style.display='none'">${esc(o.company)}</h3>
       <div class="d-meta">${esc(o.id)} · ${esc(o.sector)}${o.location ? " · " + esc(o.location) : ""}${o.vehicle ? " · " + esc(o.vehicle) + " " + esc(o.year ?? "") : ""}</div>
       <h4>Real event</h4>
       <div class="d-event">${esc(o.event)}${o.verified ? '<span class="d-verified">✓ verified</span>' : ""}</div>

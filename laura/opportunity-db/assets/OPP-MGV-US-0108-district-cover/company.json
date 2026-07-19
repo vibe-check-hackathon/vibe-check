@@ -1,0 +1,10 @@
+{
+  "company": "District Cover",
+  "website": "https://districtcover.com/",
+  "channels": {
+    "website": "https://districtcover.com/",
+    "linkedinCompanySearch": "https://www.linkedin.com/search/results/companies/?keywords=District%20Cover"
+  },
+  "assets": { "logo": "logo.png", "logoSource": "favicon via google s2 service, domain districtcover.com", "fetched": "2026-07-19" },
+  "policy": "company-level public assets only; no personal data of founders stored (consent-gated per system design)"
+}

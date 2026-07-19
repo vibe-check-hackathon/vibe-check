@@ -1,0 +1,10 @@
+{
+  "company": "Observe.AI",
+  "website": "https://observe.ai/",
+  "channels": {
+    "website": "https://observe.ai/",
+    "linkedinCompanySearch": "https://www.linkedin.com/search/results/companies/?keywords=Observe.AI"
+  },
+  "assets": { "logo": "logo.png", "logoSource": "favicon via google s2 service, domain observe.ai", "fetched": "2026-07-19" },
+  "policy": "company-level public assets only; no personal data of founders stored (consent-gated per system design)"
+}
