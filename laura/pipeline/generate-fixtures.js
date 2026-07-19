@@ -6,7 +6,7 @@
 // Usage: node generate-fixtures.js   (writes ../opportunity-db/synthetic/)
 
 import { faker } from "@faker-js/faker";
-import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -42,7 +42,8 @@ function makeFounder(i, j, domain, role) {
   return {
     id,
     name, sex, role,
-    avatar: `avatars/${id}.svg`,
+    /* matched library portrait wins over the dicebear placeholder */
+    avatar: existsSync(join(outDir, "avatars", `${id}.png`)) ? `avatars/${id}.png` : `avatars/${id}.svg`,
     email: `${kebab(first)}.${kebab(last)}@${domain}`,
     linkedin: `https://linkedin.example/in/${handle}`,
     github: role === "CTO" ? `https://github.example/${handle}` : undefined,
