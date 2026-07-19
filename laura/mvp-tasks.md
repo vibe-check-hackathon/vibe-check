@@ -91,10 +91,18 @@ Sun's spec), `stitch-ai-prompt.md` §3 (event contract).
       Martin's `loadSyntheticStartups()` also mirrors the canonical screen and
       filters any future outbound record with Series B+ or billion-scale signals
       before it reaches the board.
-- [ ] **Identify (re-run on-thesis)** — rescan for genuinely early-stage
-      targets (pre-seed/seed, EU-leaning, B2B software: fresh YC/accelerator
-      cohorts, new GitHub projects, stealth-exit signals) and add records
-      that pass `screenOpportunity`. Research task, ~1–2h.
+- [x] **Identify (re-run on-thesis)** — 12 genuinely early-stage records
+      (Jan–Jul 2026, all pre-seed/seed, EU-leaning B2B AI) from the
+      public-source research doc `opportunity-db/MGV-OUTBOUND-2026-COMBINED.md`,
+      converted by `pipeline/build-outbound.js`: every record passes the
+      canonical screen before admission, carries its funding trigger as
+      `activitySignal`, the founder-evidence coverage score (never a
+      personality score — founders stay `assessed: false`), quoted public
+      founder signals, sources, and **seed+speed portfolio adjacency**
+      computed against `Martin/seed-speed-portfolio-enriched.md` (e.g.
+      Auxilius ↔ Calvin Risk/Prewave, Kyrok ↔ Prewave/Orderlion) so each
+      outbound card names the existing investment that makes it relevant.
+      Board: "only outbound" filter / kanban switch shows them.
 - [ ] **LLM research handoff** � when asking an LLM to add outbound records,
       constrain it to the thesis before writing files: `stage in {pre-seed,
       seed}`, no Series B+, no unicorn/billion valuation, realistic initial

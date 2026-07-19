@@ -19,6 +19,7 @@ import {
   type Startup,
 } from "@/lib/data";
 import { loadSyntheticStartups } from "@/lib/synthetic-opportunities";
+import { useSubmittedApplications, applicationToStartup } from "@/lib/applications";
 import { ArrowDownUp, FileText, Filter, Globe2, LayoutGrid, Lock, Mic, Rows, Plus, Search, Sparkles, X, Youtube } from "lucide-react";
 
 export const Route = createFileRoute("/board")({
@@ -46,6 +47,7 @@ const NO_FILTERS: TableFilters = {
 
 function BoardPage() {
   const [synthetic, setSynthetic] = useState<Startup[]>([]);
+  const submitted = useSubmittedApplications();
   const [selected, setSelected] = useState<Startup | null>(null);
   const [view, setView] = useState<"kanban" | "table">("kanban");
   const [sortKey, setSortKey] = useState<SortKey>(null);
@@ -220,7 +222,8 @@ function BoardPage() {
     return () => removeEventListener("keydown", onKey);
   }, []);
 
-  const all = [...STARTUPS, ...synthetic];
+  // Inbound applications sit alongside every other card, newest first.
+  const all = [...submitted.map(applicationToStartup), ...STARTUPS, ...synthetic];
   const normalizedQuery = query.trim().toLowerCase();
   const attrPreds = attrQuery ? parseAttributeQuery(attrQuery) : [];
   const visibleDeals = all

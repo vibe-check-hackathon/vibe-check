@@ -14,7 +14,7 @@ function LoginPage() {
   const [error, setError] = useState(false);
 
   function submit() {
-    if (login(pw)) window.location.href = "/";
+    if (login(pw)) window.location.href = "/board"; // straight to the deal board, no extra hops
     else setError(true);
   }
 

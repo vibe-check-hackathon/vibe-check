@@ -89,6 +89,8 @@ export type Startup = {
   outboundSelected?: boolean;
   /** Source channel for board filtering and detail labels. */
   sourceChannel?: string;
+  /** First-pass thesis screen, for cards that arrived through the apply form. */
+  screening?: { pass: boolean; hardFails: string[]; softFlags: string[] };
   /** Public activity signal behind an outbound-selected record. */
   activitySignal?: string | null;
   /** Why the company was selected for outbound. */
@@ -527,4 +529,18 @@ export const ACME_TEAM = {
     },
   ],
   note: "Scored as a pair, never as an average of the two founders. Per Wasserman, ~65% of startup failures trace to people problems, so the co-founder dynamic carries its own gated score.",
+};
+
+/**
+ * The signed-in investor. Single source for the header, settings and the
+ * diligence activity log.
+ *
+ * `avatarUrl` points at the photo in `public/`. Set it to null to fall back to
+ * initials.
+ */
+export const INVESTOR = {
+  name: "Carl-Philipp Beichert",
+  initials: "CB",
+  role: "Partner · Screening lead",
+  avatarUrl: "/carl-philipp-beichert.jpg" as string | null,
 };

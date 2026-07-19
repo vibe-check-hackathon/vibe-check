@@ -1111,6 +1111,920 @@
       "sourceChannel": "current_application"
     }
   ],
-  "outboundSelected": [],
-  "rationaleBasis": "scoreRationale strings are part of the synthetic full-consent demo tier — invented to match the generated sub-scores; real people remain not assessed"
+  "outboundSelected": [
+    {
+      "id": "OPP-MGV-OUT-2026-0001",
+      "outboundSelected": true,
+      "realCompany": true,
+      "currentAsOf": "2026-07-19",
+      "company": "palma.ai",
+      "sector": "AI infrastructure",
+      "location": "London, UK / remote",
+      "card": "../MGV-OUTBOUND-2026-COMBINED.md",
+      "status": "research",
+      "oneLiner": "Enterprise mission control for MCP and AI agents: govern, audit, secure and control every tool call.",
+      "stage": "Pre-seed",
+      "latestRound": "$1.6M pre-seed led by Marathon Venture Capital",
+      "raiseUsd": 1600000,
+      "website": "https://palma.ai/company",
+      "activitySignal": "2026-01-28 funding announcement — $1.6M pre-seed led by Marathon Venture Capital",
+      "outboundRationale": "Enterprise agent adoption is moving from demos into core systems, while MCP governance, auditability and cost control remain unresolved. Public founder-evidence score 85/100 (evidence coverage, not personality; unknowns score zero). Portfolio adjacency (seed+speed): Orq.ai (AI infrastructure), Briink (AI / ESG / RegTech) — warm reference and diligence path. Check fit: Conditional: recently funded; only pursue if an extension, SPV or strategically useful allocation is open.",
+      "screening": {
+        "pass": true,
+        "hardFails": [],
+        "softFlags": []
+      },
+      "portfolioAlignments": [
+        {
+          "company": "Orq.ai",
+          "sector": "AI infrastructure",
+          "sharedGround": "agent"
+        },
+        {
+          "company": "Briink",
+          "sector": "AI / ESG / RegTech",
+          "sharedGround": "agent"
+        }
+      ],
+      "founders": [
+        {
+          "id": "FND-MGV-OUT-0001",
+          "name": "Patrick Eden",
+          "role": "CEO & co-founder",
+          "publicSignal": "Prior enterprise-infrastructure founder; company says his earlier monitoring business was acquired by Cisco in 2021.",
+          "avatar": {
+            "type": "initials",
+            "value": "PE",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0002",
+          "name": "Undisclosed publicly",
+          "role": "CTO & co-founder",
+          "publicSignal": "Company describes 10+ years building secure systems in fintech and automotive; identity not public on the reviewed page.",
+          "avatar": {
+            "type": "initials",
+            "value": "UP",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tech.eu funding announcement, 2026-01-28",
+          "url": "https://tech.eu/2026/01/28/pallma-ai-closes-16m-pre-seed-round-for-ai-agent-security/"
+        },
+        {
+          "label": "palma.ai company/team page",
+          "url": "https://palma.ai/company"
+        },
+        {
+          "label": "palma.ai product page",
+          "url": "https://palma.ai/"
+        }
+      ]
+    },
+    {
+      "id": "OPP-MGV-OUT-2026-0002",
+      "outboundSelected": true,
+      "realCompany": true,
+      "currentAsOf": "2026-07-19",
+      "company": "TetraxAI",
+      "sector": "AI governance / compliance",
+      "location": "Barcelona, ES",
+      "card": "../MGV-OUTBOUND-2026-COMBINED.md",
+      "status": "diligence",
+      "oneLiner": "AI-powered due diligence and risk assessment for renewable-energy investments, with source-level traceability.",
+      "stage": "Pre-seed",
+      "latestRound": "€1.2M equity pre-seed plus €325K NEOTEC grant; approximately €1.5M total",
+      "raiseUsd": 1200000,
+      "website": "https://tetrax.ai/",
+      "activitySignal": "2026-01-29 funding announcement — €1.2M equity pre-seed plus €325K NEOTEC grant; approximately €1.5M total",
+      "outboundRationale": "Renewable project pipelines are expanding while legal and technical diligence remains document-heavy, slow and expensive. Public founder-evidence score 92/100 (evidence coverage, not personality; unknowns score zero). Portfolio adjacency (seed+speed): Prewave (AI / SupplyChainTech), e-mobilio (Mobility / Energy) — warm reference and diligence path. Check fit: High strategic fit; investment access depends on whether the announced pre-seed remained open.",
+      "screening": {
+        "pass": true,
+        "hardFails": [],
+        "softFlags": []
+      },
+      "portfolioAlignments": [
+        {
+          "company": "Prewave",
+          "sector": "AI / SupplyChainTech",
+          "sharedGround": "risk"
+        },
+        {
+          "company": "e-mobilio",
+          "sector": "Mobility / Energy",
+          "sharedGround": "energy"
+        }
+      ],
+      "founders": [
+        {
+          "id": "FND-MGV-OUT-0003",
+          "name": "Marta Vizcaíno Martín",
+          "role": "CEO & co-founder",
+          "publicSignal": "Renewable-energy M&A lawyer with 17+ years in the market and 4GW+ of transactions, per company biography.",
+          "avatar": {
+            "type": "initials",
+            "value": "MM",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0004",
+          "name": "Arnau Tibau Puig, PhD",
+          "role": "CTO & co-founder",
+          "publicSignal": "12+ years building data products; second-time founder and former leadership roles at Landbot, Letgo and WalmartLabs, per company biography.",
+          "avatar": {
+            "type": "initials",
+            "value": "AP",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0005",
+          "name": "Ekaterina Filina",
+          "role": "COO & co-founder",
+          "publicSignal": "13+ years international operations and marketing, including six years at Amazon, per company biography.",
+          "avatar": {
+            "type": "initials",
+            "value": "EF",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tech.eu funding announcement, 2026-01-29",
+          "url": "https://tech.eu/2026/01/29/tetraxai-secures-eur15m-for-ai-risk-tools-in-clean-energy//"
+        },
+        {
+          "label": "TetraxAI official team and product page",
+          "url": "https://tetrax.ai/"
+        },
+        {
+          "label": "TetraxAI official news page",
+          "url": "https://www.tetrax.ai/news"
+        },
+        {
+          "label": "TetraxVerify product page",
+          "url": "https://tetrax.ai/tetrax-verify"
+        }
+      ]
+    },
+    {
+      "id": "OPP-MGV-OUT-2026-0003",
+      "outboundSelected": true,
+      "realCompany": true,
+      "currentAsOf": "2026-07-19",
+      "company": "Rippletide",
+      "sector": "AI infrastructure",
+      "location": "Paris, FR / San Francisco, US",
+      "card": "../MGV-OUTBOUND-2026-COMBINED.md",
+      "status": "diligence",
+      "oneLiner": "Decision-context infrastructure that makes enterprise AI-agent reasoning deterministic, explainable and auditable.",
+      "stage": "Seed",
+      "latestRound": "$5M seed reported by company, September 2025",
+      "raiseUsd": 5000000,
+      "website": "https://www.rippletide.com/company/about",
+      "activitySignal": "2026-02-05 hackathon win — $5M seed reported by company, September 2025",
+      "outboundRationale": "A multi-agent scientific-discovery system won the OpenAI Codex Hackathon on 2026-02-05, producing a founder-first technical trigger independent of a fundraising announcement. Public founder-evidence score 95/100 (evidence coverage, not personality; unknowns score zero). Portfolio adjacency (seed+speed): Orq.ai (AI infrastructure), Briink (AI / ESG / RegTech) — warm reference and diligence path. Check fit: Likely too late for a first $100K check; high-priority relationship for a future round or strategic co-investment.",
+      "screening": {
+        "pass": true,
+        "hardFails": [],
+        "softFlags": []
+      },
+      "portfolioAlignments": [
+        {
+          "company": "Orq.ai",
+          "sector": "AI infrastructure",
+          "sharedGround": "agent, infrastructure"
+        },
+        {
+          "company": "Briink",
+          "sector": "AI / ESG / RegTech",
+          "sharedGround": "agent"
+        }
+      ],
+      "founders": [
+        {
+          "id": "FND-MGV-OUT-0006",
+          "name": "Patrick Joubert",
+          "role": "CEO & co-founder",
+          "publicSignal": "Company reports 20+ years in AI and three prior exits: Recast.AI, Ponicode and Beamap.",
+          "avatar": {
+            "type": "initials",
+            "value": "PJ",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0007",
+          "name": "Yann Bilien",
+          "role": "Chief Scientist & co-founder",
+          "publicSignal": "Mathematician and AI researcher trained at Télécom Paris and Imperial College London; public author of the hackathon account.",
+          "avatar": {
+            "type": "initials",
+            "value": "YB",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        }
+      ],
+      "sources": [
+        {
+          "label": "Rippletide hackathon account, 2026-02-07",
+          "url": "https://www.rippletide.com/resources/blog/winning-the-openai-codex-hackathon-moving-from-outputs-to-outcomes-the-decision-layer"
+        },
+        {
+          "label": "Rippletide company and founder page",
+          "url": "https://www.rippletide.com/company/about"
+        },
+        {
+          "label": "STATION F F/ai launch",
+          "url": "https://stationf.co/news/f-ai"
+        },
+        {
+          "label": "STATION F F/ai 2026 update",
+          "url": "https://stationf.co/news/fai-international"
+        }
+      ]
+    },
+    {
+      "id": "OPP-MGV-OUT-2026-0004",
+      "outboundSelected": true,
+      "realCompany": true,
+      "currentAsOf": "2026-07-19",
+      "company": "Qontext",
+      "sector": "AI infrastructure",
+      "location": "Berlin, DE",
+      "card": "../MGV-OUTBOUND-2026-COMBINED.md",
+      "status": "research",
+      "oneLiner": "A permission-aware, self-maintaining enterprise context repository designed for every AI agent to use.",
+      "stage": "Pre-seed",
+      "latestRound": "$2.7M pre-seed led by HV Capital",
+      "raiseUsd": 2700000,
+      "website": "https://qontext.ai/about",
+      "activitySignal": "2026-02-05 funding announcement — $2.7M pre-seed led by HV Capital",
+      "outboundRationale": "As enterprises deploy many agents, fragmented and stale organizational context becomes a bottleneck independent of model quality. Public founder-evidence score 82/100 (evidence coverage, not personality; unknowns score zero). Portfolio adjacency (seed+speed): Orq.ai (AI infrastructure), Briink (AI / ESG / RegTech) — warm reference and diligence path. Check fit: Good thesis fit; allocation and customer proof are the gating items.",
+      "screening": {
+        "pass": true,
+        "hardFails": [],
+        "softFlags": []
+      },
+      "portfolioAlignments": [
+        {
+          "company": "Orq.ai",
+          "sector": "AI infrastructure",
+          "sharedGround": "agent"
+        },
+        {
+          "company": "Briink",
+          "sector": "AI / ESG / RegTech",
+          "sharedGround": "agent"
+        }
+      ],
+      "founders": [
+        {
+          "id": "FND-MGV-OUT-0008",
+          "name": "Lorenz Hieber",
+          "role": "CEO & co-founder",
+          "publicSignal": "Publicly identified founder; company says the team previously built AI products and data infrastructure.",
+          "avatar": {
+            "type": "initials",
+            "value": "LH",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0009",
+          "name": "Nikita Kowalski",
+          "role": "CPTO & co-founder",
+          "publicSignal": "Publicly identified technical/product co-founder; detailed prior roles not disclosed on reviewed official page.",
+          "avatar": {
+            "type": "initials",
+            "value": "NK",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tech.eu funding announcement, 2026-02-05",
+          "url": "https://tech.eu/2026/02/05/qontext-closes-27m-pre-seed-round-to-develop-a-context-layer-for-ai/"
+        },
+        {
+          "label": "Qontext official about/team page",
+          "url": "https://qontext.ai/about"
+        }
+      ]
+    },
+    {
+      "id": "OPP-MGV-OUT-2026-0005",
+      "outboundSelected": true,
+      "realCompany": true,
+      "currentAsOf": "2026-07-19",
+      "company": "First Concepts",
+      "sector": "Creative AI tools",
+      "location": "London, UK",
+      "card": "../MGV-OUTBOUND-2026-COMBINED.md",
+      "status": "research",
+      "oneLiner": "A taste-aware AI workspace that preserves creative context from brief to concept instead of generating disconnected assets.",
+      "stage": "Pre-seed",
+      "latestRound": "$1M pre-seed led by Arāya Ventures with Antler",
+      "raiseUsd": 1000000,
+      "website": "https://firstconcepts.co/",
+      "activitySignal": "2026-03-17 funding announcement — $1M pre-seed led by Arāya Ventures with Antler",
+      "outboundRationale": "Creative teams are adopting generation tools rapidly, but reusable taste, references and decision context remain fragmented across pitches and tools. Public founder-evidence score 85/100 (evidence coverage, not personality; unknowns score zero). No direct seed+speed portfolio adjacency — retained on founder-evidence strength. Check fit: Potentially attractive if the pre-seed had extension capacity and the agency cohort is paid and retained.",
+      "screening": {
+        "pass": true,
+        "hardFails": [],
+        "softFlags": []
+      },
+      "portfolioAlignments": [],
+      "founders": [
+        {
+          "id": "FND-MGV-OUT-0010",
+          "name": "Conor Hoey",
+          "role": "CEO & co-founder",
+          "publicSignal": "Public founder and primary spokesperson; states the team formed during an Antler residency.",
+          "avatar": {
+            "type": "initials",
+            "value": "CH",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0011",
+          "name": "Marin Godechot",
+          "role": "Co-founder",
+          "publicSignal": "Publicly named by Conor Hoey as part of the three-person founding team.",
+          "avatar": {
+            "type": "initials",
+            "value": "MG",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0012",
+          "name": "Polina — surname not verified",
+          "role": "Co-founder",
+          "publicSignal": "Publicly named by first name in founder communication; full identity requires confirmation.",
+          "avatar": {
+            "type": "initials",
+            "value": "PV",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tech.eu funding announcement, 2026-03-17",
+          "url": "https://tech.eu/2026/03/17/first-concepts-raises-1m-to-develop-ai-native-os-for-creative-work/"
+        },
+        {
+          "label": "First Concepts official product page",
+          "url": "https://firstconcepts.co/"
+        },
+        {
+          "label": "Founder funding and customer announcement",
+          "url": "https://www.linkedin.com/posts/hoeyconor_startupfunding-creativetech-activity-7439657006308818944-_I2p"
+        },
+        {
+          "label": "Antler portfolio description",
+          "url": "https://br.antler.co/portfolio?0b933bfd_page=7&8cea4155_page=8"
+        }
+      ]
+    },
+    {
+      "id": "OPP-MGV-OUT-2026-0006",
+      "outboundSelected": true,
+      "realCompany": true,
+      "currentAsOf": "2026-07-19",
+      "company": "Reson8",
+      "sector": "AI infrastructure",
+      "location": "Amsterdam, NL",
+      "card": "../MGV-OUTBOUND-2026-COMBINED.md",
+      "status": "research",
+      "oneLiner": "Customizable speech-recognition infrastructure for domain-specific use cases across 20+ European languages, operated on European infrastructure.",
+      "stage": "Pre-seed",
+      "latestRound": "€5M pre-seed led by Balderton Capital",
+      "raiseUsd": 5000000,
+      "website": "https://www.linkedin.com/company/reson8labs",
+      "activitySignal": "2026-03-19 funding announcement — €5M pre-seed led by Balderton Capital",
+      "outboundRationale": "Speech agents are scaling, but generic English-first models underperform in specialized language, regulated data and European sovereignty requirements. Public founder-evidence score 89/100 (evidence coverage, not personality; unknowns score zero). Portfolio adjacency (seed+speed): Orq.ai (AI infrastructure) — warm reference and diligence path. Check fit: Strong strategic fit, but €5M pre-seed likely reduces immediate $100K access; prioritize relationship and technical diligence.",
+      "screening": {
+        "pass": true,
+        "hardFails": [],
+        "softFlags": []
+      },
+      "portfolioAlignments": [
+        {
+          "company": "Orq.ai",
+          "sector": "AI infrastructure",
+          "sharedGround": "infrastructure"
+        }
+      ],
+      "founders": [
+        {
+          "id": "FND-MGV-OUT-0013",
+          "name": "Raoul Ritter",
+          "role": "Co-founder",
+          "publicSignal": "Public spokesperson for the company’s European speech-infrastructure thesis.",
+          "avatar": {
+            "type": "initials",
+            "value": "RR",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0014",
+          "name": "Thomas Kluiters",
+          "role": "Co-founder",
+          "publicSignal": "Named publicly as part of a founding team spanning AI, entrepreneurship and infrastructure engineering.",
+          "avatar": {
+            "type": "initials",
+            "value": "TK",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0015",
+          "name": "Jarno Verhagen",
+          "role": "Co-founder",
+          "publicSignal": "Named publicly as part of the founding team; detailed role requires confirmation.",
+          "avatar": {
+            "type": "initials",
+            "value": "JV",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        }
+      ],
+      "sources": [
+        {
+          "label": "EU-Startups funding announcement, 2026-03-19",
+          "url": "https://www.eu-startups.com/2026/03/amsterdams-reson8-raises-e5-million-to-build-speech-ai-infrastructure-that-resonates-across-europe/"
+        },
+        {
+          "label": "Reson8 public company profile and updates",
+          "url": "https://www.linkedin.com/company/reson8labs"
+        },
+        {
+          "label": "Reson8 product site",
+          "url": "https://reson8.dev/"
+        }
+      ]
+    },
+    {
+      "id": "OPP-MGV-OUT-2026-0007",
+      "outboundSelected": true,
+      "realCompany": true,
+      "currentAsOf": "2026-07-19",
+      "company": "Tolemy Bio",
+      "sector": "TechBio / AI",
+      "location": "Cambridge, UK / Barcelona, ES",
+      "card": "../MGV-OUTBOUND-2026-COMBINED.md",
+      "status": "diligence",
+      "oneLiner": "An AI-native virtual-cell platform that helps scientists understand, predict and direct cell behavior for therapeutic development and manufacture.",
+      "stage": "Pre-seed",
+      "latestRound": "€1.4M pre-seed led by Norrsken Evolve",
+      "raiseUsd": 1400000,
+      "website": "https://tolemy.bio/team",
+      "activitySignal": "2026-05-12 funding announcement — €1.4M pre-seed led by Norrsken Evolve",
+      "outboundRationale": "Cell and gene therapy manufacturing remains expensive and variable, while multimodal biological data and virtual-cell methods are becoming more usable. Public founder-evidence score 93/100 (evidence coverage, not personality; unknowns score zero). No direct seed+speed portfolio adjacency — retained on founder-evidence strength. Check fit: High founder and technical fit; scientific/IP diligence is mandatory before capital deployment.",
+      "screening": {
+        "pass": true,
+        "hardFails": [],
+        "softFlags": []
+      },
+      "portfolioAlignments": [],
+      "founders": [
+        {
+          "id": "FND-MGV-OUT-0016",
+          "name": "Alex Ward",
+          "role": "CEO & co-founder",
+          "publicSignal": "Worked with co-founder for two years before startup; public account describes personal capital committed and rapid lab/product execution.",
+          "avatar": {
+            "type": "initials",
+            "value": "AW",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0017",
+          "name": "Caelan Anderson",
+          "role": "CTO & co-founder",
+          "publicSignal": "Technical co-founder focused on AI-enabled cell biology; prior collaboration with Alex Ward is publicly described.",
+          "avatar": {
+            "type": "initials",
+            "value": "CA",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tech.eu funding announcement, 2026-05-12",
+          "url": "https://tech.eu/2026/05/12/tolemy-bio-lands-eur14m-to-power-ai-driven-cell-biology/"
+        },
+        {
+          "label": "Tolemy official team page",
+          "url": "https://tolemy.bio/team"
+        },
+        {
+          "label": "Science Creates company profile",
+          "url": "https://www.sciencecreates.co.uk/companies/tolemy-bio"
+        },
+        {
+          "label": "Founder execution account",
+          "url": "https://www.linkedin.com/posts/alex-o-ward_when-we-started-tolemy-bio-last-year-we-activity-7388831907482091520-D7c_"
+        },
+        {
+          "label": "Tolemy product site",
+          "url": "https://tolemy.bio/"
+        }
+      ]
+    },
+    {
+      "id": "OPP-MGV-OUT-2026-0008",
+      "outboundSelected": true,
+      "realCompany": true,
+      "currentAsOf": "2026-07-19",
+      "company": "Gyver",
+      "sector": "B2B AI software",
+      "location": "Brescia, IT",
+      "card": "../MGV-OUTBOUND-2026-COMBINED.md",
+      "status": "research",
+      "oneLiner": "WhatsApp-first workforce infrastructure connecting electrical technicians with employers across Europe’s electrification economy.",
+      "stage": "Pre-seed",
+      "latestRound": "€1.4M pre-seed led by Brighteye",
+      "raiseUsd": 1400000,
+      "website": "https://www.linkedin.com/company/gyver-work/",
+      "activitySignal": "2026-05-13 funding announcement — €1.4M pre-seed led by Brighteye",
+      "outboundRationale": "Grid upgrades, renewables, factories and data centers are increasing demand for electrical trades while conventional recruiting tools underserve this workforce. Public founder-evidence score 88/100 (evidence coverage, not personality; unknowns score zero). Portfolio adjacency (seed+speed): Orq.ai (AI infrastructure) — warm reference and diligence path. Check fit: Attractive early-stage fit if marketplace liquidity and paid employer retention are substantiated.",
+      "screening": {
+        "pass": true,
+        "hardFails": [],
+        "softFlags": []
+      },
+      "portfolioAlignments": [
+        {
+          "company": "Orq.ai",
+          "sector": "AI infrastructure",
+          "sharedGround": "infrastructure"
+        }
+      ],
+      "founders": [
+        {
+          "id": "FND-MGV-OUT-0018",
+          "name": "Francesco Paolo Defendi",
+          "role": "Co-founder",
+          "publicSignal": "Previously worked with the other founders in industrial solar systems, according to public company coverage.",
+          "avatar": {
+            "type": "initials",
+            "value": "FD",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0019",
+          "name": "Leo Acciarri",
+          "role": "Co-founder",
+          "publicSignal": "Publicly identified co-founder with prior shared industry operating experience.",
+          "avatar": {
+            "type": "initials",
+            "value": "LA",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0020",
+          "name": "Mattia Zarrelli",
+          "role": "Co-founder",
+          "publicSignal": "Publicly identified co-founder with prior shared industry operating experience.",
+          "avatar": {
+            "type": "initials",
+            "value": "MZ",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tech.eu funding announcement, 2026-05-13",
+          "url": "https://tech.eu/2026/05/13/gyver-scores-eur14m-to-help-power-europes-industrial-workforce/"
+        },
+        {
+          "label": "Gyver public company profile",
+          "url": "https://www.linkedin.com/company/gyver-work/"
+        },
+        {
+          "label": "Scalable company profile and founder history",
+          "url": "https://www.scalablepod.it/startup/gyver/"
+        },
+        {
+          "label": "Gyver product site",
+          "url": "https://www.gyver.work"
+        }
+      ]
+    },
+    {
+      "id": "OPP-MGV-OUT-2026-0009",
+      "outboundSelected": true,
+      "realCompany": true,
+      "currentAsOf": "2026-07-19",
+      "company": "Zaro",
+      "sector": "AI governance / compliance",
+      "location": "London, UK",
+      "card": "../MGV-OUTBOUND-2026-COMBINED.md",
+      "status": "research",
+      "oneLiner": "An enterprise-owned context, governance and application layer where AI systems accumulate organizational knowledge instead of starting from zero.",
+      "stage": "Pre-seed",
+      "latestRound": "$5.1M pre-seed led by Cherry Ventures",
+      "raiseUsd": 5100000,
+      "website": "https://zaro.ai/",
+      "activitySignal": "2026-06-09 stealth exit and funding — $5.1M pre-seed led by Cherry Ventures",
+      "outboundRationale": "Enterprises are adding disconnected AI tools faster than they can govern data, reuse context or preserve workflow knowledge. Public founder-evidence score 89/100 (evidence coverage, not personality; unknowns score zero). Portfolio adjacency (seed+speed): Calvin Risk (AI governance / RiskTech) — warm reference and diligence path. Check fit: Strong founder and thesis fit; likely relationship-first because the pre-seed is already substantial.",
+      "screening": {
+        "pass": true,
+        "hardFails": [],
+        "softFlags": []
+      },
+      "portfolioAlignments": [
+        {
+          "company": "Calvin Risk",
+          "sector": "AI governance / RiskTech",
+          "sharedGround": "governance"
+        }
+      ],
+      "founders": [
+        {
+          "id": "FND-MGV-OUT-0021",
+          "name": "Michael Bajwa",
+          "role": "CEO & co-founder",
+          "publicSignal": "Previously worked on agent products at Convergence and later Salesforce, according to public company communication and coverage.",
+          "avatar": {
+            "type": "initials",
+            "value": "MB",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0022",
+          "name": "Qian Zheng",
+          "role": "CTO & co-founder",
+          "publicSignal": "Previously worked on Convergence’s Proxy agent and Salesforce agent infrastructure, according to public profiles.",
+          "avatar": {
+            "type": "initials",
+            "value": "QZ",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tech.eu stealth/funding announcement, 2026-06-09",
+          "url": "https://tech.eu/2026/06/09/zaro-lands-51m-to-build-the-next-layer-of-enterprise-ai/"
+        },
+        {
+          "label": "Zaro official product site",
+          "url": "https://zaro.ai/"
+        },
+        {
+          "label": "Zaro founder/company communication",
+          "url": "https://www.linkedin.com/posts/zaro-ai_watch-our-ceo-michael-bajwa-sit-down-with-activity-7471203517328764928-rjXg"
+        }
+      ]
+    },
+    {
+      "id": "OPP-MGV-OUT-2026-0010",
+      "outboundSelected": true,
+      "realCompany": true,
+      "currentAsOf": "2026-07-19",
+      "company": "Kyrok",
+      "sector": "Industrial AI",
+      "location": "Berlin, DE",
+      "card": "../MGV-OUTBOUND-2026-COMBINED.md",
+      "status": "diligence",
+      "oneLiner": "An AI operating-system overlay for pharmaceutical and chemical supply chains that works on top of existing ERP systems.",
+      "stage": "Pre-seed",
+      "latestRound": "€3.1M pre-seed led by Speedinvest",
+      "raiseUsd": 3100000,
+      "website": "https://www.linkedin.com/company/kyrok/",
+      "activitySignal": "2026-06-23 funding announcement — €3.1M pre-seed led by Speedinvest",
+      "outboundRationale": "European pharma and chemical SMEs rely on aging ERP systems and retiring operational expertise while supply-chain reliability is strategically critical. Public founder-evidence score 92/100 (evidence coverage, not personality; unknowns score zero). Portfolio adjacency (seed+speed): Prewave (AI / SupplyChainTech), Orderlion (Logistics / FoodTech) — warm reference and diligence path. Check fit: High strategic fit; customer validation and integration economics are decisive.",
+      "screening": {
+        "pass": true,
+        "hardFails": [],
+        "softFlags": []
+      },
+      "portfolioAlignments": [
+        {
+          "company": "Prewave",
+          "sector": "AI / SupplyChainTech",
+          "sharedGround": "supply, chain"
+        },
+        {
+          "company": "Orderlion",
+          "sector": "Logistics / FoodTech",
+          "sharedGround": "supply, chain"
+        }
+      ],
+      "founders": [
+        {
+          "id": "FND-MGV-OUT-0023",
+          "name": "Daniel Hofinger",
+          "role": "Co-founder & managing director",
+          "publicSignal": "Public spokesperson; reports more than 200 operator interviews and factory-floor discovery across pharma and chemicals.",
+          "avatar": {
+            "type": "initials",
+            "value": "DH",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0024",
+          "name": "Lukas Bierfreund",
+          "role": "Co-founder & managing director",
+          "publicSignal": "Publicly registered co-founder/manager; worked with Daniel on customer discovery and product formation.",
+          "avatar": {
+            "type": "initials",
+            "value": "LB",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tech.eu funding announcement, 2026-06-23",
+          "url": "https://tech.eu/2026/06/23/kyrok-secures-3-1m-to-bring-ai-to-pharma-and-chemical-supply-chains/"
+        },
+        {
+          "label": "Berlin economic-development coverage with pilot and founder details",
+          "url": "https://invest-in.berlin/n/kyrok-lands-eur31m-to-bring-ai-to-pharma-supply-chains/"
+        },
+        {
+          "label": "Kyrok public company profile",
+          "url": "https://www.linkedin.com/company/kyrok/"
+        },
+        {
+          "label": "Kyrok product site",
+          "url": "https://www.kyrok.com/"
+        }
+      ]
+    },
+    {
+      "id": "OPP-MGV-OUT-2026-0011",
+      "outboundSelected": true,
+      "realCompany": true,
+      "currentAsOf": "2026-07-19",
+      "company": "Auxilius",
+      "sector": "AI governance / compliance",
+      "location": "Unterföhring / Munich, DE",
+      "card": "../MGV-OUTBOUND-2026-COMBINED.md",
+      "status": "diligence",
+      "oneLiner": "GRC automation that converts policies, risks, controls and regulatory requirements into executable, continuously updated code.",
+      "stage": "Pre-seed",
+      "latestRound": "Approximately €1.3M pre-seed led by HTGF with Techstars and angels",
+      "raiseUsd": 1300000,
+      "website": "https://www.auxilius.ai/",
+      "activitySignal": "2026-07-07 funding announcement — Approximately €1.3M pre-seed led by HTGF with Techstars and angels",
+      "outboundRationale": "Regulatory change is accelerating while AI agents and complex enterprise systems make manual control testing slower and less reliable. Public founder-evidence score 90/100 (evidence coverage, not personality; unknowns score zero). Portfolio adjacency (seed+speed): Prewave (AI / SupplyChainTech), Calvin Risk (AI governance / RiskTech) — warm reference and diligence path. Check fit: Very high thesis fit and plausible extension size; deployment evidence is the gating condition.",
+      "screening": {
+        "pass": true,
+        "hardFails": [],
+        "softFlags": []
+      },
+      "portfolioAlignments": [
+        {
+          "company": "Prewave",
+          "sector": "AI / SupplyChainTech",
+          "sharedGround": "risk"
+        },
+        {
+          "company": "Calvin Risk",
+          "sector": "AI governance / RiskTech",
+          "sharedGround": "risk"
+        }
+      ],
+      "founders": [
+        {
+          "id": "FND-MGV-OUT-0025",
+          "name": "Christian “Chris” Hoppe",
+          "role": "CEO & co-founder",
+          "publicSignal": "Former EY equity partner with 15+ years advising Fortune 500 clients on governance, risk and compliance.",
+          "avatar": {
+            "type": "initials",
+            "value": "CH",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        },
+        {
+          "id": "FND-MGV-OUT-0026",
+          "name": "James Barnes",
+          "role": "CTO & co-founder",
+          "publicSignal": "Former senior solution architect leading enterprise financial-services software projects.",
+          "avatar": {
+            "type": "initials",
+            "value": "JB",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tech.eu funding announcement, 2026-07-07",
+          "url": "https://tech.eu/2026/07/07/auxilius-raises-eur13m-pre-seed-to-automate-enterprise-compliance/"
+        },
+        {
+          "label": "Auxilius official product and team page",
+          "url": "https://www.auxilius.ai/"
+        }
+      ]
+    },
+    {
+      "id": "OPP-MGV-OUT-2026-0012",
+      "outboundSelected": true,
+      "realCompany": true,
+      "currentAsOf": "2026-07-19",
+      "company": "ZML",
+      "sector": "AI infrastructure",
+      "location": "Paris, FR",
+      "card": "../MGV-OUTBOUND-2026-COMBINED.md",
+      "status": "research",
+      "oneLiner": "A hardware-agnostic, Python-free AI inference stack that compiles and serves models across NVIDIA, AMD, TPU, Intel and Apple accelerators.",
+      "stage": "Seed / post-seed",
+      "latestRound": "Approximately $20M total reported by TechCrunch",
+      "raiseUsd": 20000000,
+      "website": "https://zml.ai/",
+      "activitySignal": "2026-07-08 technical product launch — Approximately $20M total reported by TechCrunch",
+      "outboundRationale": "ZML/LLMD launched publicly on 2026-07-08 with modern serving features across five accelerator targets, creating a high-signal technical trigger. Public founder-evidence score 95/100 (evidence coverage, not personality; unknowns score zero). No direct seed+speed portfolio adjacency — retained on founder-evidence strength. Check fit: No immediate first-check fit because the company has reportedly raised approximately $20M; strategic monitoring only.",
+      "screening": {
+        "pass": true,
+        "hardFails": [],
+        "softFlags": []
+      },
+      "portfolioAlignments": [],
+      "founders": [
+        {
+          "id": "FND-MGV-OUT-0027",
+          "name": "Steeve Morin",
+          "role": "Founder & CEO",
+          "publicSignal": "Former Zenly VP of Engineering; Zenly was acquired by Snap in 2017. Public GitHub and technical writing show a sustained systems footprint.",
+          "avatar": {
+            "type": "initials",
+            "value": "SM",
+            "basis": "neutral placeholder; public record only"
+          },
+          "assessed": false
+        }
+      ],
+      "sources": [
+        {
+          "label": "TechCrunch ZML/LLMD launch and founder profile, 2026-07-08",
+          "url": "https://techcrunch.com/2026/07/08/hot-french-startup-zml-releases-free-product-to-speed-inference-across-lots-of-ai-chips/"
+        },
+        {
+          "label": "ZML/LLMD first-party release",
+          "url": "https://zml.ai/posts/llmd/"
+        },
+        {
+          "label": "ZML v2 first-party engineering release",
+          "url": "https://zml.ai/posts/zml-v2/"
+        },
+        {
+          "label": "ZML official product site",
+          "url": "https://zml.ai/"
+        }
+      ]
+    }
+  ],
+  "rationaleBasis": "scoreRationale strings are part of the synthetic full-consent demo tier — invented to match the generated sub-scores; real people remain not assessed",
+  "outboundBasis": "public-source outbound research (MGV-OUTBOUND-2026-COMBINED.md): real companies, quoted public facts, founder-evidence coverage scores only; screened via lib/screening.js; portfolio adjacency from Martin/seed-speed-portfolio-enriched.md"
 }

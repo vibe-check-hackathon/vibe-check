@@ -5,13 +5,15 @@
 //     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
 import { join, normalize, extname, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 // @ts-expect-error — canonical screening lives in laura's plain-ESM pipeline (no type defs; single source of truth)
 import { screenOpportunity } from "../../laura/pipeline/lib/screening.js";
 // @ts-expect-error — same pipeline convention: provider-agnostic LLM adapter, key set via laura/pipeline/set-key.js
 import { filterDealsWithLLM, keyStatus, loadConfig } from "../../laura/pipeline/lib/llm.js";
+// @ts-expect-error — same pipeline: founder profiling + interview hypotheses
+import { buildFounderProfiles } from "../../laura/pipeline/lib/founder-profiles.js";
 
 /* Serve laura/opportunity-db as /opportunity-db/* directly from the single
  * source of truth — no copied data in public/. The old copy used a cards/
@@ -186,15 +188,21 @@ const lauraOpportunityDb = () => ({
             sector: normalized.intake.companyProfile.sector,
             oneLiner: normalized.intake.oneLiner,
           }, await readThesisFlat());
+          // Profiling pass on the normalized founders: personality hypotheses
+          // for the agent interview to test. Unscored by design.
+          const founders = buildFounderProfiles(
+            { ...application, founders: normalized.intake.founders },
+            normalized.opportunityId,
+          );
           const receivedAt = new Date().toISOString();
           await mkdir(INBOX_DIR, { recursive: true });
           await writeFile(
             join(INBOX_DIR, `${id}.json`),
-            JSON.stringify({ id, opportunityId: normalized.opportunityId, receivedAt, screening: verdict, application, intake: normalized.intake }, null, 2),
+            JSON.stringify({ id, opportunityId: normalized.opportunityId, receivedAt, screening: verdict, application, intake: normalized.intake, founders }, null, 2),
             "utf8",
           );
           await writeFile(join(INBOX_DIR, `${id}.md`), applicationMarkdown(id, receivedAt, verdict, normalized), "utf8");
-          res.end(JSON.stringify({ id, opportunityId: normalized.opportunityId, founders: normalized.intake.founders.length, ...verdict }));
+          res.end(JSON.stringify({ id, opportunityId: normalized.opportunityId, ...verdict, founders }));
         } catch {
           res.statusCode = 400;
           res.end(JSON.stringify({ error: "invalid json" }));
@@ -229,6 +237,22 @@ const lauraOpportunityDb = () => ({
           res.end(JSON.stringify({ error: `LLM call failed: ${e instanceof Error ? e.message : "unknown"}` }));
         }
       });
+    });
+    // Everything submitted through /apply, newest first. The board and the
+    // founder pipeline both read this so a submission shows up immediately.
+    server.middlewares.use("/applications", async (req, res, next) => {
+      if (req.method !== "GET") return next();
+      res.setHeader("Content-Type", "application/json");
+      try {
+        const names = (await readdir(INBOX_DIR)).filter((n) => n.endsWith(".json"));
+        const records = await Promise.all(
+          names.map(async (n) => JSON.parse(await readFile(join(INBOX_DIR, n), "utf8"))),
+        );
+        records.sort((a, b) => String(b.receivedAt).localeCompare(String(a.receivedAt)));
+        res.end(JSON.stringify(records));
+      } catch {
+        res.end("[]"); // no inbox yet — nobody has applied
+      }
     });
     server.middlewares.use("/opportunity-db", async (req, res, next) => {
       try {
