@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Opportunity OS — Technical Architecture</title>
+    <style>
+      :root {
+        --black: #050505;
+        --ink: #111111;
+        --white: #f5f5ed;
+        --muted: #a6aaa2;
+        --green: #39ff14;
+        --frame: #30332f;
+        --surface: #0d0f0c;
+        --border-accent: 3px solid var(--green);
+        --border-card: 2px solid var(--white);
+        --slide-padding: clamp(24px, 4vw, 64px);
+        --content-width: 1500px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-snap-type: y mandatory;
+      }
+      body {
+        margin: 0;
+        background: var(--black);
+        color: var(--white);
+        font-family: "Courier New", Courier, monospace;
+      }
+      button {
+        font: inherit;
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+      h1,
+      h2,
+      h3 {
+        line-height: 0.96;
+        text-transform: uppercase;
+      }
+      h2 {
+        margin-bottom: clamp(18px, 2vw, 28px);
+        font-size: clamp(2rem, 4vw, 4.6rem);
+        letter-spacing: -0.055em;
+      }
+      h3 {
+        margin-bottom: 12px;
+        color: var(--green);
+        font-size: clamp(0.9rem, 1.4vw, 1.3rem);
+        letter-spacing: 0;
+      }
+      p,
+      li {
+        font-size: clamp(0.76rem, 1vw, 0.98rem);
+        line-height: 1.4;
+      }
+      strong {
+        color: var(--green);
+      }
+
+      .slide {
+        position: relative;
+        display: flex;
+        min-height: 100vh;
+        padding: var(--slide-padding);
+        overflow: hidden;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+      .slide::before {
+        position: absolute;
+        inset: 16px;
+        border: 1px solid var(--frame);
+        content: "";
+        pointer-events: none;
+      }
+      .slide::after {
+        position: absolute;
+        right: 18px;
+        bottom: 18px;
+        width: 64px;
+        height: 10px;
+        border-right: 18px solid var(--white);
+        background: var(--green);
+        content: "";
+      }
+      .content {
+        z-index: 1;
+        width: min(var(--content-width), 100%);
+        margin: auto;
+      }
+      .slide-count {
+        position: absolute;
+        z-index: 2;
+        top: 28px;
+        right: 34px;
+        color: var(--green);
+        font-weight: 900;
+      }
+      .eyebrow {
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 7px 11px;
+        border: 2px solid var(--green);
+        color: var(--green);
+        font-size: 0.78rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        box-shadow: 5px 5px 0 var(--green);
+      }
+      .green {
+        color: var(--green);
+      }
+      .muted {
+        color: var(--muted);
+      }
+
+      .architecture {
+        display: grid;
+        grid-template-columns: 1fr 70px 1.2fr 70px 1fr;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .stack {
+        display: grid;
+        gap: 10px;
+      }
+      .node {
+        display: flex;
+        min-height: 64px;
+        padding: 14px;
+        border: var(--border-card);
+        background: var(--black);
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+      .node.accent {
+        border-color: var(--green);
+        box-shadow: 6px 6px 0 var(--green);
+      }
+      .node small {
+        color: var(--muted);
+        font-size: 0.68rem;
+        font-weight: 400;
+        text-transform: none;
+      }
+      .connector {
+        display: grid;
+        color: var(--green);
+        place-items: center;
+        font-size: 2rem;
+        font-weight: 900;
+      }
+      .worker {
+        padding: 18px;
+        border: var(--border-accent);
+        background: var(--surface);
+      }
+      .worker-title {
+        display: flex;
+        margin-bottom: 12px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        color: var(--green);
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+      .worker ul {
+        display: grid;
+        margin: 0;
+        padding: 0;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        list-style: none;
+      }
+      .worker li {
+        padding: 8px;
+        border: 1px solid var(--frame);
+      }
+      .strip {
+        display: grid;
+        margin-top: 18px;
+        border: var(--border-accent);
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .strip > div {
+        padding: 13px 16px;
+        border-right: var(--border-accent);
+      }
+      .strip > div:last-child {
+        border-right: 0;
+      }
+      .label {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--green);
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+      .strip b {
+        font-size: clamp(0.75rem, 0.9vw, 0.92rem);
+        line-height: 1.35;
+      }
+
+      .contract-layout {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 24px;
+      }
+      .opportunity-card {
+        position: relative;
+        min-height: 430px;
+        padding: 24px;
+        border: var(--border-card);
+        background: var(--surface);
+        box-shadow: 9px 9px 0 var(--green);
+      }
+      .card-top {
+        display: flex;
+        padding-bottom: 14px;
+        border-bottom: 2px solid var(--white);
+        justify-content: space-between;
+        gap: 15px;
+        font-size: 0.75rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+      .yaml {
+        margin: 18px 0;
+        padding: 12px;
+        border-left: 7px solid var(--green);
+        background: var(--black);
+        color: var(--muted);
+        font-size: clamp(0.68rem, 0.8vw, 0.8rem);
+        line-height: 1.5;
+      }
+      .axes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .axis {
+        padding: 12px 8px;
+        border: 1px solid var(--green);
+        color: var(--green);
+        font-size: clamp(0.68rem, 0.8vw, 0.82rem);
+        font-weight: 900;
+        text-align: center;
+        text-transform: uppercase;
+      }
+      .sections {
+        display: grid;
+        margin-top: 13px;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .sections span {
+        padding: 8px;
+        border: 1px solid var(--frame);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+      }
+      .write-flow {
+        display: grid;
+        align-content: center;
+        gap: 9px;
+      }
+      .flow-box {
+        padding: 13px 15px;
+        border: var(--border-card);
+        font-size: clamp(0.75rem, 0.9vw, 0.9rem);
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+      .flow-box.primary {
+        border-color: var(--green);
+        background: var(--green);
+        color: var(--ink);
+      }
+      .arrow-down {
+        color: var(--green);
+        font-size: 1.25rem;
+        font-weight: 900;
+        text-align: center;
+      }
+      .outputs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+      }
+      .outputs span {
+        padding: 9px 5px;
+        border: 1px solid var(--green);
+        color: var(--green);
+        font-size: 0.65rem;
+        font-weight: 900;
+        text-align: center;
+        text-transform: uppercase;
+      }
+      .contract-meta {
+        display: grid;
+        margin-top: 20px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      .contract-meta div {
+        padding: 11px;
+        border-top: 2px solid var(--green);
+        font-size: 0.72rem;
+        line-height: 1.35;
+      }
+
+      .shell-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: var(--border-card);
+      }
+      .shell-column {
+        padding: 18px 22px;
+      }
+      .shell-column:first-child {
+        border-right: var(--border-card);
+      }
+      .shell-column h3 {
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--green);
+      }
+      .task-list {
+        display: grid;
+        margin: 0;
+        padding: 0;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 18px;
+        list-style: none;
+      }
+      .task-list li {
+        position: relative;
+        margin: 0;
+        padding-left: 16px;
+      }
+      .task-list li::before {
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        content: ">";
+      }
+      .control-path {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 16px;
+        align-items: center;
+      }
+      .control-step {
+        position: relative;
+        min-height: 92px;
+        padding: 13px 10px;
+        border: 1px solid var(--frame);
+        display: grid;
+        align-content: center;
+        font-size: clamp(0.66rem, 0.8vw, 0.8rem);
+        font-weight: 900;
+        text-align: center;
+        text-transform: uppercase;
+      }
+      .control-step::after {
+        position: absolute;
+        right: -15px;
+        color: var(--green);
+        content: ">";
+        font-size: 1.2rem;
+      }
+      .control-step:last-child {
+        border: 2px solid var(--green);
+        color: var(--green);
+      }
+      .control-step:last-child::after {
+        content: none;
+      }
+      .rules {
+        display: grid;
+        margin-top: 16px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      .rule {
+        padding: 10px;
+        border-left: 5px solid var(--green);
+        background: var(--surface);
+        font-size: 0.7rem;
+        line-height: 1.35;
+      }
+
+      .implementation {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 22px;
+      }
+      .timeline {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 16px;
+        counter-reset: step;
+      }
+      .timeline-item {
+        position: relative;
+        min-height: 54px;
+        padding: 9px 10px 9px 44px;
+        border-bottom: 1px solid var(--frame);
+        display: flex;
+        align-items: center;
+        font-size: clamp(0.68rem, 0.85vw, 0.85rem);
+        font-weight: 900;
+      }
+      .timeline-item::before {
+        position: absolute;
+        left: 0;
+        width: 32px;
+        height: 32px;
+        display: grid;
+        background: var(--green);
+        color: var(--ink);
+        content: counter(step, decimal-leading-zero);
+        counter-increment: step;
+        place-items: center;
+      }
+      .repo-map {
+        padding: 18px;
+        border: var(--border-accent);
+        background: var(--surface);
+      }
+      .repo-row {
+        display: grid;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--frame);
+        grid-template-columns: 120px 1fr;
+        gap: 10px;
+        font-size: 0.72rem;
+        line-height: 1.3;
+      }
+      .repo-row:last-child {
+        border-bottom: 0;
+      }
+      .repo-row code {
+        color: var(--green);
+        font-weight: 900;
+      }
+      .checks {
+        display: grid;
+        margin-top: 16px;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+      }
+      .check {
+        padding: 10px;
+        border: 1px solid var(--white);
+        font-size: 0.65rem;
+        line-height: 1.35;
+      }
+      .check::before {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--green);
+        content: "[PASS]";
+        font-weight: 900;
+      }
+
+      .nav {
+        position: fixed;
+        z-index: 10;
+        right: 24px;
+        bottom: 24px;
+        display: flex;
+        gap: 7px;
+        padding: 7px;
+        border: 2px solid var(--green);
+        background: var(--black);
+      }
+      .nav button {
+        width: 40px;
+        height: 36px;
+        border: 0;
+        background: var(--green);
+        color: var(--ink);
+        cursor: pointer;
+        font-weight: 900;
+      }
+      .nav button:hover,
+      .nav button:focus-visible {
+        outline: 2px solid var(--white);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 900px) {
+        html {
+          scroll-snap-type: none;
+        }
+        .slide {
+          min-height: auto;
+          padding: 60px 28px;
+          overflow: visible;
+        }
+        .architecture,
+        .contract-layout,
+        .implementation {
+          grid-template-columns: 1fr;
+        }
+        .architecture .connector {
+          min-height: 34px;
+          transform: rotate(90deg);
+        }
+        .contract-meta,
+        .rules {
+          grid-template-columns: 1fr 1fr;
+        }
+        .shell-grid {
+          grid-template-columns: 1fr;
+        }
+        .shell-column:first-child {
+          border-right: 0;
+          border-bottom: var(--border-card);
+        }
+        .control-path {
+          grid-template-columns: 1fr;
+        }
+        .control-step::after {
+          right: auto;
+          bottom: -17px;
+          left: 50%;
+          transform: rotate(90deg);
+        }
+        .checks {
+          grid-template-columns: 1fr 1fr;
+        }
+        .nav {
+          display: none;
+        }
+      }
+      @media (max-width: 560px) {
+        h2 {
+          font-size: 2rem;
+        }
+        .worker-title {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .strip,
+        .axes,
+        .outputs,
+        .contract-meta,
+        .rules,
+        .timeline,
+        .checks {
+          grid-template-columns: 1fr;
+        }
+        .strip > div {
+          border-right: 0;
+          border-bottom: var(--border-accent);
+        }
+        .strip > div:last-child {
+          border-bottom: 0;
+        }
+        .worker ul,
+        .task-list {
+          grid-template-columns: 1fr;
+        }
+        .repo-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media print {
+        .nav {
+          display: none;
+        }
+        .slide {
+          min-height: 100vh;
+          break-after: page;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="slide" id="slide-1">
+      <span class="slide-count">01 / 04</span>
+      <div class="content">
+        <div class="eyebrow">System architecture</div>
+        <h2>Vibe Check</h2>
+        <div class="architecture">
+          <div class="stack">
+            <div class="node accent"><span>Browser</span><small>React UI</small></div>
+            <div class="node"><span>Next.js Web / API</span><small>HTTP commands + SSE</small></div>
+            <div class="node"><span>Temporal</span><small>Durable workflows</small></div>
+          </div>
+          <div class="connector" aria-hidden="true">→</div>
+          <div class="worker">
+            <div class="worker-title"><span>TypeScript workers</span><span>[ bounded ]</span></div>
+            <ul>
+              <li>OpenAI Agents SDK</li>
+              <li>Document parsing / OCR</li>
+              <li>ElevenLabs WebRTC</li>
+              <li>External connectors</li>
+            </ul>
+            <div class="node accent" style="margin-top: 12px"><span>Card Writer</span><small>revision + outbox</small></div>
+          </div>
+          <div class="connector" aria-hidden="true">→</div>
+          <div class="stack">
+            <div class="node"><span>PostgreSQL</span><small>pgvector + state</small></div>
+            <div class="node"><span>S3</span><small>immutable artifacts</small></div>
+            <div class="node"><span>Webhooks</span><small>typed adapters</small></div>
+          </div>
+        </div>
+        <div class="strip">
+          <div><span class="label">Deployment</span><b>Modular monolith: web + worker</b></div>
+          <div><span class="label">Ownership</span><b>Postgres state / S3 artifacts</b></div>
+          <div><span class="label">Boundary</span><b>Long-running work isolated by Temporal</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-2">
+      <span class="slide-count">02 / 04</span>
+      <div class="content">
+        <div class="eyebrow">Canonical data contract</div>
+        <h2>The Card is the <span class="green">authority.</span></h2>
+        <div class="contract-layout">
+          <article class="opportunity-card">
+            <div class="card-top"><span>Opportunity Card</span><span class="green">Rev. 017 // Active</span></div>
+            <div class="yaml">identity: OPP-0042<br />status: diligence<br />revision: 17<br />consent: active</div>
+            <div class="axes">
+              <div class="axis">Founder</div>
+              <div class="axis">Market</div>
+              <div class="axis">Idea / Market</div>
+            </div>
+            <div class="sections">
+              <span>Claims</span><span>Evidence</span><span>Unknowns</span><span>Contradictions</span><span>Interview findings</span
+              ><span>Recommendation + terms</span>
+            </div>
+          </article>
+          <div class="write-flow">
+            <div class="flow-box">Agent / human</div>
+            <div class="arrow-down">↓</div>
+            <div class="flow-box">CardPatchProposal<br /><span class="muted">baseRevision + operationId + patches</span></div>
+            <div class="arrow-down">↓</div>
+            <div class="flow-box primary">Card Writer<br />authorize → validate → dedupe → commit</div>
+            <div class="arrow-down">↓</div>
+            <div class="outputs"><span>Immutable revision</span><span>Search projection</span><span>Outbox event</span></div>
+          </div>
+        </div>
+        <div class="contract-meta">
+          <div><strong>Canonical</strong><br />Markdown + YAML front matter</div>
+          <div><strong>Schema</strong><br />JSON Schema + Zod runtime</div>
+          <div><strong>Concurrency</strong><br />Serialized writes + edit lease</div>
+          <div><strong>Provenance</strong><br />Every conclusion links to evidence</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-3">
+      <span class="slide-count">03 / 04</span>
+      <div class="content">
+        <div class="eyebrow">Execution controls</div>
+        <h2>Deterministic shell.<br /><span class="green">Bounded agents.</span></h2>
+        <div class="shell-grid">
+          <div class="shell-column">
+            <h3>Temporal / application code</h3>
+            <ul class="task-list">
+              <li>Workflow state + retries</li>
+              <li>Idempotency + routing</li>
+              <li>Permissions + allowlists</li>
+              <li>Approval + escalation</li>
+              <li>Card write ordering</li>
+              <li>Financial calculations</li>
+              <li>Side-effect authorization</li>
+            </ul>
+          </div>
+          <div class="shell-column">
+            <h3>Agent tasks</h3>
+            <ul class="task-list">
+              <li>Extract claims</li>
+              <li>Plan targeted research</li>
+              <li>Summarize cited sources</li>
+              <li>Propose interview questions</li>
+              <li>Draft rationale</li>
+              <li>Suggest negotiation moves</li>
+            </ul>
+          </div>
+        </div>
+        <div class="control-path">
+          <div class="control-step">Untrusted artifact</div>
+          <div class="control-step">Scoped context</div>
+          <div class="control-step">Bounded agent + typed tools</div>
+          <div class="control-step">Structured proposal</div>
+          <div class="control-step">Policy / approval gate</div>
+          <div class="control-step">Card write / external action</div>
+        </div>
+        <div class="rules">
+          <div class="rule"><strong>Model aliases</strong><br />Capabilities, never hard-coded names.</div>
+          <div class="rule"><strong>Formula traces</strong><br />Terms from versioned TypeScript.</div>
+          <div class="rule"><strong>Authority bounds</strong><br />BATNA and per-term limits control.</div>
+          <div class="rule"><strong>Human approval</strong><br />Required for material external action.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-4">
+      <span class="slide-count">04 / 04</span>
+      <div class="content">
+        <div class="eyebrow">Implementation slice</div>
+        <h2>One complete path.<br /><span class="green">Trust boundaries first.</span></h2>
+        <div class="implementation">
+          <div class="timeline">
+            <div class="timeline-item">Upload deck + intake</div>
+            <div class="timeline-item">Validate, store, parse / OCR</div>
+            <div class="timeline-item">Create schema-valid Card</div>
+            <div class="timeline-item">Research claims + contradictions</div>
+            <div class="timeline-item">Generate + run voice interview</div>
+            <div class="timeline-item">Commit transcript-linked findings</div>
+            <div class="timeline-item">Run 3 independent assessments</div>
+            <div class="timeline-item">Calculate + annotate draft terms</div>
+            <div class="timeline-item">Approve; reject out-of-bounds</div>
+            <div class="timeline-item">Export Card + complete audit history</div>
+          </div>
+          <div class="repo-map">
+            <h3>TypeScript monorepo</h3>
+            <div class="repo-row"><code>/apps/web</code><span>Next.js workspace + API</span></div>
+            <div class="repo-row"><code>/apps/worker</code><span>Temporal workers + activities</span></div>
+            <div class="repo-row"><code>/packages</code><span>Card, evidence, agents, workflows</span></div>
+            <div class="repo-row"><code>/prompts</code><span>Versioned domain prompts</span></div>
+            <div class="repo-row"><code>/schemas</code><span>Cards, events, tool contracts</span></div>
+            <div class="repo-row"><code>/evals</code><span>Grounding, injection, consent, calculations</span></div>
+          </div>
+        </div>
+        <div class="checks">
+          <div class="check">Stale Card update rejected or rebased</div>
+          <div class="check">Every side effect is idempotent</div>
+          <div class="check">Terms carry evidence or formula traces</div>
+          <div class="check">Injection cannot expand authority</div>
+          <div class="check">Consent withdrawal triggers reassessment</div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="nav" aria-label="Slide navigation">
+      <button type="button" id="previous" aria-label="Previous slide">↑</button><button type="button" id="next" aria-label="Next slide">↓</button>
+    </nav>
+    <script>
+      const slides = [...document.querySelectorAll(".slide")];
+      let currentSlide = 0;
+      const goToSlide = (index) => {
+        currentSlide = Math.max(0, Math.min(slides.length - 1, index));
+        slides[currentSlide].scrollIntoView({ behavior: "smooth" });
+      };
+      document.querySelector("#previous").addEventListener("click", () => goToSlide(currentSlide - 1));
+      document.querySelector("#next").addEventListener("click", () => goToSlide(currentSlide + 1));
+      document.addEventListener("keydown", (event) => {
+        if (["ArrowDown", "PageDown", " "].includes(event.key)) {
+          event.preventDefault();
+          goToSlide(currentSlide + 1);
+        }
+        if (["ArrowUp", "PageUp"].includes(event.key)) {
+          event.preventDefault();
+          goToSlide(currentSlide - 1);
+        }
+        if (event.key === "Home") goToSlide(0);
+        if (event.key === "End") goToSlide(slides.length - 1);
+      });
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) currentSlide = slides.indexOf(entry.target);
+          });
+        },
+        { threshold: 0.6 },
+      );
+      slides.forEach((slide) => observer.observe(slide));
+    </script>
+  </body>
+</html>
