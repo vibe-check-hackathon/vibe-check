@@ -248,6 +248,11 @@ const lauraOpportunityDb = () => ({
         const records = await Promise.all(
           names.map(async (n) => JSON.parse(await readFile(join(INBOX_DIR, n), "utf8"))),
         );
+        // Backfill founder profiles for records written before profiles existed
+        // — old inbox JSON must never crash the board.
+        for (const r of records) {
+          if (!Array.isArray(r.founders)) r.founders = buildFounderProfiles(r.application ?? {}, r.id);
+        }
         records.sort((a, b) => String(b.receivedAt).localeCompare(String(a.receivedAt)));
         res.end(JSON.stringify(records));
       } catch {

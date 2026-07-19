@@ -29,14 +29,15 @@ export type SubmittedApplication = {
  * gives a pass/fail, but no axis has evidence until the interview runs.
  */
 export function applicationToStartup(record: SubmittedApplication): Startup {
-  const a = record.application;
+  const a = record.application ?? {};
   const screenedOut = !record.screening?.pass;
 
   return {
     id: record.id,
     company: a.company ?? "Untitled application",
     oneLiner: a.oneLiner || "No one-line pitch supplied.",
-    founders: record.founders.map((f) => ({
+    // Older inbox records predate founder profiles — never crash on them.
+    founders: (record.founders ?? []).map((f) => ({
       id: f.id,
       name: f.name,
       role: f.role ?? undefined,

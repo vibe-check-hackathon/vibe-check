@@ -155,7 +155,20 @@ function offThesis(o: OutboundOpp): boolean {
   return /series\s+[b-z]\b/.test(t) || /\d+(?:[.,]\d+)?\s*b(?:illion|\b)/.test(t);
 }
 
-export async function loadSyntheticStartups(): Promise<Startup[]> {
+/* Loaded once per session, then served from memory: navigating away from the
+ * board and back must not make the synthetic/outbound deals flicker out and
+ * refetch — they should already be there. */
+let cache: Promise<Startup[]> | null = null;
+
+export function loadSyntheticStartups(): Promise<Startup[]> {
+  cache ??= fetchSyntheticStartups().catch((e) => {
+    cache = null; // failed fetch must not poison the session — retry next mount
+    throw e;
+  });
+  return cache;
+}
+
+async function fetchSyntheticStartups(): Promise<Startup[]> {
   const res = await fetch("/opportunity-db/synthetic/index.json");
   if (!res.ok) return [];
   const db = (await res.json()) as {

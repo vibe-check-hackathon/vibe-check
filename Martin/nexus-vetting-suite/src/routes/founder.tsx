@@ -226,7 +226,7 @@ function InboundFounders() {
         <div className="flex items-center gap-2">
           <UserPlus className="h-4 w-4 text-primary" />
           <span className="text-[13.5px] font-medium">Inbound founder profiles</span>
-          <Badge tone="outline">{submitted.reduce((n, r) => n + r.founders.length, 0)} founders</Badge>
+          <Badge tone="outline">{submitted.reduce((n, r) => n + (r.founders?.length ?? 0), 0)} founders</Badge>
         </div>
         <p className="mt-1.5 text-[12px] text-muted-foreground">
           Created automatically on submission, with the personality hypotheses the agent interview has to test.
@@ -242,7 +242,7 @@ function InboundFounders() {
                   {record.screening?.pass ? "Passed screening" : "Screened out"}
                 </Badge>
               </div>
-              {record.founders.map((f) => (
+              {(record.founders ?? []).map((f) => (
                 <div key={f.id} className="px-3 py-3 border-b border-border last:border-b-0">
                   <div className="flex items-center gap-2.5">
                     <span className="h-7 w-7 rounded-full bg-surface-2 grid place-items-center text-[11px] font-medium">
