@@ -16,10 +16,18 @@ type TermSheetResult = {
   status: string;
   summary?: string;
   markdown: string;
+  legalText?: string;
   adjustments: Adjustment[];
   base: Record<string, unknown>;
   terms: Record<string, unknown> | null;
 };
+
+/** The FirstCheck founders the lawyer-form sheet addresses. */
+const FOUNDERS = [
+  { name: "Martin Auer", role: "Co-founder" },
+  { name: "Sun Chuanqi", role: "Co-founder" },
+  { name: "Laura Spies", role: "Co-founder" },
+];
 
 const fmt = (v: unknown) => (v == null ? "—" : typeof v === "object" ? "structured" : String(v));
 
@@ -59,6 +67,7 @@ export function TermSheetStudio({ company = "FirstCheck", askUsd = 1200000 }: { 
           trustScore: trust,
           contradictions: withContradiction ? ["ARR stated as both $120K and $80K (CON-001)"] : [],
           gaps: ["model-IP assignment (GAP-002)", "customer data rights (GAP-003)"],
+          founders: FOUNDERS,
         }),
       });
       const data = (await res.json()) as TermSheetResult;
@@ -101,6 +110,13 @@ export function TermSheetStudio({ company = "FirstCheck", askUsd = 1200000 }: { 
             className="h-7 rounded-md bg-primary px-2.5 text-[11.5px] font-medium text-primary-foreground"
           >
             Export PDF · after
+          </button>
+          <button
+            onClick={() => result?.legalText && printMarkdown(`${company} — memorandum of terms (long form)`, result.legalText)}
+            className="h-7 rounded-md border border-border bg-surface px-2.5 text-[11.5px]"
+            title="Lawyer-form memorandum of terms addressed to the founders, with the analytical basis disclosed"
+          >
+            Export PDF · legal
           </button>
         </div>
       </div>

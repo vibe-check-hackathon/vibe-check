@@ -27,7 +27,7 @@ import { getSignedUrl, buildDynamicVariables } from "../../laura/pipeline/lib/in
 // @ts-expect-error — service key store
 import { serviceStatus, serviceConfig } from "../../laura/pipeline/lib/service-keys.js";
 // @ts-expect-error — adaptive term sheets: thesis base terms adapted by team analysis, every change explained
-import { generateTermSheet, renderTermSheet } from "../../laura/pipeline/lib/term-sheet.js";
+import { generateTermSheet, renderTermSheet, renderLegalTermSheet } from "../../laura/pipeline/lib/term-sheet.js";
 
 /* Serve laura/opportunity-db as /opportunity-db/* directly from the single
  * source of truth — no copied data in public/. The old copy used a cards/
@@ -467,7 +467,11 @@ const lauraOpportunityDb = () => ({
             return;
           }
           const result = generateTermSheet(analysis);
-          res.end(JSON.stringify({ ...result, markdown: renderTermSheet(result) }));
+          res.end(JSON.stringify({
+            ...result,
+            markdown: renderTermSheet(result),
+            legalText: renderLegalTermSheet(result, { founders: analysis.founders ?? [] }),
+          }));
         } catch (e) {
           res.statusCode = 400;
           res.end(JSON.stringify({ error: e instanceof Error ? e.message : "invalid json" }));

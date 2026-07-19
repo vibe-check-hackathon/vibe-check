@@ -189,3 +189,55 @@ ${adjustments.length ? adjustments.map((a, i) => `${i + 1}. **${a.term}**: ${JSO
 Investor $${result.envelope.investor.range[0]}–${result.envelope.investor.range[1]}M (target $${result.envelope.investor.target}M) · founder $${result.envelope.founder.range[0]}–${result.envelope.founder.range[1]}M · ZOPA $${result.envelope.zopa[0]}–${result.envelope.zopa[1]}M.
 `;
 }
+
+/** Lawyer-grade prose per Martin/firstcheck-maschmeyer-termsheet-template.md:
+ *  his clause skeleton, our adaptive values, NYC-counsel drafting style.
+ *  Non-binding demo language is stated in the instrument itself. */
+export function renderLegalTermSheet(result, { founders = [], jurisdiction = "Delaware" } = {}) {
+  const t = result.terms;
+  if (!t) return `TERM SHEET WITHHELD — ${result.adjustments[0].because}`;
+  const list = founders.map((f) => `${f.name}${f.role ? ` (${f.role})` : ""}`).join(", ");
+  const cp = t.conditionsPrecedent.length
+    ? t.conditionsPrecedent.map((c, i) => `    (${String.fromCharCode(97 + i)}) ${c};`).join("\n")
+    : "    (a) completion of customary confirmatory due diligence;";
+  const tranche = t.tranches
+    ? `The Investment shall be funded in two tranches: ${t.tranches.atSigning * 100}% at Closing and ${t.tranches.onMilestone * 100}% upon ${t.tranches.milestone}, as certified by the Investor acting reasonably.`
+    : `The Investment shall be funded in a single tranche at Closing.`;
+  return `MEMORANDUM OF TERMS
+${result.company.toUpperCase()} — PROPOSED ${t.instrument.toUpperCase()} FINANCING
+
+This memorandum summarizes the principal terms on which Maschmeyer Group, investing through FirstCheck (the "Investor"), proposes to invest in ${result.company}, a ${jurisdiction} corporation (the "Company"). Except for the sections titled "Confidentiality" and "Exclusivity," this memorandum is NON-BINDING, is for discussion purposes only, does not constitute legal advice, and any obligation shall arise only under definitive agreements approved by each party's counsel. Prepared in the style of New York counsel for demonstration purposes.
+
+1. PARTIES. The Company; the Investor; and the founders of the Company, being ${list || "the persons identified on Schedule A"} (each a "Founder" and collectively the "Founders").
+
+2. THE INVESTMENT. Subject to Section 8, the Investor shall purchase a ${t.instrument} in the principal amount of US$${(t.checkUsd / 1e3).toFixed(0)},000 (the "Investment"). ${tranche}
+
+3. VALUATION. The valuation cap under the ${t.instrument} shall be US$${t.valuationCapM},000,000 on a post-money basis${t.discountPct ? `, with a discount of ${t.discountPct}%` : ", with no discount"}. The parties acknowledge the cap was determined from the Investor's evidence-based assessment of market, traction, and team, and not from a headline number alone.
+
+4. PRO RATA RIGHTS. ${t.proRata ? "The Investor shall have the right, but not the obligation, to participate in subsequent priced equity financings of the Company so as to maintain its fully-diluted ownership percentage, subject to customary exceptions." : "The Investor waives participation rights in subsequent financings."}
+
+5. GOVERNANCE; INFORMATION. Board rights: ${t.boardRights === "none" ? "the Investor shall receive no board seat and no observer seat at this stage" : `the Investor shall be entitled to a ${t.boardRights}`}. Information rights: the Company shall provide ${t.informationRights}, together with such other information as the Investor may reasonably request.
+
+6. FRAMING. ${t.followOnFraming ? "The Investment is made as a strategic follow-on participation and shall not be construed as the Investor leading or pricing the round." : "The Investment constitutes the Investor's first check and the Investor may be identified as such."}
+
+7. LIQUIDATION; CONVERSION; ANTI-DILUTION. As per the FirstCheck standard template: 1x non-participating preference economics upon conversion to preferred; automatic conversion upon a qualified financing or IPO at a 1:1 ratio; broad-based weighted-average anti-dilution with standard exclusions.
+
+8. CONDITIONS PRECEDENT. The obligation of the Investor to fund is subject to:
+${cp}
+    and (z) approval by the Investor's investment committee and completion of definitive documentation.
+
+9. CLOSING. The parties shall target a Closing within ${t.closingDays} calendar days of the date hereof, time being of the essence with respect to the exclusivity period only.
+
+10. CONFIDENTIALITY; EXCLUSIVITY (BINDING). The existence and terms of this memorandum are confidential. For ${t.closingDays} days from the date hereof, the Company and the Founders shall not solicit or entertain competing proposals for the financing contemplated hereby.
+
+11. NO RELIANCE. Each Founder acknowledges the analytical basis of these terms has been disclosed (see the accompanying adjustment schedule), and that no personality assessment or protected characteristic formed part of that basis.
+
+ADJUSTMENT SCHEDULE (analytical basis disclosed to the Founders):
+${result.adjustments.map((a, i) => `${i + 1}. ${a.term}: ${JSON.stringify(a.from)} -> ${JSON.stringify(a.to)} — ${a.because} [basis: ${a.evidence}]`).join("\n") || "None — thesis base terms apply."}
+
+AGREED AS TO THE BINDING SECTIONS ONLY:
+
+  Maschmeyer Group / FirstCheck: ______________________  Date: __________
+${founders.map((f) => `  ${f.name}${f.role ? `, ${f.role}` : ""}: ______________________  Date: __________`).join("\n")}
+`;
+}
