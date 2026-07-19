@@ -465,6 +465,8 @@ export type DemoFounder = {
   photo: string | null;
   /** Public profile, as supplied by the founder. */
   linkedin: string;
+  /** Looping tile footage for the interview studio. Falls back to photo/initials. */
+  video?: string | null;
   /**
    * 16-personalities read, held as an open hypothesis. Never a verdict: the
    * type is inferred from written material and must be confirmed or dropped by
@@ -499,7 +501,8 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     name: "Martin Auer",
     role: "CEO",
     initials: "MA",
-    photo: null, // no photo file supplied yet — see STARTUP_USER
+    photo: null, // no still supplied yet — see STARTUP_USER
+    video: "/martin-auer.mp4",
     linkedin: "https://www.linkedin.com/in/martin-auer/",
     personality: {
       type: "ENTJ",

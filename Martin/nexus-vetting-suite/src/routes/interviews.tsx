@@ -235,6 +235,7 @@ function InterviewsPage() {
                   role={f.role}
                   initials={f.initials}
                   photo={f.photo}
+                  video={f.video}
                   readout={reads[f.id] ?? "Neutral"}
                   speaking={speaking === f.id}
                 />
@@ -431,10 +432,22 @@ function InterviewsPage() {
   );
 }
 
-function Tile({ name, role, initials, photo, readout, speaking, agent }: { name: string; role: string; initials: string; photo?: string | null; readout?: string; speaking?: boolean; agent?: boolean }) {
+function Tile({ name, role, initials, photo, video, readout, speaking, agent }: { name: string; role: string; initials: string; photo?: string | null; video?: string | null; readout?: string; speaking?: boolean; agent?: boolean }) {
   return (
     <div className={"relative rounded-lg border overflow-hidden bg-surface-2 " + (agent ? "aspect-[32/7]" : "aspect-[16/10]") + " " + (speaking ? "ring-2 ring-primary" : "border-border")}>
-      <div className="absolute inset-0 grid place-items-center">
+      {video && (
+        /* muted + playsInline so browsers allow autoplay in the tile */
+        <video
+          src={video}
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-label={name}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      )}
+      <div className={"absolute inset-0 grid place-items-center " + (video ? "hidden" : "")}>
         {photo ? (
           <img src={photo} alt={name} className={"rounded-full object-cover " + (agent ? "h-10 w-10" : "h-14 w-14")} />
         ) : (
