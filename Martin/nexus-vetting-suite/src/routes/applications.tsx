@@ -66,7 +66,7 @@ function ApplicationsPage() {
             </div>
             <div className="p-5 space-y-4">
               <p className="text-[13px] leading-relaxed text-foreground/90">
-                Acme sells demonstration-based model adaptation for warehouse picking robots — an operator shows a new SKU once and the system generalises. Two paid pilots and a technically credible team; the open risks are an ARR contradiction (CON-001, $120K vs $80K) and undocumented model-IP ownership (GAP-002), both routed into the live interview.
+                FirstCheck sells demonstration-based model adaptation for warehouse picking robots — an operator shows a new SKU once and the system generalises. Two paid pilots and a technically credible team; the open risks are an ARR contradiction (CON-001, $120K vs $80K) and undocumented model-IP ownership (GAP-002), both routed into the live interview.
               </p>
               <div className="grid md:grid-cols-3 gap-4">
                 <ScoreBar label="Founder score" value={s.founderScore ?? 0} />

@@ -98,9 +98,9 @@ export function DiligencePage() {
   return (
     <AppShell>
       <PageHeader
-        crumbs={["Due Diligence", "Helix Bio"]}
+        crumbs={["Due Diligence", "FirstCheck"]}
         eyebrow="Live diligence workspace"
-        title="Diligence · Helix Bio"
+        title="Diligence · FirstCheck"
         description="Six lanes, six owners. Every check is evidence-anchored. Contradictions surface here first, then propagate to scores."
         actions={
           <>

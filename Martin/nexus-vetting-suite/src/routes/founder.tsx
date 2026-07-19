@@ -5,7 +5,7 @@ import {
 } from "recharts";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge } from "@/components/ui-kit";
-import { Sparkles, Lock, ChevronRight, UserPlus } from "lucide-react";
+import { Sparkles, Lock, ChevronRight, UserPlus, BrainCircuit } from "lucide-react";
 import { useSubmittedApplications } from "@/lib/applications";
 import { ACME_FOUNDERS, ACME_TEAM, type DemoFounder } from "@/lib/data";
 
@@ -39,8 +39,8 @@ function FounderPage() {
   return (
     <AppShell>
       <PageHeader
-        crumbs={["Founders", "Acme Robotics", active?.name ?? "Team overview"]}
-        eyebrow="Founder psychogram · OPP-2026-0001 · Acme Robotics"
+        crumbs={["Founders", "FirstCheck", active?.name ?? "Team overview"]}
+        eyebrow="Founder psychogram · OPP-2026-0001 · FirstCheck"
         title="Founder psychogram"
         description="Five-axis, evidence-based founder profiles. Sub-scores stay separate — the headline number never hides its components."
         actions={<Link to={"/interviews" as never} className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5">← Live interview</Link>}
@@ -50,7 +50,7 @@ function FounderPage() {
       <div className="px-8 pt-5">
         <div className="rounded-md border border-warning/40 bg-warning/5 px-4 py-2.5 flex items-start gap-2.5 text-[12px] text-foreground/90">
           <Lock className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
-          <span>This scored psychogram runs only on the <span className="font-medium">Acme</span> demo, whose founders are members of this team using their own names and photos with consent. Third-party founders (Secfix, deskbird, VoiceLine…) are shown from public data and <span className="font-medium">deliberately never scored</span> — the suite does not fabricate psychometric judgments of people who have not opted in.</span>
+          <span>This scored psychogram runs only on the <span className="font-medium">FirstCheck</span> demo, whose founders are members of this team using their own names and photos with consent. Third-party founders (Secfix, deskbird, VoiceLine…) are shown from public data and <span className="font-medium">deliberately never scored</span> — the suite does not fabricate psychometric judgments of people who have not opted in.</span>
         </div>
       </div>
 
@@ -73,7 +73,7 @@ function FounderPage() {
         </div>
       </div>
 
-      {active ? <FounderView founder={active} /> : <TeamView ada={ACME_FOUNDERS[0]} minh={ACME_FOUNDERS[1]} />}
+      {active ? <FounderView founder={active} /> : <TeamView founders={ACME_FOUNDERS} />}
     </AppShell>
   );
 }
@@ -116,8 +116,9 @@ function FounderView({ founder }: { founder: DemoFounder }) {
         </Card>
       </div>
 
-      {/* right: axis breakdown w/ collapsible live evidence */}
+      {/* right: personality hypothesis, then axis breakdown */}
       <div className="lg:col-span-2 space-y-4">
+        <PersonalityCard founder={founder} />
         <Card className="p-0">
           <div className="px-5 py-3.5 border-b border-border flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary" /><span className="text-[13px] font-medium">Axis breakdown &amp; evidence</span></div>
           <div className="divide-y divide-border">
@@ -161,13 +162,17 @@ function FounderView({ founder }: { founder: DemoFounder }) {
   );
 }
 
-function TeamView({ ada, minh }: { ada: DemoFounder; minh: DemoFounder }) {
-  const keys = ada.axes.map((a) => a.key);
-  const radarData = keys.map((k) => ({
-    axis: k,
-    Ada: ada.axes.find((a) => a.key === k)!.v,
-    Minh: minh.axes.find((a) => a.key === k)!.v,
-  }));
+/** One colour per founder, so the overlay stays readable at four series. */
+const TEAM_COLORS = ["var(--series-1)", "var(--series-2)", "var(--series-3)", "var(--series-4)"];
+
+function TeamView({ founders }: { founders: DemoFounder[] }) {
+  const keys = founders[0].axes.map((a) => a.key);
+  // Every founder overlaid on the same five axes.
+  const radarData = keys.map((k) => {
+    const row: Record<string, string | number> = { axis: k };
+    for (const f of founders) row[f.name] = f.axes.find((a) => a.key === k)!.v;
+    return row;
+  });
   return (
     <div className="px-8 py-6 grid lg:grid-cols-3 gap-4">
       <div className="space-y-4">
@@ -182,14 +187,27 @@ function TeamView({ ada, minh }: { ada: DemoFounder; minh: DemoFounder }) {
                 <PolarGrid stroke="var(--border)" />
                 <PolarAngleAxis dataKey="axis" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
                 <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
-                <Radar name="Ada" dataKey="Ada" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.16} />
-                <Radar name="Minh" dataKey="Minh" stroke="var(--positive)" fill="var(--positive)" fillOpacity={0.14} />
+                {founders.map((f, i) => (
+                  <Radar
+                    key={f.id}
+                    name={f.name}
+                    dataKey={f.name}
+                    stroke={TEAM_COLORS[i % TEAM_COLORS.length]}
+                    fill={TEAM_COLORS[i % TEAM_COLORS.length]}
+                    fillOpacity={0.1}
+                    strokeWidth={2}
+                  />
+                ))}
               </RadarChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex justify-center gap-4 text-[12px]">
-            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-primary" /> Ada · CEO</span>
-            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-positive" /> Minh · CTO</span>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-[12px]">
+            {founders.map((f, i) => (
+              <span key={f.id} className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: TEAM_COLORS[i % TEAM_COLORS.length] }} />
+                {f.name.split(" ")[0]} · {f.role}
+              </span>
+            ))}
           </div>
         </Card>
       </div>
@@ -304,5 +322,45 @@ function InboundFounders() {
         </div>
       </Card>
     </div>
+  );
+}
+
+
+/**
+ * The 16-personalities read, deliberately rendered as an *open hypothesis*
+ * rather than a result: it is inferred from written material and only the
+ * agent interview can support or contradict it.
+ */
+function PersonalityCard({ founder }: { founder: DemoFounder }) {
+  const { type, label, hypothesis, basis, status, confidence } = founder.personality;
+  const tone = status === "supported" ? "positive" : status === "contradicted" ? "negative" : "warning";
+
+  return (
+    <Card className="p-0">
+      <div className="px-5 py-3.5 border-b border-border flex items-center gap-2">
+        <BrainCircuit className="h-3.5 w-3.5 text-primary" />
+        <span className="text-[13px] font-medium">Personality hypothesis</span>
+        <Badge tone="outline">16 personalities</Badge>
+        <span className={"ml-auto text-[10px] uppercase tracking-wider text-" + tone}>
+          {status === "open" ? "open · to be tested" : status}
+        </span>
+      </div>
+      <div className="p-5">
+        <div className="flex items-baseline gap-2.5">
+          <span className="font-serif text-[26px] leading-none">{type}</span>
+          <span className="text-[13px] text-muted-foreground">{label}</span>
+          <span className="ml-auto text-[11px] text-muted-foreground">confidence {confidence}/100</span>
+        </div>
+        <div className="mt-2 h-1.5 rounded-full bg-muted overflow-hidden">
+          <div className="h-full rounded-full bg-warning" style={{ width: confidence + "%" }} />
+        </div>
+        <p className="mt-3 text-[13px] leading-relaxed text-foreground/90">{hypothesis}</p>
+        <p className="mt-2 text-[11.5px] text-muted-foreground">{basis}</p>
+        <p className="mt-3 pt-2.5 border-t border-border text-[11.5px] text-muted-foreground">
+          Held open on purpose. A type inferred from written material is a prompt for the interview, not a
+          judgment — the agent tests it live and the confidence moves with the evidence.
+        </p>
+      </div>
+    </Card>
   );
 }

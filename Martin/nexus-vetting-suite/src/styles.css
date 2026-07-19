@@ -81,6 +81,15 @@
   --positive: #047857;
   --warning: #b45309;
   --negative: #b91c1c;
+
+  /* Categorical series colors for multi-founder charts. Validated for CVD
+     separation and contrast against the light card surface (#ffffff).
+     Assigned in fixed order, never cycled. */
+  --series-1: #047857;
+  --series-2: #2563eb;
+  --series-3: #b45309;
+  --series-4: #a21caf;
+
   --border: #e5e7eb;
   --input: #e5e7eb;
   --ring: #10b981;
@@ -102,6 +111,13 @@
   --foreground: #f9fafb;
   --card: #1a2332;
   --card-foreground: #f9fafb;
+
+  /* Dark-mode steps of the same ramps, re-validated against #1a2332 —
+     not an automatic flip of the light values. */
+  --series-1: #0d9488;
+  --series-2: #3b82f6;
+  --series-3: #d97706;
+  --series-4: #c026d3;
   --popover: #1a2332;
   --popover-foreground: #f9fafb;
   --primary: #10b981;
