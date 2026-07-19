@@ -48,7 +48,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [authed, setAuthed] = useState<boolean | null>(null);
   useEffect(() => {
     if (isInvestor()) setAuthed(true);
-    else window.location.href = "/apply";
+    else {
+      setAuthed(false);
+      window.location.href = "/login"; // the login page links founders onward to /apply
+    }
   }, []);
   /* The gate decides who you are; this toggle lets an authenticated investor
    * preview the startup side without logging out. */
@@ -87,7 +90,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   if (authed !== true) {
-    return <div className="min-h-screen bg-background" />;
+    // Never a dead blank page: say what is happening and give a manual path
+    // out in case the client-side redirect cannot fire (stale tab, JS error).
+    return (
+      <div className="min-h-screen bg-background text-foreground grid place-items-center px-4">
+        <div className="text-center text-[13px] text-muted-foreground">
+          <div>{authed === false ? "Investor login required — redirecting…" : "Checking access…"}</div>
+          <a href="/login" className="mt-2 inline-block text-primary hover:underline">
+            Go to investor login
+          </a>
+        </div>
+      </div>
+    );
   }
 
   return (
