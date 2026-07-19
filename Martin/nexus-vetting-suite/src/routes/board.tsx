@@ -999,7 +999,11 @@ function FounderRow({
           <span
             key={axis}
             className={`rounded border border-border px-1.5 py-0.5 text-[10px] ${axes ? "bg-background text-foreground" : "bg-surface text-muted-foreground"}`}
-            title={axes ? undefined : "Not assessed — no fabricated scores for real people"}
+            title={
+              axes
+                ? f.scoreRationale?.[SYNTHETIC_SCORE_KEYS[axis]] ?? undefined
+                : "Not assessed — no fabricated scores for real people"
+            }
           >
             {axis} <span className="font-mono">{axes ? axes[axis] : "—"}</span>
           </span>
@@ -1010,6 +1014,31 @@ function FounderRow({
           </span>
         )}
       </div>
+      <ScoreWhy founder={f} axes={axes} />
+    </div>
+  );
+}
+
+/** Why the strongest and weakest axes score the way they do — the rationale is
+ *  part of the synthetic full-consent tier; real people show nothing here. */
+function ScoreWhy({ founder, axes }: { founder: FounderRef; axes: Record<string, number> | null }) {
+  if (!axes || !founder.scoreRationale) return null;
+  const ranked = FOUNDER_AXES.filter((a) => founder.scoreRationale![SYNTHETIC_SCORE_KEYS[a]]).sort((a, b) => axes[b] - axes[a]);
+  if (ranked.length < 2) return null;
+  const strongest = ranked[0];
+  const weakest = ranked[ranked.length - 1];
+  const line = (axis: (typeof FOUNDER_AXES)[number], up: boolean) => (
+    <div className="flex gap-1.5 text-[10.5px] leading-snug">
+      <span className={up ? "text-positive" : "text-negative"}>{up ? "▲" : "▼"}</span>
+      <span className="text-muted-foreground">
+        <span className="text-foreground">{axis} {axes[axis]}</span> — {founder.scoreRationale![SYNTHETIC_SCORE_KEYS[axis]]}
+      </span>
+    </div>
+  );
+  return (
+    <div className="mt-1.5 space-y-0.5 border-t border-border pt-1.5">
+      {line(strongest, true)}
+      {line(weakest, false)}
     </div>
   );
 }

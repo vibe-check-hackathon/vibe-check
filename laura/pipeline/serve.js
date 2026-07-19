@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { createBus } from "./lib/events.js";
 import { loadThesis } from "./lib/thesis.js";
 import { screenOpportunity } from "./lib/screening.js";
+import { createInterviewEvaluator } from "./lib/interview-eval.js";
 import { runSourcing } from "./sourcing.js";
 import { runDeveloping } from "./developing.js";
 
@@ -52,8 +53,17 @@ function streamPipeline(res) {
     timers.push(setTimeout(() => send(res, event), 400 * (i + 1)));
   });
   const pipelineMs = 400 * (bus.log.length + 2);
+  // Real-time evaluation rides on the transcript: each spoken line is scored
+  // as it streams (derived events follow the line by 300ms), so scores and the
+  // negotiation model visibly react to WHAT WAS SAID, with reasons.
+  const evaluator = createInterviewEvaluator({ thesis: loadThesis(), card });
   for (const step of interviewScript) {
     timers.push(setTimeout(() => send(res, { at: new Date().toISOString(), ...step.event }), pipelineMs + step.t * 1000));
+    if (step.event.type !== "transcript.line") continue;
+    const derived = evaluator.ingestLine(step.event); // order-correct: computed now, streamed on schedule
+    derived.forEach((event, j) => {
+      timers.push(setTimeout(() => send(res, { at: new Date().toISOString(), ...event }), pipelineMs + step.t * 1000 + 300 + j * 250));
+    });
   }
   return () => timers.forEach(clearTimeout);
 }

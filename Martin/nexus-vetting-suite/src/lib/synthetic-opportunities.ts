@@ -29,6 +29,7 @@ type SyntheticFounder = {
   linkedin?: string;
   linkedinSearch?: string;
   scores?: Record<string, number>;
+  scoreRationale?: Record<string, string>;
   scoreConfidence?: number;
 };
 
@@ -82,6 +83,7 @@ function mapCurrentApplication(o: SyntheticOpp): Startup {
       email: f.email,
       linkedin: f.linkedin,
       scores: f.scores,
+      scoreRationale: f.scoreRationale,
       scoreConfidence: f.scoreConfidence,
     })),
     stage: STATUS_TO_STAGE[o.status] ?? "Inbound",

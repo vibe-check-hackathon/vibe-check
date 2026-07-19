@@ -1318,6 +1318,14 @@
       case "card.update":
         addLine("System", `${e.ref} → ${e.state}${typeof e.trust === "number" ? ` (trust ${e.trust}/100)` : ""} — ${e.evidence ?? ""}`, true);
         break;
+      case "evaluation.update": {
+        // Live scoring with reasons: WHY the number moved, as it happens.
+        const arrow = e.delta > 0 ? "▲" : e.delta < 0 ? "▼" : "⚑";
+        const scoreBit = e.axis === "flag" ? "FLAG" : `${e.axis} ${e.score} (${e.delta > 0 ? "+" : ""}${e.delta})`;
+        addLine("Eval", `${arrow} ${e.who} · ${scoreBit} — ${e.reason} · founder axis ${e.founderAxis}/100, signal conf ${e.signalConfidence}`, true);
+        upd("live", `${e.who}: ${scoreBit} — ${e.reason}`);
+        break;
+      }
       case "model.update":
         if (e.party === "founder" && e.range) M.fnd = e.range.slice();
         setModel(M);
