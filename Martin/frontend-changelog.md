@@ -8,7 +8,29 @@ Files touched:
 - `laura/frontend/founder.html` — founder personality / psychogram page (new)
 - `laura/founder-axis-scoring.md` — scoring model (added the team complementarity score)
 
-Status: **working-tree changes, not yet committed.** Nothing pushed to `origin/main` yet.
+Status: **merged into local `main`** (2 commits ahead of `origin/main`); **not yet pushed**.
+
+---
+
+## 2026-07-18 · Round 3 — merge with Laura's `origin/main`
+
+Pulled Laura's 4 new commits (sourcing/developing pipeline in JS, live server,
+**inbox / opportunity-list view**, approval gate, VC criteria config, Maschmeyer
+opportunity DB) and merged my `frontend-psychogram` branch into `main`.
+
+- **Clean merges:** `founder.html`, `Martin/frontend-changelog.md`, and
+  `founder-axis-scoring.md` (§5a) — no overlap with Laura's work.
+- **One real conflict — `index.html`:** Laura independently restructured the same
+  header/hero, adding an **inbox landing → click into studio** flow (`inboxView` /
+  `studioView` toggle, `‹ Opportunities` back button) driven by new JS, and she
+  **kept the hero**. Resolution: kept Laura's more complete structure intact (so
+  her view-toggle JS keeps working) and re-applied my **"See details →" link** on
+  the Vibe-check panel (→ `founder.html`). The panel-head / breadcrumb / see-details
+  **CSS auto-merged** and is retained.
+- **⚠️ Superseded — needs a decision:** my earlier **hero removal + top-left
+  breadcrumb** on `index.html` were dropped in favour of Laura's hero + inbox
+  landing. If we still want the hero gone / the breadcrumb in on top of Laura's new
+  structure, that's a follow-up (the breadcrumb CSS is already present and unused).
 
 ---
 
