@@ -1,0 +1,2 @@
+# Ignore raw design-tool exports; extracted files live in stitch-export/
+*.zip
