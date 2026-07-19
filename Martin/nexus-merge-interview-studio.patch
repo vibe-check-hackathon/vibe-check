@@ -1,0 +1,1975 @@
+From da42f03da4d45f7df0eeb75bb7a613dbf529d164 Mon Sep 17 00:00:00 2001
+From: mrtn au <s-mauer@ucp.pt>
+Date: Sat, 18 Jul 2026 23:29:46 -0400
+Subject: [PATCH] Merge interview studio + real Maschmeyer data into the
+ vetting suite
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Replaces the fictional dummy pipeline with the real Maschmeyer Group
+opportunity DB (Secfix, deskbird, VoiceLine, Timefold, Climatiq, Pliant)
+from public sources, plus one fictional Acme demo card. Real founders are
+never scored — 'not assessed' is enforced through the data model.
+
+Ports Laura's live interview studio into React:
+- /interviews: scripted live call, real-time vibe-check meters, and a
+  'super negotiation' ZOPA model with interactive levers + deal-fit score.
+- /founder: 5-axis psychogram (Recharts radar), team overlay with a gated
+  complementarity score, collapsible live-evidence quotes, and a guardrail
+  banner. Wired the routes into the sidebar nav.
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+---
+ src/components/AppShell.tsx |   8 +-
+ src/lib/data.ts             | 419 ++++++++++++++++++++++--------------
+ src/routes/applications.tsx | 286 ++++++++----------------
+ src/routes/board.tsx        |  19 +-
+ src/routes/founder.tsx      | 326 +++++++++++++++-------------
+ src/routes/index.tsx        |  45 ++--
+ src/routes/interviews.tsx   | 382 +++++++++++++++++++++++---------
+ 7 files changed, 834 insertions(+), 651 deletions(-)
+
+diff --git a/src/components/AppShell.tsx b/src/components/AppShell.tsx
+index 28b859a..c154776 100644
+--- a/src/components/AppShell.tsx
++++ b/src/components/AppShell.tsx
+@@ -8,6 +8,8 @@ import {
+   Search,
+   Command,
+   Bell,
++  Mic,
++  UserSquare,
+ } from "lucide-react";
+ import logo from "@/assets/vibecheck.svg.asset.json";
+ 
+@@ -15,6 +17,8 @@ const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: bo
+   { to: "/", label: "Pipeline", icon: LayoutDashboard, exact: true },
+   { to: "/board", label: "Board", icon: Kanban },
+   { to: "/applications", label: "Applications", icon: FileText },
++  { to: "/interviews", label: "Live Interview", icon: Mic },
++  { to: "/founder", label: "Founder Psychogram", icon: UserSquare },
+   { to: "/memo", label: "Decision Memo", icon: ScrollText },
+   { to: "/settings", label: "Settings", icon: Settings },
+ ];
+@@ -78,10 +82,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
+           <div className="mx-3 mb-3 rounded-md border border-sidebar-border bg-background/60 p-3">
+             <div className="flex items-center gap-2">
+               <div className="h-1.5 w-1.5 rounded-full bg-positive pulse-dot" />
+-              <div className="text-[11px] font-medium">4 memos due · 24h</div>
++              <div className="text-[11px] font-medium">1 memo due · 24h</div>
+             </div>
+             <div className="mt-1 text-[11px] text-muted-foreground leading-snug">
+-              Vela Legal, Ledgerly, Helix Bio, Sonar Health awaiting IC.
++              Acme Robotics awaiting IC · live interview in progress.
+             </div>
+           </div>
+ 
+diff --git a/src/lib/data.ts b/src/lib/data.ts
+index ce773fe..5866bfb 100644
+--- a/src/lib/data.ts
++++ b/src/lib/data.ts
+@@ -27,195 +27,205 @@ export type Startup = {
+   geography: string;
+   round: string;
+   ask: string;
+-  founderScore: number;
+-  marketScore: number;
+-  ideaMarketScore: number;
+-  trustScore: number;
++  /**
++   * Real founders sourced from public data are intentionally NOT scored — the
++   * suite never fabricates psychometric judgments of real people. Only the
++   * fictional demo opportunity (Acme) is `assessed`.
++   */
++  assessed: boolean;
++  founderScore: number | null;
++  marketScore: number | null;
++  ideaMarketScore: number | null;
++  trustScore: number | null;
+   urgency: "Low" | "Medium" | "High";
+   submitted: string;
+-  thesisFit: number;
++  thesisFit: number | null;
++  /** Verified real-world outcome (public), if any. */
++  realEvent?: string;
++  /** Public founder interview URL, if one exists. */
++  interviewUrl?: string | null;
++  /** The single fictional card that powers the live interview + psychogram demo. */
++  demo?: boolean;
+ };
+ 
++/**
++ * Pipeline = the real Maschmeyer Group opportunity DB (public sources only,
++ * from `laura/opportunity-db`) + one fictional demo card (Acme) that the live
++ * interview studio and founder psychogram run on. Real founders stay unassessed.
++ */
+ export const STARTUPS: Startup[] = [
+   {
+-    id: "helix",
+-    company: "Helix Bio",
+-    oneLiner: "AI-designed enzymes for industrial-scale carbon capture.",
+-    founders: ["Dr. Amina Osei", "Lukas Berger"],
+-    stage: "Diligence",
+-    sector: "Climate / Biotech",
+-    geography: "Zürich, CH",
+-    round: "Seed",
+-    ask: "€3.5M",
+-    founderScore: 88,
+-    marketScore: 74,
+-    ideaMarketScore: 81,
+-    trustScore: 92,
+-    urgency: "High",
+-    submitted: "2026-07-12",
+-    thesisFit: 0.87,
+-  },
+-  {
+-    id: "ledger",
+-    company: "Ledgerly",
+-    oneLiner: "Autonomous month-end close for mid-market finance teams.",
+-    founders: ["Priya Raman", "Tom Whitfield"],
+-    stage: "Partner Review",
+-    sector: "Vertical SaaS",
+-    geography: "London, UK",
+-    round: "Seed+",
+-    ask: "€5.0M",
+-    founderScore: 82,
+-    marketScore: 86,
+-    ideaMarketScore: 79,
+-    trustScore: 84,
++    id: "acme",
++    company: "Acme Robotics",
++    oneLiner:
++      "Vision-guided picking software — warehouse robots learn new objects from a short operator demonstration.",
++    founders: ["Ada Keller", "Minh Tran"],
++    stage: "Interview",
++    sector: "Robotics / AI",
++    geography: "Berlin, DE",
++    round: "Pre-seed",
++    ask: "€1.2M",
++    assessed: true,
++    founderScore: 76,
++    marketScore: 62,
++    ideaMarketScore: 58,
++    trustScore: 55,
+     urgency: "High",
+-    submitted: "2026-07-08",
+-    thesisFit: 0.91,
++    submitted: "2026-07-18",
++    thesisFit: 0.72,
++    interviewUrl: null,
++    demo: true,
+   },
+   {
+-    id: "northwind",
+-    company: "Northwind Robotics",
+-    oneLiner: "Warehouse fleet-orchestration OS for third-party logistics.",
+-    founders: ["Jonas Keller"],
+-    stage: "Reference",
+-    sector: "Robotics",
+-    geography: "Munich, DE",
+-    round: "Pre-seed",
+-    ask: "€1.8M",
+-    founderScore: 71,
+-    marketScore: 68,
+-    ideaMarketScore: 65,
+-    trustScore: 62,
++    id: "secfix",
++    company: "Secfix",
++    oneLiner:
++      "Europe's AI security-compliance platform — cuts ISO 27001 / SOC 2 / GDPR work up to 90% for SMBs.",
++    founders: ["Fabiola Munguia", "Grigory Emelianov"],
++    stage: "Term Sheet",
++    sector: "Security / Compliance",
++    geography: "Berlin / Munich, DE",
++    round: "Series A",
++    ask: "$12M",
++    assessed: false,
++    founderScore: null,
++    marketScore: null,
++    ideaMarketScore: null,
++    trustScore: null,
+     urgency: "Medium",
+-    submitted: "2026-07-14",
+-    thesisFit: 0.62,
++    submitted: "2026-02-24",
++    thesisFit: null,
++    realEvent: "$12M Series A led by ALSTIN Capital (announced 2026-02-25)",
++    interviewUrl: "https://www.youtube.com/watch?v=k_Rkq40O3kU",
+   },
+   {
+-    id: "sonar",
+-    company: "Sonar Health",
+-    oneLiner: "Voice-based cognitive decline screening for primary care.",
+-    founders: ["Dr. Elena Marchetti", "Ravi Shah"],
+-    stage: "Interview",
+-    sector: "Digital Health",
+-    geography: "Milan, IT",
+-    round: "Seed",
+-    ask: "€2.4M",
+-    founderScore: 79,
+-    marketScore: 72,
+-    ideaMarketScore: 77,
+-    trustScore: 74,
++    id: "deskbird",
++    company: "deskbird",
++    oneLiner:
++      "Hybrid-workplace management — desk and meeting-room booking for flexible offices.",
++    founders: ["Ivan Cossu", "Jonas Hess"],
++    stage: "Term Sheet",
++    sector: "Workplace SaaS",
++    geography: "St. Gallen, CH",
++    round: "Series A",
++    ask: "$13M",
++    assessed: false,
++    founderScore: null,
++    marketScore: null,
++    ideaMarketScore: null,
++    trustScore: null,
+     urgency: "Medium",
+-    submitted: "2026-07-15",
+-    thesisFit: 0.74,
++    submitted: "2023-09-01",
++    thesisFit: null,
++    realEvent:
++      "$13M Series A led by ALSTIN Capital & AXA Venture Partners (announced 2023-09-06)",
++    interviewUrl: "https://www.youtube.com/watch?v=Flx_ZmOau68",
+   },
+   {
+-    id: "kavan",
+-    company: "Kavan Labs",
+-    oneLiner: "On-device inference runtime for embedded manufacturers.",
+-    founders: ["Sana Iqbal", "Marc Dupont"],
+-    stage: "Screened",
+-    sector: "Infra / AI",
+-    geography: "Paris, FR",
+-    round: "Pre-seed",
+-    ask: "€1.2M",
+-    founderScore: 84,
+-    marketScore: 70,
+-    ideaMarketScore: 73,
+-    trustScore: 68,
++    id: "voiceline",
++    company: "VoiceLine",
++    oneLiner:
++      "Voice AI for enterprise frontline sales — capture field data hands-free, straight into the CRM.",
++    founders: ["Dr. Nicolas Höflinger"],
++    stage: "Term Sheet",
++    sector: "Voice AI",
++    geography: "Munich, DE",
++    round: "Series A",
++    ask: "€10M",
++    assessed: false,
++    founderScore: null,
++    marketScore: null,
++    ideaMarketScore: null,
++    trustScore: null,
+     urgency: "Low",
+-    submitted: "2026-07-16",
+-    thesisFit: 0.69,
++    submitted: "2026-02-20",
++    thesisFit: null,
++    realEvent: "€10M Series A led by ALSTIN Capital & Peak (announced 2026-02-24)",
++    interviewUrl: null,
+   },
+   {
+-    id: "meridian",
+-    company: "Meridian Trade",
+-    oneLiner: "Trade-finance underwriting copilot for regional banks.",
+-    founders: ["Chidera Okafor", "Yuki Tanaka"],
++    id: "timefold",
++    company: "Timefold",
++    oneLiner:
++      "Scheduling and routing optimization engine — an open-source planning solver for operations.",
++    founders: ["—"],
+     stage: "Screened",
+-    sector: "Fintech",
+-    geography: "Amsterdam, NL",
+-    round: "Seed",
+-    ask: "€4.0M",
+-    founderScore: 76,
+-    marketScore: 81,
+-    ideaMarketScore: 72,
+-    trustScore: 70,
+-    urgency: "Medium",
+-    submitted: "2026-07-15",
+-    thesisFit: 0.78,
+-  },
+-  {
+-    id: "arbor",
+-    company: "Arbor Grid",
+-    oneLiner: "Predictive load balancing for community solar cooperatives.",
+-    founders: ["Ingrid Sørensen"],
+-    stage: "Inbound",
+-    sector: "Climate / Energy",
+-    geography: "Copenhagen, DK",
+-    round: "Pre-seed",
+-    ask: "€900K",
+-    founderScore: 66,
+-    marketScore: 64,
+-    ideaMarketScore: 59,
+-    trustScore: 55,
++    sector: "Optimization",
++    geography: "Unverified",
++    round: "—",
++    ask: "—",
++    assessed: false,
++    founderScore: null,
++    marketScore: null,
++    ideaMarketScore: null,
++    trustScore: null,
+     urgency: "Low",
+-    submitted: "2026-07-17",
+-    thesisFit: 0.54,
++    submitted: "2026-07-19",
++    thesisFit: null,
++    realEvent: "Maschmeyer portfolio listing (unverified)",
++    interviewUrl: null,
+   },
+   {
+-    id: "vela",
+-    company: "Vela Legal",
+-    oneLiner: "Contract-diligence agents for M&A workstreams.",
+-    founders: ["Adaeze Nwosu", "Sam Cohen"],
+-    stage: "Term Sheet",
+-    sector: "Legal Tech",
++    id: "climatiq",
++    company: "Climatiq",
++    oneLiner:
++      "Carbon-intelligence API — embed emissions calculations into any software product.",
++    founders: ["—"],
++    stage: "Screened",
++    sector: "Climate / Data",
+     geography: "Berlin, DE",
+-    round: "Seed",
+-    ask: "€3.0M",
+-    founderScore: 91,
+-    marketScore: 78,
+-    ideaMarketScore: 85,
+-    trustScore: 90,
+-    urgency: "High",
+-    submitted: "2026-07-02",
+-    thesisFit: 0.93,
++    round: "—",
++    ask: "—",
++    assessed: false,
++    founderScore: null,
++    marketScore: null,
++    ideaMarketScore: null,
++    trustScore: null,
++    urgency: "Low",
++    submitted: "2026-07-19",
++    thesisFit: null,
++    realEvent: "Maschmeyer portfolio listing (unverified)",
++    interviewUrl: null,
+   },
+   {
+-    id: "kite",
+-    company: "Kite Studio",
+-    oneLiner: "Generative product photography for e-commerce merchants.",
+-    founders: ["Nora Fischer", "Owen Reilly"],
+-    stage: "Inbound",
+-    sector: "Creative AI",
+-    geography: "Dublin, IE",
+-    round: "Pre-seed",
+-    ask: "€750K",
+-    founderScore: 58,
+-    marketScore: 55,
+-    ideaMarketScore: 48,
+-    trustScore: 51,
++    id: "pliant",
++    company: "Pliant",
++    oneLiner:
++      "Adaptable corporate cards and spend management with API-based card issuing.",
++    founders: ["—"],
++    stage: "Screened",
++    sector: "Fintech",
++    geography: "Berlin, DE",
++    round: "—",
++    ask: "—",
++    assessed: false,
++    founderScore: null,
++    marketScore: null,
++    ideaMarketScore: null,
++    trustScore: null,
+     urgency: "Low",
+-    submitted: "2026-07-17",
+-    thesisFit: 0.41,
++    submitted: "2026-07-19",
++    thesisFit: null,
++    realEvent: "Maschmeyer portfolio listing (unverified)",
++    interviewUrl: null,
+   },
+ ];
+ 
+ export const METRICS = {
+-  activeApplications: 47,
+-  avgFounderScore: 77,
+-  referencesCompleted: 132,
+-  diligenceInProgress: 9,
+-  decisionsDue24h: 4,
+-  invitesSent7d: 68,
++  activeApplications: 7,
++  assessedDeals: 1,
++  publicOutcomes: 4,
++  diligenceInProgress: 3,
++  decisionsDue24h: 1,
++  interviewsAvailable: 2,
+ };
+ 
+ export const FUNNEL = [
+-  { stage: "Sourcing", count: 214, delta: "+18 this week" },
+-  { stage: "Screening", count: 47, delta: "+9 this week" },
+-  { stage: "Interview", count: 18, delta: "6 scheduled" },
+-  { stage: "Diligence", count: 9, delta: "2 late-stage" },
+-  { stage: "Term Sheet", count: 3, delta: "1 signed" },
++  { stage: "Sourcing", count: 214, delta: "public + inbound" },
++  { stage: "Screening", count: 7, delta: "6 real · 1 demo" },
++  { stage: "Interview", count: 1, delta: "Acme · live" },
++  { stage: "Diligence", count: 3, delta: "confidential" },
++  { stage: "Term Sheet", count: 3, delta: "ALSTIN-led (real)" },
+ ];
+ 
+ export function stageColor(stage: Stage) {
+@@ -231,9 +241,104 @@ export function stageColor(stage: Stage) {
+   return map[stage];
+ }
+ 
+-export function scoreTone(n: number) {
++export function scoreTone(n: number | null) {
++  if (n === null) return "text-muted-foreground";
+   if (n >= 80) return "text-positive";
+   if (n >= 65) return "text-foreground";
+   if (n >= 50) return "text-warning";
+   return "text-negative";
+ }
++
++/** Render a score, or an em-dash for unassessed real founders. */
++export function fmtScore(n: number | null) {
++  return n === null ? "—" : String(n);
++}
++
++/* ------------------------------------------------------------------ */
++/*  Acme demo — the fictional card the live interview + psychogram use */
++/*  (mirrors laura/frontend + sun/opportunity-card-example.md)         */
++/* ------------------------------------------------------------------ */
++
++export type Axis = { key: string; full: string; v: number; conf: number };
++
++export type DemoFounder = {
++  id: string;
++  name: string;
++  role: string;
++  initials: string;
++  score: number;
++  confidence: number;
++  trend: "improving" | "stable";
++  history: string;
++  axes: Axis[];
++};
++
++export const AXIS_FULL: Record<string, string> = {
++  Resilience: "Resilience / emotional stability",
++  Autonomy: "Autonomy / self-reliance",
++  Curiosity: "Curiosity / adaptability",
++  Perseverance: "Perseverance",
++  "Co-founder fit": "Co-founder complementarity",
++};
++
++export const ACME_FOUNDERS: DemoFounder[] = [
++  {
++    id: "FND-0007",
++    name: "Ada Keller",
++    role: "CEO",
++    initials: "AK",
++    score: 76,
++    confidence: 60,
++    trend: "improving",
++    history:
++      "Former robotics research engineer; led a picking-system deployment at two distribution centres. Full-time since Jan 2026.",
++    axes: [
++      { key: "Resilience", full: AXIS_FULL.Resilience, v: 82, conf: 62 },
++      { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 80, conf: 60 },
++      { key: "Curiosity", full: AXIS_FULL.Curiosity, v: 77, conf: 55 },
++      { key: "Perseverance", full: AXIS_FULL.Perseverance, v: 74, conf: 52 },
++      { key: "Co-founder fit", full: AXIS_FULL["Co-founder fit"], v: 75, conf: 50 },
++    ],
++  },
++  {
++    id: "FND-0008",
++    name: "Minh Tran",
++    role: "CTO",
++    initials: "MT",
++    score: 72,
++    confidence: 62,
++    trend: "stable",
++    history:
++      "Published relevant imitation-learning research and built the current product prototype. Model IP ownership not yet documented (GAP-002).",
++    axes: [
++      { key: "Resilience", full: AXIS_FULL.Resilience, v: 68, conf: 55 },
++      { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 79, conf: 65 },
++      { key: "Curiosity", full: AXIS_FULL.Curiosity, v: 83, conf: 66 },
++      { key: "Perseverance", full: AXIS_FULL.Perseverance, v: 70, conf: 52 },
++      { key: "Co-founder fit", full: AXIS_FULL["Co-founder fit"], v: 75, conf: 50 },
++    ],
++  },
++];
++
++export const ACME_TEAM = {
++  score: 71,
++  confidence: 55,
++  components: [
++    {
++      name: "Skill complementarity",
++      v: 85,
++      why: "Commercial CEO × technical CTO — different critical functions, not duplicate strengths.",
++    },
++    {
++      name: "Decision clarity",
++      v: 74,
++      why: "Both founders describe the same decision process and split product vs. commercial calls cleanly.",
++    },
++    {
++      name: "Pressure-tested history",
++      v: 45,
++      why: "Conflict handling not yet observed under real pressure — the ceiling-gating component.",
++    },
++  ],
++  note: "Scored as a pair, never as an average of the two founders. Per Wasserman, ~65% of startup failures trace to people problems, so the co-founder dynamic carries its own gated score.",
++};
+diff --git a/src/routes/applications.tsx b/src/routes/applications.tsx
+index 312671b..602721e 100644
+--- a/src/routes/applications.tsx
++++ b/src/routes/applications.tsx
+@@ -1,19 +1,17 @@
+-import { createFileRoute } from "@tanstack/react-router";
++import { createFileRoute, Link } from "@tanstack/react-router";
+ import { useState } from "react";
+ import { AppShell } from "@/components/AppShell";
+ import { PageHeader, Section, Card, Badge, ScoreBar, EvidencePill } from "@/components/ui-kit";
+-import { STARTUPS } from "@/lib/data";
+-import { FileText, Globe, Github, Users, MapPin, Layers, ExternalLink, Sparkles, CheckCircle2, AlertTriangle, Linkedin, ChevronDown } from "lucide-react";
++import { STARTUPS, ACME_FOUNDERS } from "@/lib/data";
++import { FileText, Globe, Github, Users, MapPin, Layers, ExternalLink, Sparkles, CheckCircle2, AlertTriangle, Linkedin, ChevronDown, Mic } from "lucide-react";
+ 
+ export const Route = createFileRoute("/applications")({
+-  head: () => ({
+-    meta: [{ title: "Applications · VibeCheck" }],
+-  }),
++  head: () => ({ meta: [{ title: "Applications · VibeCheck" }] }),
+   component: ApplicationsPage,
+ });
+ 
+ function ApplicationsPage() {
+-  const s = STARTUPS.find((x) => x.id === "helix")!;
++  const s = STARTUPS.find((x) => x.id === "acme")!;
+ 
+   return (
+     <AppShell>
+@@ -24,13 +22,9 @@ function ApplicationsPage() {
+         description={s.oneLiner}
+         actions={
+           <>
+-            <Badge tone="teal">Fit {Math.round(s.thesisFit * 100)}%</Badge>
+-            <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]">
+-              Pass
+-            </button>
+-            <button className="h-8 rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground">
+-              Advance to interview
+-            </button>
++            <Badge tone="teal">Fit {Math.round((s.thesisFit ?? 0) * 100)}%</Badge>
++            <Link to={"/interviews" as never} className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5"><Mic className="h-3.5 w-3.5" /> Live interview</Link>
++            <button className="h-8 rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground">Advance to term sheet</button>
+           </>
+         }
+       />
+@@ -38,11 +32,10 @@ function ApplicationsPage() {
+       <div className="px-8 py-6 grid lg:grid-cols-3 gap-4">
+         {/* Left / main */}
+         <div className="lg:col-span-2 space-y-4">
+-          {/* Application record */}
+           <Card className="p-0">
+             <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
+-              <div className="text-[13px] font-medium">Application record</div>
+-              <div className="text-[11px] text-muted-foreground">Submitted 12 Jul 2026 · 06 days ago</div>
++              <div className="text-[13px] font-medium">Application record · OPP-2026-0001</div>
++              <div className="text-[11px] text-muted-foreground">Fictional demo card</div>
+             </div>
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-0 divide-x divide-border">
+               <Field label="Round" value={s.round} />
+@@ -51,53 +44,50 @@ function ApplicationsPage() {
+               <Field label="Stage" value={s.stage} icon={<Layers className="h-3 w-3" />} />
+             </div>
+             <div className="border-t border-border p-5 grid md:grid-cols-2 gap-3">
+-              <Link href="deck.pdf" icon={<FileText className="h-3.5 w-3.5" />} title="Pitch deck v3.2" hint="18 slides · 4.1 MB" />
+-              <Link href="helix.bio" icon={<Globe className="h-3.5 w-3.5" />} title="helix.bio" hint="Website · scraped 3 min ago" />
+-              <Link href="github.com/helixbio" icon={<Github className="h-3.5 w-3.5" />} title="github.com/helix-bio" hint="7 repos · 24 contributors" />
+-              <Link href="data-room" icon={<Users className="h-3.5 w-3.5" />} title="Data room" hint="12 documents · access granted" />
++              <Ref href="deck.pdf" icon={<FileText className="h-3.5 w-3.5" />} title="Pitch deck v3" hint="SRC-001 · imported" />
++              <Ref href="acme.example" icon={<Globe className="h-3.5 w-3.5" />} title="acme-robotics.example" hint="Website · scraped" />
++              <Ref href="github" icon={<Github className="h-3.5 w-3.5" />} title="github.com/acme-robotics" hint="Product prototype (SRC-004)" />
++              <Ref href="data-room" icon={<Users className="h-3.5 w-3.5" />} title="Pilot contracts" hint="SRC-007 · access granted" />
+             </div>
+             <div className="border-t border-border p-5">
+               <div className="flex items-center justify-between mb-3">
+                 <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Team</div>
+-                <div className="text-[11px] text-muted-foreground">Click a member to see profile & personality</div>
++                <Link to={"/founder" as never} className="text-[11px] text-primary hover:underline">Open founder psychogram →</Link>
+               </div>
+               <TeamGrid />
+             </div>
+           </Card>
+ 
+-          {/* AI Screening */}
+           <Card className="p-0">
+             <div className="px-5 py-3.5 border-b border-border flex items-center gap-2">
+               <Sparkles className="h-3.5 w-3.5 text-primary" />
+               <div className="text-[13px] font-medium">AI screening output</div>
+-              <Badge tone="teal" className="ml-2">Generated 09:12 · GPT-orchestrated</Badge>
++              <Badge tone="teal" className="ml-2">research agent</Badge>
+             </div>
+             <div className="p-5 space-y-4">
+               <p className="text-[13px] leading-relaxed text-foreground/90">
+-                Helix Bio is an early-stage biotech applying deep-learning enzyme design to industrial carbon capture.
+-                The team combines protein-engineering research pedigree (ETH, EPFL) with bioprocess scale-up experience (Ginkgo).
+-                The wedge is a licensable enzyme library sold to cement and steel decarbonization retrofits, with a stated 3.4× energy-efficiency uplift over aminebased capture in early bench trials.
++                Acme sells demonstration-based model adaptation for warehouse picking robots — an operator shows a new SKU once and the system generalises. Two paid pilots and a technically credible team; the open risks are an ARR contradiction (CON-001, $120K vs $80K) and undocumented model-IP ownership (GAP-002), both routed into the live interview.
+               </p>
+               <div className="grid md:grid-cols-3 gap-4">
+-                <ScoreBar label="Founder score" value={s.founderScore} />
+-                <ScoreBar label="Market score" value={s.marketScore} />
+-                <ScoreBar label="Idea ↔ Market fit" value={s.ideaMarketScore} />
++                <ScoreBar label="Founder score" value={s.founderScore ?? 0} />
++                <ScoreBar label="Market score" value={s.marketScore ?? 0} />
++                <ScoreBar label="Idea ↔ Market fit" value={s.ideaMarketScore ?? 0} />
+               </div>
+               <div className="grid md:grid-cols-2 gap-3">
+                 <div className="rounded-md border border-border p-3">
+                   <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5">Strengths</div>
+                   <ul className="text-[12.5px] space-y-1.5 text-foreground/90">
+-                    <li className="flex gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-positive mt-0.5 shrink-0" /> Two named-lab publications on engineered carbonic anhydrase variants.</li>
+-                    <li className="flex gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-positive mt-0.5 shrink-0" /> Signed LoIs from Holcim and thyssenkrupp Steel pilots.</li>
+-                    <li className="flex gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-positive mt-0.5 shrink-0" /> Prior startup exit by CTO (2019, undisclosed).</li>
++                    <li className="flex gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-positive mt-0.5 shrink-0" /> Two paid pilots; deployment time cut 9d → 2d (HYP-001 supported).</li>
++                    <li className="flex gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-positive mt-0.5 shrink-0" /> CTO published relevant imitation-learning research (CLM-003).</li>
++                    <li className="flex gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-positive mt-0.5 shrink-0" /> Complementary CEO/CTO split, aligned decision process.</li>
+                   </ul>
+                 </div>
+                 <div className="rounded-md border border-border p-3">
+-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5">Risks & open questions</div>
++                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5">Risks &amp; open questions</div>
+                   <ul className="text-[12.5px] space-y-1.5 text-foreground/90">
+-                    <li className="flex gap-2"><AlertTriangle className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" /> Capital intensity of pilot scale-up not modeled in deck.</li>
+-                    <li className="flex gap-2"><AlertTriangle className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" /> IP: EPFL license terms unclear — request diligence pack.</li>
+-                    <li className="flex gap-2"><AlertTriangle className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" /> LoI → paid pilot conversion timing unverified.</li>
++                    <li className="flex gap-2"><AlertTriangle className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" /> ARR contradiction CON-001 ($120K vs $80K) — clarified on call.</li>
++                    <li className="flex gap-2"><AlertTriangle className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" /> Model-IP assignment GAP-002 — a real blocker, not a bluff.</li>
++                    <li className="flex gap-2"><AlertTriangle className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" /> Rights to customer-generated training data unclear (GAP-003).</li>
+                   </ul>
+                 </div>
+               </div>
+@@ -110,20 +100,20 @@ function ApplicationsPage() {
+           <Card className="p-0">
+             <div className="px-5 py-3.5 border-b border-border flex items-center gap-2">
+               <Sparkles className="h-3.5 w-3.5 text-primary" />
+-              <div className="text-[13px] font-medium">AI thesis match</div>
++              <div className="text-[13px] font-medium">Thesis match</div>
+             </div>
+             <div className="p-5 space-y-3">
+               <div className="flex items-baseline justify-between">
+                 <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Composite fit</div>
+-                <div className="font-serif text-[28px] leading-none">{Math.round(s.thesisFit * 100)}%</div>
++                <div className="font-serif text-[28px] leading-none">{Math.round((s.thesisFit ?? 0) * 100)}%</div>
+               </div>
+-              <ThesisRow label="Sector · Climate hard-tech" v={94} />
+-              <ThesisRow label="Stage · Seed (€2–5M)" v={88} />
++              <ThesisRow label="Sector · AI infrastructure" v={82} />
++              <ThesisRow label="Stage · Pre-seed (€1–2M)" v={80} />
+               <ThesisRow label="Geography · DACH / EU" v={100} />
+-              <ThesisRow label="Risk appetite · Technical" v={72} />
++              <ThesisRow label="Risk appetite · Technical" v={64} />
+               <div className="pt-2 mt-1 border-t border-border">
+                 <p className="text-[12px] text-muted-foreground leading-relaxed">
+-                  Matches all four thesis pillars for Fund II. Slight technical-risk exposure due to scale-up capital needs; mitigated by CTO's prior scale-up track record.
++                  Fits the European AI-infrastructure thesis. Cleared once ARR is reconciled and model-IP assignment is confirmed.
+                 </p>
+               </div>
+             </div>
+@@ -132,33 +122,29 @@ function ApplicationsPage() {
+           <Card className="p-0">
+             <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
+               <div className="text-[13px] font-medium">Evidence</div>
+-              <span className="text-[11px] text-muted-foreground">14 sources</span>
++              <span className="text-[11px] text-muted-foreground">7 sources</span>
+             </div>
+             <div className="p-4 space-y-2">
+-              <EvidencePill label="Pitch deck v3.2" verified />
+-              <EvidencePill label="helix.bio (crawl)" verified />
+-              <EvidencePill label="Google Scholar · 12 papers" verified />
+-              <EvidencePill label="GitHub · commit history" verified />
+-              <EvidencePill label="LinkedIn · founder careers" verified />
+-              <EvidencePill label="Holcim LoI (PDF)" verified />
+-              <EvidencePill label="thyssenkrupp LoI" />
+-              <EvidencePill label="Founder interview transcript" verified />
+-              <EvidencePill label="Reference: Prof. E. Weber (ETH)" verified />
+-              <EvidencePill label="Reference: Dr. J. Patel (ex-Ginkgo)" />
+-              <EvidencePill label="EPFL license (requested)" />
++              <EvidencePill label="Founder application & deck (SRC-001)" verified />
++              <EvidencePill label="Ada CV / employment (SRC-002)" verified />
++              <EvidencePill label="Minh research paper (SRC-003)" verified />
++              <EvidencePill label="Product repository (SRC-004)" verified />
++              <EvidencePill label="Joint interview transcript (SRC-005)" verified />
++              <EvidencePill label="Pilot contract & invoice (SRC-007)" />
++              <EvidencePill label="Revenue export (requested)" />
+               <div className="pt-2 mt-1 border-t border-border flex items-center justify-between text-[11px]">
+                 <span className="text-muted-foreground">Trust score</span>
+-                <span className="font-mono tabular-nums text-positive">92 / 100</span>
++                <span className="font-mono tabular-nums text-warning">55 / 100</span>
+               </div>
+             </div>
+           </Card>
+         </div>
+       </div>
+ 
+-      <Section title="Other active applications">
++      <Section title="Real Maschmeyer opportunities (public sources)">
+         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
+-          {STARTUPS.filter((x) => x.id !== "helix").slice(0, 6).map((x) => (
+-            <Card key={x.id} className="p-4 hover:border-primary/40 transition-colors cursor-pointer">
++          {STARTUPS.filter((x) => !x.demo).map((x) => (
++            <Card key={x.id} className="p-4 hover:border-primary/40 transition-colors">
+               <div className="flex items-center justify-between">
+                 <div className="text-[13px] font-medium">{x.company}</div>
+                 <Badge tone="outline">{x.stage}</Badge>
+@@ -166,7 +152,7 @@ function ApplicationsPage() {
+               <p className="mt-1.5 text-[12px] text-muted-foreground line-clamp-2">{x.oneLiner}</p>
+               <div className="mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
+                 <span>{x.geography}</span>
+-                <span className="font-mono tabular-nums">Fit {Math.round(x.thesisFit * 100)}%</span>
++                <span className="text-positive">{x.realEvent?.split(" led ")[0] ?? "listed"}</span>
+               </div>
+             </Card>
+           ))}
+@@ -180,14 +166,12 @@ function Field({ label, value, icon }: { label: string; value: string; icon?: Re
+   return (
+     <div className="p-4">
+       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+-      <div className="mt-1 flex items-center gap-1.5 text-[13px] font-medium">
+-        {icon} {value}
+-      </div>
++      <div className="mt-1 flex items-center gap-1.5 text-[13px] font-medium">{icon} {value}</div>
+     </div>
+   );
+ }
+ 
+-function Link({ href, icon, title, hint }: { href: string; icon: React.ReactNode; title: string; hint: string }) {
++function Ref({ href, icon, title, hint }: { href: string; icon: React.ReactNode; title: string; hint: string }) {
+   return (
+     <a href={"#" + href} className="flex items-center gap-3 rounded-md border border-border p-2.5 hover:border-primary/40 transition-colors">
+       <div className="h-7 w-7 rounded-md bg-surface-2 grid place-items-center text-muted-foreground">{icon}</div>
+@@ -204,179 +188,79 @@ function ThesisRow({ label, v }: { label: string; v: number }) {
+   return (
+     <div className="flex items-center gap-3">
+       <div className="flex-1 text-[12px]">{label}</div>
+-      <div className="w-24 h-1 rounded-full bg-muted overflow-hidden">
+-        <div className="h-full bg-primary" style={{ width: `${v}%` }} />
+-      </div>
++      <div className="w-24 h-1 rounded-full bg-muted overflow-hidden"><div className="h-full bg-primary" style={{ width: `${v}%` }} /></div>
+       <div className="w-8 text-right text-[11px] font-mono tabular-nums">{v}</div>
+     </div>
+   );
+ }
+ 
+-type Member = {
+-  n: string;
+-  r: string;
+-  init: string;
+-  location: string;
+-  personality: { archetype: string; traits: string[]; summary: string };
+-  drivers: { label: string; v: number }[];
+-  redFlags?: string[];
+-  quotes: string[];
+-};
+-
+-const TEAM: Member[] = [
+-  {
+-    n: "Dr. Amina Osei",
+-    r: "CEO · ex-ETH Zürich, protein engineering",
+-    init: "AO",
+-    location: "Zürich · PhD Biotechnology",
+-    personality: {
+-      archetype: "Mission-driven scientist-operator",
+-      traits: ["Analytical", "Patient", "High-integrity", "Low-ego"],
+-      summary:
+-        "Speaks in evidence and hedges precisely. Comfortable saying 'I don't know'. Long-cycle thinker with unusually clean reference calls — three references volunteered the same anecdote about her declining a lucrative Novozymes offer to keep the IP.",
+-    },
+-    drivers: [
+-      { label: "Founder", v: 88 },
+-      { label: "Trust", v: 92 },
+-      { label: "Resilience", v: 83 },
+-      { label: "Clarity", v: 90 },
+-    ],
+-    quotes: [
+-      "\"If the enzyme doesn't hold at 40°C in a rotary kiln, none of this matters. That's the only test I care about.\"",
+-      "\"I'd rather ship a smaller library that actually works than pitch a platform we can't defend.\"",
+-    ],
+-  },
+-  {
+-    n: "Lukas Berger",
+-    r: "CTO · ex-Ginkgo, bioprocess platforms",
+-    init: "LB",
+-    location: "Boston / Zürich · MSc ChemEng ETH",
+-    personality: {
+-      archetype: "Pragmatic builder",
+-      traits: ["Direct", "Commercially fluent", "Impatient with theory"],
+-      summary:
+-        "Ginkgo scale-up veteran. Reference calls describe him as 'the person who makes the pilot actually run on a Tuesday morning'. Slightly abrasive in early interviews but softens once technical details are on the table.",
+-    },
+-    drivers: [
+-      { label: "Founder", v: 84 },
+-      { label: "Trust", v: 79 },
+-      { label: "Resilience", v: 88 },
+-      { label: "Clarity", v: 74 },
+-    ],
+-    redFlags: ["Prior exit terms (2019) not verified — requested cap table"],
+-    quotes: [
+-      "\"Amina picks the enzymes. I make sure they don't die in a fermenter. That division has worked for two years.\"",
+-    ],
+-  },
+-  {
+-    n: "Dr. Marie Roche",
+-    r: "Chief Scientist · fractional",
+-    init: "MR",
+-    location: "Lausanne · PhD Chemistry EPFL",
+-    personality: {
+-      archetype: "Academic advisor",
+-      traits: ["Precise", "Reserved", "Deep specialist"],
+-      summary:
+-        "Fractional (2 days/week). Signals long-term commitment via co-inventor status on core patent. Interview coverage limited — recommend a dedicated scientific reference before term sheet.",
+-    },
+-    drivers: [
+-      { label: "Founder", v: 76 },
+-      { label: "Trust", v: 81 },
+-      { label: "Resilience", v: 70 },
+-      { label: "Clarity", v: 82 },
+-    ],
+-    quotes: ["\"I joined because the enzyme selection is genuinely novel — not because it's a startup.\""],
++const ARCHETYPE: Record<string, { archetype: string; traits: string[]; summary: string; quotes: string[]; flag?: string }> = {
++  "FND-0007": {
++    archetype: "Commercial operator",
++    traits: ["Decisive", "Execution-led", "Speed-biased"],
++    summary: "Owns the commercial call and stays engaged under challenge. Cut deployment time 9d → 2d by rebuilding the capture flow on evidence rather than defending the first design.",
++    quotes: ["\"At nine million with full pro-rata — yes, that's a conversation we want to have.\"", "\"We have two warehouses waiting and want to be deploying by September.\""],
+   },
+-  {
+-    n: "Nikhil Rao",
+-    r: "Founding engineer · sim/ML",
+-    init: "NR",
+-    location: "London · MEng Imperial",
+-    personality: {
+-      archetype: "High-velocity generalist",
+-      traits: ["Curious", "Independent", "Ships fast"],
+-      summary:
+-        "Owns the enzyme-design simulation stack. GitHub shows 3× commit velocity vs peers over 90 days. Slight flight risk — was approached by two other seed-stage climate startups per LinkedIn signals.",
+-    },
+-    drivers: [
+-      { label: "Founder", v: 78 },
+-      { label: "Trust", v: 72 },
+-      { label: "Resilience", v: 74 },
+-      { label: "Clarity", v: 80 },
+-    ],
+-    redFlags: ["Retention risk — no vesting cliff disclosed"],
+-    quotes: ["\"The models tell us which mutations to try. We ran 4,200 candidates last quarter — 6 made it to wet lab.\""],
++  "FND-0008": {
++    archetype: "Technical researcher",
++    traits: ["Rigorous", "Honest", "Risk-aware"],
++    summary: "Built the prototype and authored the underlying research. Surfaced the IP-assignment timeline as a genuine blocker instead of bluffing past it.",
++    quotes: ["\"Contracted today is $80K.\"", "\"We'd need our counsel to confirm the IP-assignment timeline first.\""],
++    flag: "Model-IP assignment (GAP-002) not yet documented",
+   },
+-];
++};
+ 
+ function TeamGrid() {
+-  const [open, setOpen] = useState<string | null>("Dr. Amina Osei");
++  const [open, setOpen] = useState<string | null>("FND-0007");
+   return (
+     <div className="space-y-2">
+-      {TEAM.map((p) => {
+-        const isOpen = open === p.n;
++      {ACME_FOUNDERS.map((p) => {
++        const meta = ARCHETYPE[p.id];
++        const isOpen = open === p.id;
+         return (
+-          <div key={p.n} className="rounded-md border border-border overflow-hidden">
+-            <button
+-              onClick={() => setOpen(isOpen ? null : p.n)}
+-              className="w-full flex items-center gap-3 p-2.5 text-left hover:bg-surface/60 transition-colors"
+-            >
+-              <div className="h-9 w-9 rounded-full bg-primary/10 text-primary grid place-items-center text-[11px] font-medium">{p.init}</div>
++          <div key={p.id} className="rounded-md border border-border overflow-hidden">
++            <button onClick={() => setOpen(isOpen ? null : p.id)} className="w-full flex items-center gap-3 p-2.5 text-left hover:bg-surface/60 transition-colors">
++              <div className="h-9 w-9 rounded-full bg-primary/10 text-primary grid place-items-center text-[11px] font-medium">{p.initials}</div>
+               <div className="min-w-0 flex-1">
+-                <div className="text-[12.5px] font-medium truncate">{p.n}</div>
+-                <div className="text-[11px] text-muted-foreground truncate">{p.r}</div>
++                <div className="text-[12.5px] font-medium truncate">{p.name}</div>
++                <div className="text-[11px] text-muted-foreground truncate">{p.role} · {p.id}</div>
+               </div>
+-              <Badge tone="outline">{p.personality.archetype}</Badge>
++              <Badge tone="outline">{meta.archetype}</Badge>
++              <span className="text-[11px] font-mono tabular-nums text-muted-foreground">{p.score}</span>
+               <ChevronDown className={"h-3.5 w-3.5 text-muted-foreground transition-transform " + (isOpen ? "rotate-180" : "")} />
+             </button>
+-
+             {isOpen && (
+               <div className="border-t border-border bg-surface/40 p-4 grid md:grid-cols-3 gap-4">
+                 <div className="md:col-span-2 space-y-3">
+                   <div>
+-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Personality</div>
+                     <div className="flex flex-wrap gap-1.5 mb-2">
+-                      {p.personality.traits.map((t) => (
+-                        <span key={t} className="text-[10.5px] px-1.5 py-0.5 rounded bg-teal-soft text-foreground">{t}</span>
+-                      ))}
++                      {meta.traits.map((t) => <span key={t} className="text-[10.5px] px-1.5 py-0.5 rounded bg-teal-soft text-foreground">{t}</span>)}
+                     </div>
+-                    <p className="text-[12.5px] leading-relaxed text-foreground/90">{p.personality.summary}</p>
++                    <p className="text-[12.5px] leading-relaxed text-foreground/90">{meta.summary}</p>
+                   </div>
+                   <div>
+                     <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">In their own words</div>
+                     <div className="space-y-1.5">
+-                      {p.quotes.map((q, i) => (
+-                        <div key={i} className="text-[12px] italic text-foreground/80 border-l-2 border-primary/40 pl-2.5">{q}</div>
+-                      ))}
++                      {meta.quotes.map((q, i) => <div key={i} className="text-[12px] italic text-foreground/80 border-l-2 border-primary/40 pl-2.5">{q}</div>)}
+                     </div>
+                   </div>
+-                  {p.redFlags && (
++                  {meta.flag && (
+                     <div className="rounded border border-warning/30 bg-warning/5 p-2.5">
+-                      <div className="flex items-center gap-1.5 text-[11px] font-medium text-warning mb-1">
+-                        <AlertTriangle className="h-3 w-3" /> Open questions
+-                      </div>
+-                      <ul className="text-[11.5px] text-foreground/80 space-y-0.5">
+-                        {p.redFlags.map((r) => <li key={r}>· {r}</li>)}
+-                      </ul>
++                      <div className="flex items-center gap-1.5 text-[11px] font-medium text-warning mb-1"><AlertTriangle className="h-3 w-3" /> Open question</div>
++                      <div className="text-[11.5px] text-foreground/80">· {meta.flag}</div>
+                     </div>
+                   )}
+                   <div className="flex items-center gap-3 text-[11px] text-muted-foreground pt-1">
+-                    <span>{p.location}</span>
++                    <span>{p.history.split(";")[0]}</span>
+                     <a href="#" className="inline-flex items-center gap-1 hover:text-foreground"><Linkedin className="h-3 w-3" /> LinkedIn</a>
+-                    <a href="#" className="inline-flex items-center gap-1 hover:text-foreground"><Github className="h-3 w-3" /> GitHub</a>
+                   </div>
+                 </div>
+                 <div className="space-y-2">
+-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Screening axes</div>
+-                  {p.drivers.map((d) => (
+-                    <div key={d.label}>
+-                      <div className="flex items-baseline justify-between">
+-                        <span className="text-[11px]">{d.label}</span>
+-                        <span className="text-[11px] font-mono tabular-nums">{d.v}</span>
+-                      </div>
+-                      <div className="mt-0.5 h-1 rounded-full bg-muted overflow-hidden">
+-                        <div className="h-full bg-primary" style={{ width: `${d.v}%` }} />
+-                      </div>
++                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Founder axes</div>
++                  {p.axes.map((d) => (
++                    <div key={d.key}>
++                      <div className="flex items-baseline justify-between"><span className="text-[11px]">{d.key}</span><span className="text-[11px] font-mono tabular-nums">{d.v}</span></div>
++                      <div className="mt-0.5 h-1 rounded-full bg-muted overflow-hidden"><div className="h-full bg-primary" style={{ width: `${d.v}%` }} /></div>
+                     </div>
+                   ))}
+                 </div>
+diff --git a/src/routes/board.tsx b/src/routes/board.tsx
+index 9fd8c90..372237e 100644
+--- a/src/routes/board.tsx
++++ b/src/routes/board.tsx
+@@ -1,7 +1,7 @@
+ import { createFileRoute } from "@tanstack/react-router";
+ import { AppShell } from "@/components/AppShell";
+ import { PageHeader, Section, Card, Badge } from "@/components/ui-kit";
+-import { STARTUPS, STAGES, stageColor, scoreTone, type Stage } from "@/lib/data";
++import { STARTUPS, STAGES, stageColor, scoreTone, fmtScore, type Stage } from "@/lib/data";
+ import { Filter, LayoutGrid, Rows, Plus } from "lucide-react";
+ 
+ export const Route = createFileRoute("/board")({
+@@ -67,7 +67,7 @@ function BoardPage() {
+                         </div>
+                       </div>
+                       <div className={`text-[11px] font-mono tabular-nums ${scoreTone(s.founderScore)}`}>
+-                        {s.founderScore}
++                        {fmtScore(s.founderScore)}
+                       </div>
+                     </div>
+                     <p className="mt-2 text-[11.5px] text-muted-foreground leading-snug line-clamp-2">
+@@ -84,7 +84,8 @@ function BoardPage() {
+                         <span className="text-[10.5px] text-muted-foreground">{s.ask}</span>
+                       </div>
+                       {s.urgency === "High" && <Badge tone="warning">Urgent</Badge>}
+-                      {s.trustScore >= 85 && <Badge tone="positive">Trust {s.trustScore}</Badge>}
++                      {s.trustScore != null && s.trustScore >= 85 && <Badge tone="positive">Trust {s.trustScore}</Badge>}
++                      {!s.assessed && <Badge tone="outline">not assessed</Badge>}
+                     </div>
+                   </Card>
+                 ))}
+@@ -122,10 +123,10 @@ function BoardPage() {
+                     <span className={`text-[11px] px-1.5 py-0.5 rounded ${stageColor(s.stage)}`}>{s.stage}</span>
+                   </td>
+                   <td className="px-3 py-2.5 text-muted-foreground">{s.sector}</td>
+-                  <td className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.founderScore)}`}>{s.founderScore}</td>
+-                  <td className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.marketScore)}`}>{s.marketScore}</td>
+-                  <td className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.ideaMarketScore)}`}>{s.ideaMarketScore}</td>
+-                  <td className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.trustScore)}`}>{s.trustScore}</td>
++                  <td className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.founderScore)}`}>{fmtScore(s.founderScore)}</td>
++                  <td className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.marketScore)}`}>{fmtScore(s.marketScore)}</td>
++                  <td className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.ideaMarketScore)}`}>{fmtScore(s.ideaMarketScore)}</td>
++                  <td className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.trustScore)}`}>{fmtScore(s.trustScore)}</td>
+                   <td className="px-3 py-2.5">
+                     {s.urgency === "High" ? <Badge tone="warning">High</Badge> : <Badge tone="outline">{s.urgency}</Badge>}
+                   </td>
+@@ -140,12 +141,12 @@ function BoardPage() {
+   );
+ }
+ 
+-function MicroAxis({ label, v }: { label: string; v: number }) {
++function MicroAxis({ label, v }: { label: string; v: number | null }) {
+   return (
+     <div className="flex items-center gap-1.5">
+       <span className="text-[9.5px] uppercase tracking-wider text-muted-foreground font-mono w-5">{label}</span>
+       <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">
+-        <div className="h-full bg-primary" style={{ width: `${v}%` }} />
++        <div className="h-full bg-primary" style={{ width: `${v ?? 0}%` }} />
+       </div>
+     </div>
+   );
+diff --git a/src/routes/founder.tsx b/src/routes/founder.tsx
+index 64111f7..18fb2ac 100644
+--- a/src/routes/founder.tsx
++++ b/src/routes/founder.tsx
+@@ -1,191 +1,209 @@
+-import { createFileRoute } from "@tanstack/react-router";
++import { createFileRoute, Link } from "@tanstack/react-router";
++import { useState } from "react";
++import {
++  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
++} from "recharts";
+ import { AppShell } from "@/components/AppShell";
+-import { PageHeader, Section, Card, Badge, ScoreBar } from "@/components/ui-kit";
+-import { Sparkles, TrendingUp, ExternalLink, Github, Linkedin, Globe, MessageSquare } from "lucide-react";
++import { PageHeader, Card, Badge } from "@/components/ui-kit";
++import { Sparkles, Lock, ChevronRight } from "lucide-react";
++import { ACME_FOUNDERS, ACME_TEAM, type DemoFounder } from "@/lib/data";
+ 
+ export const Route = createFileRoute("/founder")({
+-  head: () => ({
+-    meta: [{ title: "Founder Profile · VibeCheck" }],
+-  }),
++  head: () => ({ meta: [{ title: "Founder Psychogram · VibeCheck" }] }),
+   component: FounderPage,
+ });
+ 
+-const CLAIMS = [
+-  { claim: "Led enzyme-design team at ETH Zürich, 2019–2023", conf: 96, src: "LinkedIn, ETH directory, 2 references" },
+-  { claim: "Published 12 peer-reviewed papers, h-index 14", conf: 98, src: "Google Scholar" },
+-  { claim: "Scaled prior pilot to 40 metric tons/day", conf: 62, src: "Deck claim · reference partially confirms 12t/day" },
+-  { claim: "Signed LoI with Holcim pilot facility", conf: 91, src: "LoI PDF, corroborated by ex-Holcim reference" },
+-  { claim: "Speaks 4 languages fluently", conf: 78, src: "Interview transcript · unverified" },
+-];
++/* live-evidence quotes per founder+axis (from the INT-001 transcript) */
++const QUOTES: Record<string, Record<string, { q: string; t: string }>> = {
++  "FND-0007": {
++    Resilience: { q: "At nine million with full pro-rata — yes, that's a conversation we want to have.", t: "INT-001 · 03:36" },
++    Autonomy: { q: "The first took nine days on site… the second was live in under two days.", t: "INT-001 · 00:58" },
++    Curiosity: { q: "We rebuilt the demonstration-capture flow.", t: "INT-001 · 00:58" },
++    Perseverance: { q: "We have two warehouses waiting and want to be deploying by September.", t: "INT-001 · 02:36" },
++    "Co-founder fit": { q: "Honestly? Speed.", t: "INT-001 · 02:36" },
++  },
++  "FND-0008": {
++    Resilience: { q: "Ten days is… fast.", t: "INT-001 · 03:16" },
++    Autonomy: { q: "The $120K includes the second pilot that's signed but starts billing next quarter. Contracted today is $80K.", t: "INT-001 · 01:46" },
++    "Co-founder fit": { q: "We'd need our counsel to confirm the IP-assignment timeline first.", t: "INT-001 · 03:16" },
++  },
++};
+ 
+-const TREND = [58, 62, 66, 69, 74, 79, 84, 88];
++type Tab = "FND-0007" | "FND-0008" | "TEAM";
++
++function FounderPage() {
++  const [tab, setTab] = useState<Tab>("FND-0007");
++  const ada = ACME_FOUNDERS[0];
++  const minh = ACME_FOUNDERS[1];
+ 
+-export function FounderPage() {
+   return (
+     <AppShell>
+       <PageHeader
+-        crumbs={["Founders", "Dr. Amina Osei"]}
+-        eyebrow="Helix Bio · CEO"
+-        title="Dr. Amina Osei"
+-        description="Persistent founder memory. Every claim tracked, weighted, and re-scored as new evidence arrives."
+-        actions={
+-          <>
+-            <Badge tone="positive">Trust 92</Badge>
+-            <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]">Compare to peers</button>
+-            <button className="h-8 rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground">Schedule follow-up</button>
+-          </>
+-        }
++        crumbs={["Founders", "Acme Robotics", tab === "TEAM" ? "Team overview" : (tab === "FND-0007" ? "Ada Keller" : "Minh Tran")]}
++        eyebrow="Founder psychogram · OPP-2026-0001 · Acme Robotics"
++        title="Founder psychogram"
++        description="Five-axis, evidence-based founder profiles. Sub-scores stay separate — the headline number never hides its components."
++        actions={<Link to={"/interviews" as never} className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5">← Live interview</Link>}
+       />
+ 
+-      <div className="px-8 py-6 grid lg:grid-cols-3 gap-4">
+-        {/* Left rail: identity */}
+-        <div className="space-y-4">
+-          <Card className="p-5">
+-            <div className="flex items-center gap-4">
+-              <div className="h-14 w-14 rounded-full bg-primary text-primary-foreground grid place-items-center font-serif text-[22px]">AO</div>
+-              <div>
+-                <div className="text-[15px] font-medium">Dr. Amina Osei</div>
+-                <div className="text-[12px] text-muted-foreground">Zürich · she/her · PhD Biotechnology</div>
+-              </div>
+-            </div>
+-            <div className="mt-4 grid grid-cols-3 gap-2">
+-              <IconLink icon={<Linkedin className="h-3.5 w-3.5" />} label="LinkedIn" />
+-              <IconLink icon={<Github className="h-3.5 w-3.5" />} label="GitHub" />
+-              <IconLink icon={<Globe className="h-3.5 w-3.5" />} label="Scholar" />
+-            </div>
+-          </Card>
+-
+-          <Card className="p-5">
+-            <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-3">Multi-axis score</div>
+-            <div className="space-y-3">
+-              <ScoreBar label="Founder" value={88} />
+-              <ScoreBar label="Market alignment" value={74} />
+-              <ScoreBar label="Idea ↔ Market" value={81} />
+-              <ScoreBar label="Trust" value={92} />
+-              <ScoreBar label="Resilience (interview)" value={83} />
+-              <ScoreBar label="Communication clarity" value={90} />
+-            </div>
+-          </Card>
++      {/* guardrail banner */}
++      <div className="px-8 pt-5">
++        <div className="rounded-md border border-warning/40 bg-warning/5 px-4 py-2.5 flex items-start gap-2.5 text-[12px] text-foreground/90">
++          <Lock className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
++          <span>This scored psychogram runs only on the fictional <span className="font-medium">Acme</span> demo. Real Maschmeyer founders (Secfix, deskbird, VoiceLine…) are shown from public data and <span className="font-medium">deliberately never scored</span> — the suite does not fabricate psychometric judgments of real people.</span>
++        </div>
++      </div>
+ 
+-          <Card className="p-5">
+-            <div className="flex items-center justify-between">
+-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Founder score · 90 days</div>
+-              <div className="text-[11px] text-positive flex items-center gap-1"><TrendingUp className="h-3 w-3" /> +30</div>
+-            </div>
+-            <div className="mt-4 flex items-end gap-1 h-20">
+-              {TREND.map((v, i) => (
+-                <div key={i} className="flex-1 rounded-t-sm bg-primary/70" style={{ height: `${v}%` }} />
+-              ))}
+-            </div>
+-            <div className="mt-2 flex justify-between text-[10px] text-muted-foreground">
+-              <span>Apr</span><span>May</span><span>Jun</span><span>Jul</span>
+-            </div>
+-          </Card>
++      <div className="px-8 pt-4">
++        <div className="flex gap-2">
++          <TabBtn active={tab === "FND-0007"} onClick={() => setTab("FND-0007")} initials="AK" color="var(--primary)">Ada Keller <span className="text-muted-foreground font-normal">CEO</span></TabBtn>
++          <TabBtn active={tab === "FND-0008"} onClick={() => setTab("FND-0008")} initials="MT" color="var(--positive)">Minh Tran <span className="text-muted-foreground font-normal">CTO</span></TabBtn>
++          <TabBtn active={tab === "TEAM"} onClick={() => setTab("TEAM")} initials="✦">Team overview</TabBtn>
+         </div>
++      </div>
+ 
+-        {/* Middle: background, work history, why this score */}
+-        <div className="lg:col-span-2 space-y-4">
+-          <Card className="p-0">
+-            <div className="px-5 py-3.5 border-b border-border flex items-center gap-2">
+-              <Sparkles className="h-3.5 w-3.5 text-primary" />
+-              <div className="text-[13px] font-medium">Why this score</div>
+-              <Badge tone="teal" className="ml-2">Live · updated 4 min ago</Badge>
+-            </div>
+-            <div className="p-5 space-y-3">
+-              <p className="text-[13px] leading-relaxed text-foreground/90">
+-                Founder score is currently <span className="font-medium text-foreground">88 / 100</span>, driven primarily by verified research pedigree, prior operating experience through her CTO co-founder, and consistent narrative across three reference calls. Score is capped at 88 until the "40 t/day pilot" claim is independently corroborated.
+-              </p>
+-              <div className="grid md:grid-cols-2 gap-2 pt-1">
+-                <ScoreDriver tone="+" label="Peer-reviewed track record" delta="+14" note="12 papers, h-index 14, verified via Scholar" />
+-                <ScoreDriver tone="+" label="Reference consistency" delta="+11" note="3 references corroborate research leadership" />
+-                <ScoreDriver tone="+" label="Interview coherence" delta="+9" note="Zero contradictions across 47-min call" />
+-                <ScoreDriver tone="-" label="Unverified traction claim" delta="-6" note="Pilot scale not confirmed by any reference" />
+-                <ScoreDriver tone="-" label="Prior exit unverified" delta="-4" note="CTO 2019 exit terms not on record" />
+-                <ScoreDriver tone="?" label="Regulatory experience" delta="pending" note="Not yet asked in interview" />
+-              </div>
+-            </div>
+-          </Card>
++      {tab === "TEAM" ? <TeamView ada={ada} minh={minh} /> : <FounderView founder={tab === "FND-0007" ? ada : minh} />}
++    </AppShell>
++  );
++}
+ 
+-          <Card className="p-0">
+-            <div className="px-5 py-3.5 border-b border-border text-[13px] font-medium">Background</div>
+-            <div className="p-5">
+-              <p className="text-[13px] leading-relaxed text-foreground/90">
+-                Amina spent a decade at the intersection of protein engineering and industrial biotech, first as a doctoral researcher at ETH Zürich under Prof. E. Weber, then as postdoc lead on the Horizon-funded ENZYME-CCS consortium. She has repeatedly moved from lab to industrial pilot in short cycles, an unusual combination for founders in this domain.
+-              </p>
++function FounderView({ founder }: { founder: DemoFounder }) {
++  const radarData = founder.axes.map((a) => ({ axis: a.key, value: a.v }));
++  return (
++    <div className="px-8 py-6 grid lg:grid-cols-3 gap-4">
++      {/* left: psychogram + score */}
++      <div className="space-y-4">
++        <Card className="p-5">
++          <div className="flex items-center justify-between mb-2">
++            <div>
++              <div className="text-[15px] font-medium">{founder.name} — {founder.role}</div>
++              <div className="text-[11px] text-muted-foreground">{founder.id}</div>
+             </div>
+-            <div className="border-t border-border">
+-              <TimelineRow year="2024" role="Founder & CEO" org="Helix Bio" note="Raised €600K angel · shipped v0 enzyme library" />
+-              <TimelineRow year="2023" role="Postdoc lead" org="ETH Zürich · ENZYME-CCS" note="Horizon Europe €4.2M consortium PI" />
+-              <TimelineRow year="2019" role="Doctoral researcher" org="ETH Zürich · Weber Lab" note="Protein engineering, industrial biocatalysts" />
+-              <TimelineRow year="2017" role="Research scientist" org="Novozymes (intern)" note="Enzymatic laundry formulations" />
++            <div className="text-right">
++              <div className="font-serif text-[30px] leading-none">{founder.score}<span className="text-[14px] text-muted-foreground">/100</span></div>
++              <div className="text-[11px] text-muted-foreground">conf {founder.confidence} · {founder.trend}</div>
+             </div>
+-          </Card>
++          </div>
++          <div className="h-[280px] -mx-2">
++            <ResponsiveContainer width="100%" height="100%">
++              <RadarChart data={radarData} outerRadius="72%">
++                <PolarGrid stroke="var(--border)" />
++                <PolarAngleAxis dataKey="axis" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
++                <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
++                <Radar dataKey="value" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.18} />
++              </RadarChart>
++            </ResponsiveContainer>
++          </div>
++          <p className="text-[11px] text-muted-foreground text-center">Each axis is a 0–100 sub-score with its own confidence. Never averaged into the headline number.</p>
++        </Card>
++      </div>
+ 
+-          <Card className="p-0">
+-            <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
+-              <div className="text-[13px] font-medium">Structured claims</div>
+-              <span className="text-[11px] text-muted-foreground">5 tracked · 2 pending verification</span>
+-            </div>
+-            <div className="divide-y divide-border">
+-              {CLAIMS.map((c) => (
+-                <div key={c.claim} className="px-5 py-3 flex items-start gap-4">
+-                  <MessageSquare className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
+-                  <div className="flex-1 min-w-0">
+-                    <div className="text-[12.5px] text-foreground/90">{c.claim}</div>
+-                    <div className="text-[11px] text-muted-foreground mt-0.5">Source · {c.src}</div>
+-                  </div>
+-                  <div className="w-28 shrink-0">
+-                    <div className="flex items-baseline justify-between mb-1">
+-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Conf.</span>
+-                      <span className={`text-[11px] font-mono tabular-nums ${c.conf >= 85 ? "text-positive" : c.conf >= 65 ? "text-foreground" : "text-warning"}`}>{c.conf}</span>
+-                    </div>
+-                    <div className="h-1 rounded-full bg-muted overflow-hidden">
+-                      <div className={"h-full " + (c.conf >= 85 ? "bg-positive" : c.conf >= 65 ? "bg-primary" : "bg-warning")} style={{ width: `${c.conf}%` }} />
+-                    </div>
++      {/* right: axis breakdown w/ collapsible live evidence */}
++      <div className="lg:col-span-2 space-y-4">
++        <Card className="p-0">
++          <div className="px-5 py-3.5 border-b border-border flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary" /><span className="text-[13px] font-medium">Axis breakdown &amp; evidence</span></div>
++          <div className="divide-y divide-border">
++            {founder.axes.map((a) => {
++              const quote = QUOTES[founder.id]?.[a.key];
++              return (
++                <div key={a.key} className="px-5 py-3.5">
++                  <div className="flex items-baseline justify-between">
++                    <span className="text-[13.5px] font-medium">{a.full}<span className="ml-2 text-[10.5px] font-normal text-muted-foreground">conf {a.conf}/100</span></span>
++                    <span className="text-[14px] font-mono tabular-nums font-semibold">{a.v}</span>
+                   </div>
++                  <div className="mt-1.5 h-1.5 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary" style={{ width: a.v + "%" }} /></div>
++                  {quote ? (
++                    <details className="mt-2 rounded-md border-l-2 border-primary bg-surface">
++                      <summary className="cursor-pointer list-none px-3 py-1.5 text-[10.5px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
++                        <ChevronRight className="h-3 w-3 text-primary transition-transform [details[open]_&]:rotate-90" />
++                        <span className="text-positive font-semibold">Live evidence</span>
++                        <span className="ml-auto">{quote.t}</span>
++                      </summary>
++                      <p className="px-3 pb-2.5 text-[12.5px] italic text-foreground/90">“{quote.q}”</p>
++                    </details>
++                  ) : (
++                    <div className="mt-2 text-[11px] text-muted-foreground">No direct interview quote — inferred from research record.</div>
++                  )}
+                 </div>
+-              ))}
+-            </div>
+-          </Card>
++              );
++            })}
++          </div>
++        </Card>
++
++        <div className="rounded-lg border border-warning/40 bg-warning/5 p-4">
++          <div className="text-[11px] uppercase tracking-wider text-warning font-semibold mb-2">How to read this</div>
++          <ul className="text-[12px] text-foreground/85 space-y-1.5">
++            <li>· Probabilistic signals tied to interview hypotheses — never a personality read as fact from face or tone.</li>
++            <li>· Conscientiousness is not rewarded as a standalone positive (sign flips at exit); extraversion is ignored.</li>
++            <li>· Trait combinations matter — assertiveness × low emotional control reads as aggression, not confidence.</li>
++          </ul>
+         </div>
+       </div>
+-    </AppShell>
++    </div>
+   );
+ }
+ 
+-function IconLink({ icon, label }: { icon: React.ReactNode; label: string }) {
++function TeamView({ ada, minh }: { ada: DemoFounder; minh: DemoFounder }) {
++  const keys = ada.axes.map((a) => a.key);
++  const radarData = keys.map((k) => ({
++    axis: k,
++    Ada: ada.axes.find((a) => a.key === k)!.v,
++    Minh: minh.axes.find((a) => a.key === k)!.v,
++  }));
+   return (
+-    <a href="#" className="flex items-center justify-center gap-1.5 rounded-md border border-border py-1.5 text-[11.5px] text-muted-foreground hover:text-foreground hover:border-primary/40">
+-      {icon} {label} <ExternalLink className="h-2.5 w-2.5" />
+-    </a>
+-  );
+-}
++    <div className="px-8 py-6 grid lg:grid-cols-3 gap-4">
++      <div className="space-y-4">
++        <Card className="p-5">
++          <div className="flex items-center justify-between mb-2">
++            <div className="text-[14px] font-medium">Founding team</div>
++            <div className="text-right"><div className="font-serif text-[28px] leading-none">{ACME_TEAM.score}<span className="text-[13px] text-muted-foreground">/100</span></div><div className="text-[11px] text-muted-foreground">complementarity · conf {ACME_TEAM.confidence}</div></div>
++          </div>
++          <div className="h-[280px] -mx-2">
++            <ResponsiveContainer width="100%" height="100%">
++              <RadarChart data={radarData} outerRadius="72%">
++                <PolarGrid stroke="var(--border)" />
++                <PolarAngleAxis dataKey="axis" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
++                <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
++                <Radar name="Ada" dataKey="Ada" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.16} />
++                <Radar name="Minh" dataKey="Minh" stroke="var(--positive)" fill="var(--positive)" fillOpacity={0.14} />
++              </RadarChart>
++            </ResponsiveContainer>
++          </div>
++          <div className="flex justify-center gap-4 text-[12px]">
++            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-primary" /> Ada · CEO</span>
++            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-positive" /> Minh · CTO</span>
++          </div>
++        </Card>
++      </div>
+ 
+-function TimelineRow({ year, role, org, note }: { year: string; role: string; org: string; note: string }) {
+-  return (
+-    <div className="grid grid-cols-[64px_1fr] gap-4 px-5 py-3 border-t border-border first:border-t-0">
+-      <div className="font-mono text-[11px] text-muted-foreground pt-0.5">{year}</div>
+-      <div>
+-        <div className="text-[12.5px]"><span className="font-medium">{role}</span> · <span className="text-muted-foreground">{org}</span></div>
+-        <div className="text-[11.5px] text-muted-foreground mt-0.5">{note}</div>
++      <div className="lg:col-span-2 space-y-4">
++        <Card className="p-0">
++          <div className="px-5 py-3.5 border-b border-border text-[13px] font-medium">Complementarity components</div>
++          <div className="p-5 space-y-4">
++            {ACME_TEAM.components.map((c) => (
++              <div key={c.name}>
++                <div className="flex items-baseline justify-between"><span className="text-[13px] font-medium">{c.name}</span><span className="text-[13px] font-mono tabular-nums font-semibold">{c.v}</span></div>
++                <div className="mt-1.5 h-1.5 rounded-full bg-muted overflow-hidden"><div className={"h-full rounded-full " + (c.v >= 70 ? "bg-positive" : c.v >= 50 ? "bg-primary" : "bg-warning")} style={{ width: c.v + "%" }} /></div>
++                <div className="mt-1 text-[12px] text-muted-foreground">{c.why}</div>
++              </div>
++            ))}
++            <p className="text-[11.5px] text-muted-foreground pt-1 border-t border-border">Gated by the weakest component, not the mean — a strong skill split with an untested relationship is a documented red-flag pattern.</p>
++          </div>
++        </Card>
++        <Card className="p-5">
++          <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Assessment note</div>
++          <p className="text-[13px] text-foreground/90 leading-relaxed">{ACME_TEAM.note}</p>
++        </Card>
+       </div>
+     </div>
+   );
+ }
+ 
+-function ScoreDriver({ tone, label, delta, note }: { tone: "+" | "-" | "?"; label: string; delta: string; note: string }) {
+-  const map = {
+-    "+": "text-positive bg-positive/10",
+-    "-": "text-negative bg-negative/10",
+-    "?": "text-muted-foreground bg-muted",
+-  };
++function TabBtn({ active, onClick, initials, color, children }: { active: boolean; onClick: () => void; initials: string; color?: string; children: React.ReactNode }) {
+   return (
+-    <div className="rounded-md border border-border p-3">
+-      <div className="flex items-center justify-between">
+-        <div className="text-[12.5px] font-medium">{label}</div>
+-        <span className={`text-[11px] font-mono px-1.5 py-0.5 rounded ${map[tone]}`}>{delta}</span>
+-      </div>
+-      <div className="text-[11.5px] text-muted-foreground mt-1">{note}</div>
+-    </div>
++    <button onClick={onClick} className={"flex items-center gap-2 rounded-full border pl-1.5 pr-3.5 py-1.5 text-[13px] font-medium transition-colors " + (active ? "border-primary text-foreground" : "border-border text-muted-foreground hover:bg-surface")}>
++      <span className="h-6 w-6 rounded-full grid place-items-center text-[10px] font-semibold text-primary-foreground" style={{ background: color ?? "var(--muted-foreground)" }}>{initials}</span>
++      {children}
++    </button>
+   );
+ }
+diff --git a/src/routes/index.tsx b/src/routes/index.tsx
+index 953d5a5..dacf2c2 100644
+--- a/src/routes/index.tsx
++++ b/src/routes/index.tsx
+@@ -1,7 +1,7 @@
+ import { createFileRoute } from "@tanstack/react-router";
+ import { AppShell } from "@/components/AppShell";
+ import { PageHeader, Section, Card, Stat, Badge, ScoreBar } from "@/components/ui-kit";
+-import { STARTUPS, FUNNEL, METRICS, stageColor, scoreTone } from "@/lib/data";
++import { STARTUPS, FUNNEL, METRICS, stageColor, scoreTone, fmtScore } from "@/lib/data";
+ import { ArrowUpRight, Sparkles, TrendingUp, AlertCircle } from "lucide-react";
+ 
+ export const Route = createFileRoute("/")({
+@@ -29,7 +29,7 @@ function PipelinePage() {
+     (s) => s.stage === "Partner Review" || s.stage === "Term Sheet",
+   ).slice(0, 4);
+   const topScreened = [...STARTUPS]
+-    .sort((a, b) => b.founderScore - a.founderScore)
++    .sort((a, b) => (b.founderScore ?? -1) - (a.founderScore ?? -1))
+     .slice(0, 5);
+ 
+   return (
+@@ -53,12 +53,12 @@ function PipelinePage() {
+       {/* Metrics */}
+       <Section title="Today">
+         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+-          <Stat label="Active applications" value={METRICS.activeApplications} trend="+9 w/w" />
+-          <Stat label="Avg founder score" value={METRICS.avgFounderScore} hint="Across 47 live" />
+-          <Stat label="References completed" value={METRICS.referencesCompleted} hint="132 of 168 requested" />
+-          <Stat label="Diligence in progress" value={METRICS.diligenceInProgress} hint="2 late-stage" />
+-          <Stat label="Decisions due · 24h" value={METRICS.decisionsDue24h} trend="4 memos" />
+-          <Stat label="Invites sent · 7d" value={METRICS.invitesSent7d} hint="34% response rate" />
++          <Stat label="Opportunities" value={METRICS.activeApplications} hint="6 real · 1 demo" />
++          <Stat label="Assessed deals" value={METRICS.assessedDeals} hint="Acme demo only" />
++          <Stat label="Public outcomes" value={METRICS.publicOutcomes} hint="ALSTIN-led rounds" />
++          <Stat label="Diligence in progress" value={METRICS.diligenceInProgress} hint="confidential" />
++          <Stat label="Decisions due · 24h" value={METRICS.decisionsDue24h} trend="1 memo" />
++          <Stat label="Interviews available" value={METRICS.interviewsAvailable} hint="public founder talks" />
+         </div>
+       </Section>
+ 
+@@ -120,6 +120,7 @@ function PipelinePage() {
+                     <MiniScore label="Market" v={s.marketScore} />
+                     <MiniScore label="Fit" v={s.ideaMarketScore} />
+                   </div>
++                  {!s.assessed && <span className="hidden md:block text-[10px] text-muted-foreground uppercase tracking-wider">not assessed</span>}
+                   <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
+                 </div>
+               ))}
+@@ -140,14 +141,16 @@ function PipelinePage() {
+                   <div className="flex items-center justify-between">
+                     <div className="text-[13px] font-medium">{s.company}</div>
+                     <div className={`text-[12px] font-mono tabular-nums ${scoreTone(s.founderScore)}`}>
+-                      {s.founderScore}
++                      {fmtScore(s.founderScore)}
+                     </div>
+                   </div>
+                   <div className="text-[11px] text-muted-foreground mt-0.5">
+                     {s.stage} · {s.ask} · {s.geography}
+                   </div>
+                   <div className="mt-2">
+-                    <ScoreBar label="Thesis fit" value={Math.round(s.thesisFit * 100)} />
++                    {s.thesisFit != null
++                      ? <ScoreBar label="Thesis fit" value={Math.round(s.thesisFit * 100)} />
++                      : <div className="text-[11px] text-positive">{s.realEvent}</div>}
+                   </div>
+                 </div>
+               ))}
+@@ -159,19 +162,19 @@ function PipelinePage() {
+       <Section title="Signals">
+         <div className="grid md:grid-cols-3 gap-3">
+           <SignalCard
+-            title="Reference contradiction detected"
+-            body="Northwind Robotics: founder claims 12 pilot customers, references corroborate only 4. Trust score revised to 62."
+-            tone="warning"
++            title="Live interview in progress"
++            body="Acme Robotics (demo): contradiction CON-001 resolving on the call; negotiation model moved ZOPA to $9M–$12M in real time."
++            tone="teal"
+           />
+           <SignalCard
+-            title="GitHub activity surge"
+-            body="Kavan Labs: 3× commit velocity in past 14 days. Runtime benchmarks pushed publicly."
++            title="Public outcome recorded"
++            body="Secfix: $12M Series A led by ALSTIN Capital. Founders sourced from public data — deliberately not scored."
+             tone="positive"
+           />
+           <SignalCard
+-            title="Thesis alignment upgrade"
+-            body="Vela Legal: new fund thesis on legal-AI raises fit from 0.81 → 0.93. Auto-promoted to term sheet."
+-            tone="teal"
++            title="Guardrail active"
++            body="deskbird, VoiceLine, Timefold, Climatiq, Pliant: public-source cards only. No fabricated founder assessments of real people."
++            tone="warning"
+           />
+         </div>
+       </Section>
+@@ -179,15 +182,15 @@ function PipelinePage() {
+   );
+ }
+ 
+-function MiniScore({ label, v }: { label: string; v: number }) {
++function MiniScore({ label, v }: { label: string; v: number | null }) {
+   return (
+     <div>
+       <div className="flex items-baseline justify-between">
+         <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+-        <div className="text-[12px] font-mono tabular-nums">{v}</div>
++        <div className="text-[12px] font-mono tabular-nums text-muted-foreground">{v ?? "—"}</div>
+       </div>
+       <div className="mt-1 h-1 rounded-full bg-muted overflow-hidden">
+-        <div className="h-full bg-primary" style={{ width: `${v}%` }} />
++        <div className="h-full bg-primary" style={{ width: `${v ?? 0}%` }} />
+       </div>
+     </div>
+   );
+diff --git a/src/routes/interviews.tsx b/src/routes/interviews.tsx
+index eb98502..f1cb22f 100644
+--- a/src/routes/interviews.tsx
++++ b/src/routes/interviews.tsx
+@@ -1,161 +1,329 @@
+-import { createFileRoute } from "@tanstack/react-router";
++import { createFileRoute, Link } from "@tanstack/react-router";
++import { useEffect, useRef, useState, useCallback } from "react";
+ import { AppShell } from "@/components/AppShell";
+-import { PageHeader, Card, Badge, ScoreBar } from "@/components/ui-kit";
+-import { Mic, Play, Pause, SkipForward, Volume2, Sparkles } from "lucide-react";
++import { PageHeader, Card, Badge } from "@/components/ui-kit";
++import { Play, RotateCcw, Sparkles, TrendingUp, Gavel } from "lucide-react";
+ 
+ export const Route = createFileRoute("/interviews")({
+-  head: () => ({
+-    meta: [{ title: "AI Interviews · VibeCheck" }],
+-  }),
++  head: () => ({ meta: [{ title: "Live Interview · VibeCheck" }] }),
+   component: InterviewsPage,
+ });
+ 
+-const TRANSCRIPT = [
+-  { t: "00:04", who: "agent", text: "Amina, walk me through the single hardest technical problem you've had to solve at Helix so far." },
+-  { t: "00:12", who: "founder", text: "Getting the engineered carbonic anhydrase to survive at 65°C in real flue-gas conditions. We had three failed variants before variant B4 held stability past 40 hours." },
+-  { t: "01:03", who: "agent", text: "You mentioned B4 in your deck. Who on the team owns that discovery, and what would happen if that person left?" },
+-  { t: "01:14", who: "founder", text: "Marie Roche led it, but the assay pipeline is documented — Lukas and Nikhil could reproduce it. We've deliberately avoided single-person dependencies since our seed check in November." },
+-  { t: "02:41", who: "agent", text: "Your deck states a Holcim pilot signed. Is it a paid pilot or LoI?" },
+-  { t: "02:47", who: "founder", text: "LoI today. Paid conversion targeted for Q4 pending our next scale-up milestone. I'd rather under-promise than overstate that." },
+-  { t: "05:22", who: "agent", text: "If we passed on this round, what's the single biggest reason we would be wrong to?" },
+-  { t: "05:29", who: "founder", text: "You'd be underestimating the switching cost for cement operators once one variant is validated on-site. That validation is a moat, not the enzyme." },
++/* ------------------------------------------------------------------ */
++/*  Live interview studio (Acme demo) — transcript + vibe + negotiation */
++/* ------------------------------------------------------------------ */
++
++type Vibe = {
++  adaSent: number; adaTone: number; adaConf: number;
++  minhSent: number; minhTone: number; minhConf: number;
++};
++const ZERO_VIBE: Vibe = { adaSent: 0, adaTone: 0, adaConf: 0, minhSent: 0, minhTone: 0, minhConf: 0 };
++
++type Step = {
++  who: string;
++  tile?: "ada" | "minh" | "agent";
++  text: string;
++  evt?: boolean;
++  vibe?: Partial<Vibe>;
++  readAda?: string;
++  readMinh?: string;
++  update?: { t: string; text: string };
++  lever?: string; // toggles a negotiation lever on
++  status?: string;
++};
++
++const SCRIPT: Step[] = [
++  { who: "System", evt: true, status: "Research", text: "Intake: application, deck and CVs imported as SRC-001…SRC-005. Opportunity card OPP-2026-0001 created." },
++  { who: "System", evt: true, text: "Research agent enriched the card: 14 claims, contradiction CON-001 ($120K vs $80K ARR), gaps GAP-002/003/004, hypotheses HYP-001/002." },
++  { who: "System", evt: true, status: "Interviewing", text: "Human investor approved the interview plan and negotiation bounds (reservation $12M, target $9M). Call starting." },
++  { who: "Agent", tile: "agent", text: "Ada, Minh — thanks for joining. Let's start with the two pilot deployments. What changed between the first and the second?" },
++  { who: "Ada", tile: "ada", text: "The first took nine days on site. We rebuilt the demonstration-capture flow, and the second was live in under two days.",
++    vibe: { adaSent: 78, adaTone: 72, adaConf: 80 }, readAda: "Engaged" },
++  { who: "Agent", tile: "agent", evt: true, text: "HYP-001 (learning velocity) → supported. Card updated [INT-001 00:41].",
++    update: { t: "00:41", text: "HYP-001 supported — deployment time cut 9d → 2d, evidence logged." } },
++  { who: "Agent", tile: "agent", text: "Your deck states $120K ARR, but the application says $80K. Help me reconcile those." },
++  { who: "Minh", tile: "minh", text: "The $120K includes the second pilot that's signed but starts billing next quarter. Contracted today is $80K.",
++    vibe: { minhSent: 62, minhTone: 55, minhConf: 68 }, readMinh: "Composed" },
++  { who: "Agent", tile: "agent", evt: true, text: "CON-001 → resolving. Verified ARR $80K; $120K is contracted-forward. Valuation target held at $9M.",
++    update: { t: "01:22", text: "CON-001 resolving — ARR clarified; request revenue export to verify." } },
++  { who: "Agent", tile: "agent", text: "What matters more to you in this round — valuation, or speed to close?" },
++  { who: "Ada", tile: "ada", text: "Honestly? Speed. We have two warehouses waiting and want to be deploying by September.",
++    vibe: { adaSent: 84, adaTone: 86, adaConf: 85 }, readAda: "Animated", lever: "speed",
++    update: { t: "02:04", text: "Speed > price signal — founder range re-estimated $9M–$13M; ZOPA widens to $9M–$12M." } },
++  { who: "Agent", tile: "agent", text: "If we closed in ten days at a $9M cap with full pro-rata, is that a conversation you'd want to have?" },
++  { who: "Minh", tile: "minh", text: "Ten days is… fast. We'd need our counsel to confirm the IP-assignment timeline first.",
++    vibe: { minhSent: 48, minhTone: 42, minhConf: 55 }, readMinh: "Hesitant",
++    update: { t: "02:47", text: "Hesitation on speed from CTO — IP assignment (GAP-002) confirmed as a real blocker, not a bluff." } },
++  { who: "Ada", tile: "ada", text: "At nine million with full pro-rata — yes, that's a conversation we want to have.",
++    vibe: { adaSent: 88, adaTone: 82, adaConf: 88 }, readAda: "Engaged", lever: "prorata" },
++  { who: "Agent", tile: "agent", evt: true, status: "Decision ready", text: "Recommendation → proceed to term sheet at $9M cap, conditional on GAP-002. Escalating to the human investor.",
++    update: { t: "03:15", text: "Recommendation: $100K SAFE at $9M cap, full pro-rata — pending human approval and IP diligence." } },
+ ];
+ 
+-const AXES = [
+-  { l: "Communication clarity", v: 90 },
+-  { l: "Consistency w/ prior claims", v: 86 },
+-  { l: "Technical depth", v: 92 },
+-  { l: "Founder ↔ market fit", v: 84 },
+-  { l: "Resilience under pressure", v: 83 },
+-  { l: "Honesty / confidence balance", v: 88 },
++/* ---- super negotiation model ---- */
++type Lever = { id: string; label: string; note: string; dInvHi: number; dFndLo: number; fit: number };
++const LEVERS: Lever[] = [
++  { id: "speed", label: "Close in 10 days", note: "Founders trade valuation for speed", dInvHi: 0, dFndLo: -1, fit: 12 },
++  { id: "prorata", label: "Full pro-rata rights", note: "Investor concession — keeps founders aligned", dInvHi: 0, dFndLo: 0, fit: 8 },
++  { id: "board", label: "Board observer (no seat)", note: "Founder-friendly governance", dInvHi: 0, dFndLo: -0.5, fit: 7 },
++  { id: "milestone", label: "Milestone tranche", note: "De-risks the round for the investor", dInvHi: 1, dFndLo: 0, fit: 9 },
++  { id: "cap", label: "$12M cap headline", note: "Meets the founder anchor", dInvHi: 0.5, dFndLo: 0, fit: 6 },
+ ];
++const AXIS = { min: 6, max: 14 };
++const pct = (v: number) => ((v - AXIS.min) / (AXIS.max - AXIS.min)) * 100;
++
++function deriveModel(active: Set<string>) {
++  let invHi = 12, fndLo = 10, fit = 38;
++  for (const l of LEVERS) if (active.has(l.id)) { invHi += l.dInvHi; fndLo += l.dFndLo; fit += l.fit; }
++  const inv: [number, number] = [8, invHi];
++  const fnd: [number, number] = [fndLo, 14];
++  const zLo = Math.max(inv[0], fnd[0]);
++  const zHi = Math.min(inv[1], fnd[1]);
++  const zopa: [number, number] | null = zHi > zLo ? [zLo, zHi] : null;
++  const dealFit = Math.max(0, Math.min(100, Math.round(fit + (zopa ? (zHi - zLo) * 4 : -20))));
++  return { inv, fnd, zopa, invTarget: 9, fndTarget: 12, dealFit };
++}
++
++const STEP_MS = 2200;
++
++function InterviewsPage() {
++  const [shown, setShown] = useState(0);
++  const [vibe, setVibe] = useState<Vibe>(ZERO_VIBE);
++  const [readAda, setReadAda] = useState("Neutral");
++  const [readMinh, setReadMinh] = useState("Neutral");
++  const [updates, setUpdates] = useState<{ t: string; text: string }[]>([]);
++  const [levers, setLevers] = useState<Set<string>>(new Set());
++  const [status, setStatus] = useState("Interviewing");
++  const [speaking, setSpeaking] = useState<string | null>(null);
++  const [playing, setPlaying] = useState(false);
++  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
++
++  const model = deriveModel(levers);
++
++  const reset = useCallback(() => {
++    timers.current.forEach(clearTimeout);
++    timers.current = [];
++    setShown(0); setVibe(ZERO_VIBE); setReadAda("Neutral"); setReadMinh("Neutral");
++    setUpdates([]); setLevers(new Set()); setStatus("Interviewing"); setSpeaking(null); setPlaying(false);
++  }, []);
++
++  const play = useCallback(() => {
++    reset();
++    setPlaying(true);
++    SCRIPT.forEach((step, i) => {
++      const id = setTimeout(() => {
++        setShown(i + 1);
++        setSpeaking(step.tile ?? null);
++        if (step.vibe) setVibe((v) => ({ ...v, ...step.vibe }));
++        if (step.readAda) setReadAda(step.readAda);
++        if (step.readMinh) setReadMinh(step.readMinh);
++        if (step.update) setUpdates((u) => [...u, step.update!]);
++        if (step.lever) setLevers((s) => new Set(s).add(step.lever!));
++        if (step.status) setStatus(step.status);
++        if (i === SCRIPT.length - 1) { setPlaying(false); setSpeaking(null); }
++      }, i * STEP_MS);
++      timers.current.push(id);
++    });
++  }, [reset]);
++
++  useEffect(() => () => timers.current.forEach(clearTimeout), []);
++
++  const toggleLever = (id: string) =>
++    setLevers((s) => {
++      const n = new Set(s);
++      if (n.has(id)) n.delete(id);
++      else n.add(id);
++      return n;
++    });
+ 
+-export function InterviewsPage() {
+   return (
+     <AppShell>
+       <PageHeader
+-        crumbs={["Interviews", "Helix Bio · Founder call #2"]}
+-        eyebrow="AI voice interview"
+-        title="Founder call · Amina Osei"
+-        description="Every interview enriches founder memory and lowers uncertainty. Extracted claims flow directly into scoring."
++        crumbs={["Interviews", "Acme Robotics · Founder call INT-001"]}
++        eyebrow="Live AI interview · Match stage"
++        title="Live interview — Ada Keller & Minh Tran"
++        description="The interview is the diligence. Every answer runs the vibe check and moves the negotiation model — BATNA, reservation points and the ZOPA — in real time. The human investor keeps the final call."
+         actions={
+           <>
+-            <Badge tone="teal">47 min · complete</Badge>
+-            <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]">Re-run analysis</button>
+-            <button className="h-8 rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground">Schedule follow-up</button>
++            <Badge tone={status === "Decision ready" ? "warning" : "teal"}>
++              {status === "Decision ready" ? "Decision ready" : "● Interviewing"}
++            </Badge>
++            <button onClick={play} className="h-8 rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground flex items-center gap-1.5">
++              <Play className="h-3.5 w-3.5" /> {playing ? "Playing…" : "Play demo"}
++            </button>
++            <button onClick={reset} className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5">
++              <RotateCcw className="h-3.5 w-3.5" /> Reset
++            </button>
+           </>
+         }
+       />
+ 
+       <div className="px-8 py-6 grid lg:grid-cols-3 gap-4">
++        {/* Left: call + transcript */}
+         <div className="lg:col-span-2 space-y-4">
+-          {/* Player */}
+-          <Card className="p-0 overflow-hidden">
+-            <div className="p-5 flex items-center gap-4 border-b border-border">
+-              <div className="relative">
+-                <div className="h-11 w-11 rounded-full bg-primary/10 grid place-items-center">
+-                  <Mic className="h-4 w-4 text-primary" />
+-                </div>
+-                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-positive border-2 border-card pulse-dot" />
+-              </div>
+-              <div className="min-w-0 flex-1">
+-                <div className="text-[13px] font-medium">Voice agent · "Kestrel v3"</div>
+-                <div className="text-[11px] text-muted-foreground">ElevenLabs · en-GB · empathetic-analyst profile</div>
+-              </div>
+-              <div className="flex items-center gap-2">
+-                <button className="h-8 w-8 rounded-md border border-border grid place-items-center"><SkipForward className="h-3.5 w-3.5 rotate-180" /></button>
+-                <button className="h-9 w-9 rounded-full bg-primary text-primary-foreground grid place-items-center"><Play className="h-3.5 w-3.5" /></button>
+-                <button className="h-8 w-8 rounded-md border border-border grid place-items-center"><SkipForward className="h-3.5 w-3.5" /></button>
+-                <button className="h-8 w-8 rounded-md border border-border grid place-items-center"><Volume2 className="h-3.5 w-3.5" /></button>
+-              </div>
++          <Card className="p-5">
++            <div className="grid grid-cols-2 gap-3">
++              <Tile name="Ada Keller" role="CEO" initials="AK" readout={readAda} speaking={speaking === "ada"} />
++              <Tile name="Minh Tran" role="CTO" initials="MT" readout={readMinh} speaking={speaking === "minh"} />
+             </div>
+-            {/* Waveform */}
+-            <div className="px-5 py-4 border-b border-border">
+-              <div className="flex items-center gap-[2px] h-12">
+-                {Array.from({ length: 90 }).map((_, i) => {
+-                  const h = 20 + Math.abs(Math.sin(i * 0.6) * 60) + (i % 7) * 4;
+-                  const played = i < 34;
+-                  return <div key={i} className={"w-[3px] rounded-full " + (played ? "bg-primary" : "bg-muted")} style={{ height: `${Math.min(h, 90)}%` }} />;
+-                })}
+-              </div>
+-              <div className="mt-2 flex justify-between text-[10.5px] font-mono text-muted-foreground">
+-                <span>12:38 / 47:04</span>
+-                <span>Speaker 1 · Amina · 62%</span>
+-              </div>
++            <div className="mt-3">
++              <Tile name="Interview Agent" role="vibe-check@1.0" initials="VC" agent speaking={speaking === "agent"} />
+             </div>
++          </Card>
+ 
+-            {/* Transcript */}
+-            <div className="p-5 space-y-4">
+-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Transcript · auto-annotated</div>
+-              {TRANSCRIPT.map((r, i) => (
+-                <div key={i} className="grid grid-cols-[52px_1fr] gap-3">
+-                  <div className="text-[11px] font-mono text-muted-foreground pt-0.5">{r.t}</div>
+-                  <div>
+-                    <div className={"text-[11px] uppercase tracking-wider mb-0.5 " + (r.who === "agent" ? "text-primary" : "text-muted-foreground")}>
+-                      {r.who === "agent" ? "Kestrel · agent" : "Amina · founder"}
+-                    </div>
+-                    <div className="text-[13px] leading-relaxed text-foreground/90">{r.text}</div>
++          <Card className="p-0">
++            <div className="px-5 py-3.5 border-b border-border text-[13px] font-medium flex items-center justify-between">
++              <span>Transcript &amp; agent events</span>
++              <span className="text-[11px] text-muted-foreground">{shown} / {SCRIPT.length}</span>
++            </div>
++            <div className="p-5 space-y-3 max-h-[360px] overflow-y-auto">
++              {shown === 0 && <div className="text-[12.5px] text-muted-foreground">Press “Play demo” to run the scripted Acme interview.</div>}
++              {SCRIPT.slice(0, shown).map((s, i) => (
++                <div key={i} className="grid grid-cols-[64px_1fr] gap-3">
++                  <div className={"text-[11px] uppercase tracking-wider pt-0.5 " + (s.evt ? "text-warning" : s.who === "Agent" ? "text-primary" : "text-muted-foreground")}>
++                    {s.who}
+                   </div>
++                  <div className={"text-[13px] leading-relaxed " + (s.evt ? "text-warning" : "text-foreground/90")}>{s.text}</div>
+                 </div>
+               ))}
+             </div>
+           </Card>
+         </div>
+ 
+-        {/* Right rail */}
++        {/* Right: vibe + super negotiation */}
+         <div className="space-y-4">
+           <Card className="p-0">
+-            <div className="px-5 py-3.5 border-b border-border flex items-center gap-2">
+-              <Sparkles className="h-3.5 w-3.5 text-primary" />
+-              <div className="text-[13px] font-medium">Structured outputs</div>
++            <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
++              <div className="flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary" /><span className="text-[13px] font-medium">Vibe check — live signals</span></div>
++              <Link to={"/founder" as never} className="text-[11px] font-medium text-primary hover:underline">See details →</Link>
+             </div>
+-            <div className="p-5 space-y-3">
+-              {AXES.map((a) => <ScoreBar key={a.l} label={a.l} value={a.v} />)}
++            <div className="p-5 space-y-4">
++              <VibeBlock name="Ada Keller" role="CEO · FND-0007" rows={[["Sentiment", vibe.adaSent], ["Energy / tone", vibe.adaTone], ["Confidence", vibe.adaConf]]} />
++              <div className="border-t border-border" />
++              <VibeBlock name="Minh Tran" role="CTO · FND-0008" rows={[["Sentiment", vibe.minhSent], ["Energy / tone", vibe.minhTone], ["Confidence", vibe.minhConf]]} />
+             </div>
+           </Card>
+ 
+           <Card className="p-0">
+-            <div className="px-5 py-3.5 border-b border-border text-[13px] font-medium">Extracted insights</div>
+-            <ul className="p-5 space-y-3 text-[12.5px] text-foreground/90">
+-              <Insight body="Deliberately avoids single-person dependencies (B4 variant reproducible)." tag="Team" />
+-              <Insight body="Distinguishes LoI from paid pilot without prompt — honesty signal." tag="Trust" />
+-              <Insight body="Names validation-on-site as the moat, not the enzyme itself — mature framing." tag="Strategy" />
+-              <Insight body="Speaks confidently about scale-up risk but light on capex modeling." tag="Risk" />
+-            </ul>
+-          </Card>
++            <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
++              <div className="flex items-center gap-2"><Gavel className="h-3.5 w-3.5 text-primary" /><span className="text-[13px] font-medium">Super negotiation — pre-money</span></div>
++              <div className="text-[11px] text-muted-foreground flex items-center gap-1"><TrendingUp className="h-3 w-3" /> deal-fit <span className="font-mono tabular-nums text-foreground">{model.dealFit}</span></div>
++            </div>
++            <div className="p-5 space-y-4">
++              {/* ZOPA chart */}
++              <div className="relative h-[104px]">
++                {[6, 8, 10, 12, 14].map((v) => (
++                  <div key={v} className="absolute top-0 bottom-5 w-px bg-border" style={{ left: pct(v) + "%" }} />
++                ))}
++                <Band top={8} lo={model.inv[0]} hi={model.inv[1]} className="bg-primary" label="Investor" side="left" />
++                {model.zopa && <Band top={34} lo={model.zopa[0]} hi={model.zopa[1]} className="bg-[oklch(0.78_0.14_75)]" label="ZOPA" side="mid" />}
++                <Band top={60} lo={model.fnd[0]} hi={model.fnd[1]} className="bg-positive" label="Founders" side="left" />
++                <Marker v={model.invTarget} top={18} />
++                <Marker v={model.fndTarget} top={70} />
++                <div className="absolute left-0 right-0 bottom-0 h-4">
++                  {[6, 8, 10, 12, 14].map((v) => (
++                    <span key={v} className="absolute -translate-x-1/2 text-[10px] font-mono text-muted-foreground" style={{ left: pct(v) + "%" }}>${v}M</span>
++                  ))}
++                </div>
++              </div>
++              <div className="text-[11.5px] text-muted-foreground">
++                {model.zopa
++                  ? <>Estimated ZOPA <span className="font-medium text-foreground">${model.zopa[0]}M–${model.zopa[1]}M</span> · widens as founder-friendly levers are pulled.</>
++                  : <span className="text-warning">No overlap — outside the investor's reservation point; the BATNA (OPP-2026-0008) wins.</span>}
++              </div>
+ 
+-          <Card className="p-0">
+-            <div className="px-5 py-3.5 border-b border-border text-[13px] font-medium">Follow-up questions</div>
+-            <ul className="p-5 space-y-2.5 text-[12.5px]">
+-              <FU q="Capex model for pilot scale-up: sources & unit economics?" />
+-              <FU q="EPFL license terms — exclusive or field-of-use restricted?" />
+-              <FU q="What would you do differently if Holcim pilot fails?" />
+-              <FU q="How do you plan hires 5–8 given fractional Chief Scientist?" />
+-            </ul>
++              {/* term table */}
++              <table className="w-full text-[11.5px]">
++                <thead className="text-muted-foreground"><tr className="text-left"><th className="font-medium pb-1"></th><th className="font-medium pb-1">BATNA</th><th className="font-medium pb-1">Reserv.</th><th className="font-medium pb-1">Target</th></tr></thead>
++                <tbody className="font-mono tabular-nums">
++                  <tr><td className="py-0.5 font-sans text-foreground">Investor</td><td>OPP-0008</td><td>$12M</td><td>${model.invTarget}M</td></tr>
++                  <tr><td className="py-0.5 font-sans text-foreground">Founders</td><td>Bootstrap</td><td>{levers.has("speed") ? "≈$9M" : "unknown"}</td><td>~${model.fndTarget}M</td></tr>
++                </tbody>
++              </table>
++
++              {/* levers */}
++              <div>
++                <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Levers — toggle to re-shape the deal</div>
++                <div className="space-y-1.5">
++                  {LEVERS.map((l) => {
++                    const on = levers.has(l.id);
++                    return (
++                      <button key={l.id} onClick={() => toggleLever(l.id)}
++                        className={"w-full text-left rounded-md border px-2.5 py-1.5 transition-colors " + (on ? "border-primary/50 bg-primary/5" : "border-border hover:bg-surface")}>
++                        <div className="flex items-center justify-between">
++                          <span className={"text-[12px] " + (on ? "font-medium text-foreground" : "text-foreground/80")}>{l.label}</span>
++                          <span className={"text-[10px] font-mono " + (on ? "text-primary" : "text-muted-foreground")}>{on ? "+" + l.fit : "off"}</span>
++                        </div>
++                        <div className="text-[10.5px] text-muted-foreground">{l.note}</div>
++                      </button>
++                    );
++                  })}
++                </div>
++              </div>
++            </div>
+           </Card>
++
++          {updates.length > 0 && (
++            <Card className="p-0">
++              <div className="px-5 py-3.5 border-b border-border text-[13px] font-medium">Agent updates</div>
++              <ul className="p-5 space-y-2.5">
++                {updates.map((u, i) => (
++                  <li key={i} className="text-[12px] text-foreground/90 flex gap-2">
++                    <span className="font-mono text-[11px] text-primary shrink-0">{u.t}</span>
++                    <span>{u.text}</span>
++                  </li>
++                ))}
++              </ul>
++            </Card>
++          )}
+         </div>
+       </div>
+     </AppShell>
+   );
+ }
+ 
+-function Insight({ body, tag }: { body: string; tag: string }) {
++function Tile({ name, role, initials, readout, speaking, agent }: { name: string; role: string; initials: string; readout?: string; speaking?: boolean; agent?: boolean }) {
++  return (
++    <div className={"relative rounded-lg border overflow-hidden bg-surface-2 " + (agent ? "aspect-[32/7]" : "aspect-[16/10]") + " " + (speaking ? "ring-2 ring-primary" : "border-border")}>
++      <div className="absolute inset-0 grid place-items-center">
++        <div className={"rounded-full grid place-items-center font-medium text-primary-foreground bg-primary/80 " + (agent ? "h-10 w-10 text-[13px]" : "h-14 w-14 text-[17px]")}>{initials}</div>
++      </div>
++      {readout && <div className="absolute top-2 right-2 rounded bg-background/70 px-2 py-0.5 text-[10px] uppercase tracking-wider text-foreground/80">{readout}</div>}
++      <div className="absolute left-2 bottom-2 rounded bg-background/70 px-2 py-0.5 text-[11px] font-medium flex items-center gap-1.5">
++        {name} <span className="text-muted-foreground">{role}</span>
++        {speaking && <span className="inline-flex gap-[2px] items-end h-2.5">{[0, 1, 2].map((i) => <span key={i} className="w-[2px] bg-primary rounded animate-pulse" style={{ height: 4 + i * 3 }} />)}</span>}
++      </div>
++    </div>
++  );
++}
++
++function VibeBlock({ name, role, rows }: { name: string; role: string; rows: [string, number][] }) {
+   return (
+-    <li className="flex gap-2">
+-      <span className="mt-1.5 h-1 w-1 rounded-full bg-primary shrink-0" />
+-      <div>
+-        <span>{body}</span>
+-        <span className="ml-2 text-[10px] text-muted-foreground uppercase tracking-wider">{tag}</span>
++    <div>
++      <div className="flex items-baseline gap-2 mb-2"><span className="text-[13px] font-medium">{name}</span><span className="text-[11px] text-muted-foreground">{role}</span></div>
++      <div className="space-y-2">
++        {rows.map(([label, v]) => (
++          <div key={label} className="grid grid-cols-[92px_1fr_28px] items-center gap-2 text-[12px]">
++            <span className="text-muted-foreground">{label}</span>
++            <span className="h-1.5 rounded-full bg-muted overflow-hidden"><span className="block h-full rounded-full bg-primary transition-all duration-700" style={{ width: v + "%" }} /></span>
++            <span className="text-right font-mono tabular-nums text-muted-foreground">{v || "–"}</span>
++          </div>
++        ))}
+       </div>
+-    </li>
++    </div>
+   );
+ }
+ 
+-function FU({ q }: { q: string }) {
++function Band({ top, lo, hi, className, label, side }: { top: number; lo: number; hi: number; className: string; label: string; side: "left" | "mid" }) {
++  const left = pct(lo);
++  const width = Math.max(pct(hi) - pct(lo), 0);
+   return (
+-    <li className="flex items-start gap-2 rounded-md border border-border p-2.5">
+-      <span className="mt-0.5 text-[10px] font-mono text-primary">›</span>
+-      <span className="text-[12px] leading-snug">{q}</span>
+-    </li>
++    <div className={"absolute h-5 rounded transition-all duration-700 " + className} style={{ top, left: left + "%", width: width + "%" }}>
++      <span className={"absolute top-1/2 -translate-y-1/2 text-[10px] font-semibold tracking-wide " + (side === "mid" ? "left-1/2 -translate-x-1/2 text-[oklch(0.2_0_0)]" : "right-full mr-2 text-muted-foreground whitespace-nowrap")}>{label}</span>
++    </div>
+   );
+ }
++
++function Marker({ v, top }: { v: number; top: number }) {
++  return <div className="absolute h-2.5 w-2.5 rounded-full bg-foreground border-2 border-card -translate-x-1/2 transition-all duration-700" style={{ left: pct(v) + "%", top }} />;
++}
+-- 
+2.39.5 (Apple Git-154)
+
