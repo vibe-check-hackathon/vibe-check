@@ -22,11 +22,14 @@ type TermSheetResult = {
   terms: Record<string, unknown> | null;
 };
 
-/** The FirstCheck founders the lawyer-form sheet addresses. */
+/** The FirstCheck founders the lawyer-form sheet addresses. Post-meeting
+ *  scores are STAGED for the demo (see TS-001-firstcheck-meeting-adjustments):
+ *  Mehdi deliberately played the disengaged founder. */
 const FOUNDERS = [
   { name: "Martin Auer", role: "Co-founder" },
   { name: "Sun Chuanqi", role: "Co-founder" },
   { name: "Laura Spies", role: "Co-founder" },
+  { name: "Mehdi", role: "Co-founder" },
 ];
 
 const fmt = (v: unknown) => (v == null ? "—" : typeof v === "object" ? "structured" : String(v));
