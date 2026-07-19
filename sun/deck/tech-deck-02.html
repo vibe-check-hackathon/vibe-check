@@ -422,9 +422,6 @@
               <text x="230" y="266">independent evidence + verdict</text>
             </g>
 
-            <!-- thesis feeds -->
-
-            <path d="M230 50 V86" stroke="#1a1d1b" stroke-width="1" fill="none" stroke-dasharray="3 3" opacity="0" />
             <!-- thesis into lenses via side rail -->
             <g stroke="#1a1d1b" stroke-width="1" fill="none" stroke-dasharray="3 3">
               <path d="M360 32 H400 V252 H346" marker-end="url(#c)" />
@@ -442,9 +439,6 @@
             <!-- verdicts converge -->
             <g stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#c)">
               <path d="M230 278 V314" />
-            </g>
-            <g stroke="#1a1d1b" stroke-width="1" fill="none">
-              <path d="M340 112 L360 112 L360 60" opacity="0" />
             </g>
 
             <!-- term sheet -->
@@ -490,9 +484,6 @@
               <marker id="d" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
                 <path d="M0 0L8 4L0 8" fill="none" stroke="#1a1d1b" stroke-width="1" />
               </marker>
-              <marker id="dg" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
-                <path d="M0 0L8 4L0 8" fill="none" stroke="#0e7a3e" stroke-width="1" />
-              </marker>
             </defs>
 
             <!-- bounds box -->
@@ -503,37 +494,34 @@
             <text x="60" y="92" font-size="12" font-weight="600" fill="#1a1d1b">FOUNDER</text>
             <text x="400" y="92" text-anchor="end" font-size="12" font-weight="600" fill="#1a1d1b">INVESTOR</text>
 
-            <!-- converging offers -->
+            <!-- converging offers: three rounds, narrowing toward center -->
             <g stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#d)">
               <path d="M70 110 H140" />
               <path d="M390 110 H320" />
-              <path d="M150 150 H195" />
-              <path d="M310 150 H265" />
-              <path d="M205 190 H219" />
-              <path d="M255 190 H241" />
+              <path d="M150 150 H196" />
+              <path d="M310 150 H264" />
+              <path d="M188 190 H222" />
+              <path d="M272 190 H238" />
             </g>
             <g font-size="10" fill="#a8ada9">
               <text x="70" y="126">offer_1</text>
               <text x="390" y="126" text-anchor="end">counter_1</text>
               <text x="150" y="166">offer_2</text>
               <text x="310" y="166" text-anchor="end">counter_2</text>
+              <text x="220" y="204" text-anchor="end">offer_3</text>
+              <text x="240" y="204">counter_3</text>
             </g>
+
+            <!-- convergence point into deal -->
+            <text x="230" y="182" text-anchor="middle" font-size="10" font-weight="600" fill="#0e7a3e">deal</text>
+            <circle cx="230" cy="190" r="2.5" fill="#0e7a3e" />
+            <path d="M230 196 V220" stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#d)" />
 
             <!-- deal zone -->
-            <rect x="196" y="216" width="68" height="34" fill="none" stroke="#0e7a3e" stroke-width="1.25" />
-            <text x="230" y="238" text-anchor="middle" font-size="12" font-weight="600" fill="#0e7a3e">DEAL</text>
-            <g stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#d)">
-              <path d="M230 196 V210" />
-            </g>
-
-            <!-- ledger line -->
-            <text x="230" y="268" text-anchor="middle" font-size="10" fill="#6b716d">every offer → append-only ledger</text>
+            <rect x="196" y="226" width="68" height="34" fill="none" stroke="#0e7a3e" stroke-width="1.25" />
+            <text x="230" y="248" text-anchor="middle" font-size="12" font-weight="600" fill="#0e7a3e">DEAL</text>
 
             <!-- escalation -->
-            <g stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#d)">
-              <path d="M430 170 H460" opacity="0" />
-              <path d="M340 280 V310 H310" opacity="0" />
-            </g>
             <path d="M230 280 V316" stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#d)" />
             <rect x="130" y="322" width="200" height="42" fill="none" stroke="#1a1d1b" stroke-width="1" />
             <text x="230" y="340" text-anchor="middle" font-size="12" font-weight="600" fill="#1a1d1b">HUMAN INVESTOR</text>
