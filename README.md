@@ -69,6 +69,8 @@ laura/pipeline  (zero-dependency Node ESM)
         ├── lib/outbound-scan.js   template-driven live sourcing (intelligence-brief cards)
         ├── lib/assistant.js       Checky: retrieval + grounding rules
         ├── lib/interview-eval.js  real-time interview scoring with reasons + BATNA updates
+        ├── interviews.js + lib/transcript|interview-extract|corroborate|founder-score|interview-card
+        │                          interview-ingestion pipeline (see below)
         ├── sourcing.js / developing.js   card building, corroboration, negotiation model
         └── serve.js               SSE demo server (pipeline events + live-scored interview)
 ```
@@ -92,6 +94,33 @@ laura/pipeline  (zero-dependency Node ESM)
   evaluations intentionally "not assessed". Synthetic people (`.example`
   domains): full data, generated with a seeded faker. The apply form collects
   an explicit research consent that feeds the permissions ledger.
+
+## Interview-ingestion pipeline (vc-brain)
+
+Permitted founder interviews become traceable evidence, Founder Score inputs,
+and `OPP-MGV-INT-*` cards — full docs in
+[`laura/pipeline/INTERVIEWS.md`](laura/pipeline/INTERVIEWS.md):
+
+```bash
+node laura/pipeline/interviews.js ingest  --file interview.vtt --company "X"   # or --url …
+node laura/pipeline/interviews.js process --transcript TRN-…
+node laura/pipeline/interviews.js review  --interview INT-0001 --approve --ack # 9-question checklist
+node laura/pipeline/interviews.js render  --interview INT-0001 [--enrich <existing card>]
+```
+
+The flow: source-policy gate (robots.txt, SSRF refusal, no hosted-media
+downloading) → normalized timestamped transcript (.txt/.md/.srt/.vtt/.json or
+authorized recordings via a provider abstraction) → claim extraction (offline
+rule layer + strictly validated LLM pass) → **corroboration against
+`Martin/seed-speed-portfolio-enriched.md` and the opportunity DB** (never
+overwrites; contradictions are retained with diligence questions) → Founder
+Score feature contributions with **separate confidence** (self-report credited
+at most 65%, caps configurable in `thesis.json`) → mandatory human-review
+checklist before any outreach → deterministic cards with per-claim references
+like `[INT-001, 00:00:08–00:00:22]`. Example generated through the pipeline:
+[`OPP-MGV-INT-0001-deskbird.md`](laura/opportunity-db/interviews/OPP-MGV-INT-0001-deskbird.md).
+Tests: `node --test laura/pipeline/test/interviews.test.js` (18 cases incl. a
+golden-file render).
 
 ## Checky & the live outbound scan
 
