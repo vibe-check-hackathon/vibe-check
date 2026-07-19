@@ -48,81 +48,89 @@
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
+/* ------------------------------------------------------------------ */
+/*  Growth Signal palette (sun/color-palette.md)                        */
+/*  Forest #0B3D2E · Emerald #10B981 · Mint #A7F3D0 · Charcoal #111827  */
+/*  · Paper White #F9FAFB. Emerald actions carry charcoal text.         */
+/* ------------------------------------------------------------------ */
 :root {
   --radius: 0.5rem;
-  /* Warm off-white / paper */
-  --background: oklch(0.985 0.004 90);
-  --surface: oklch(0.975 0.005 90);
-  --surface-2: oklch(0.955 0.006 90);
-  --foreground: oklch(0.22 0.02 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.02 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.02 250);
-  /* Deep teal accent */
-  --primary: oklch(0.38 0.06 190);
-  --primary-foreground: oklch(0.985 0.004 90);
-  --teal: oklch(0.42 0.07 195);
-  --teal-soft: oklch(0.92 0.03 190);
-  --secondary: oklch(0.94 0.006 90);
-  --secondary-foreground: oklch(0.28 0.02 250);
-  --muted: oklch(0.955 0.005 90);
-  --muted-foreground: oklch(0.5 0.015 250);
-  --accent: oklch(0.94 0.02 190);
-  --accent-foreground: oklch(0.28 0.04 200);
-  --destructive: oklch(0.52 0.19 27);
-  --destructive-foreground: oklch(0.985 0 0);
-  --positive: oklch(0.55 0.11 155);
-  --warning: oklch(0.72 0.14 75);
-  --negative: oklch(0.58 0.18 27);
-  --border: oklch(0.9 0.007 90);
-  --input: oklch(0.92 0.007 90);
-  --ring: oklch(0.42 0.07 195);
-  --sidebar: oklch(0.97 0.005 90);
-  --sidebar-foreground: oklch(0.3 0.02 250);
-  --sidebar-primary: oklch(0.38 0.06 190);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.93 0.02 190);
-  --sidebar-accent-foreground: oklch(0.28 0.04 200);
-  --sidebar-border: oklch(0.9 0.007 90);
-  --sidebar-ring: oklch(0.42 0.07 195);
+  /* Paper White canvas · true white reserved for elevated cards */
+  --background: #f9fafb;
+  --surface: #f2f5f3;
+  --surface-2: #e9efeb;
+  --foreground: #111827; /* Charcoal */
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  /* Emerald action + Forest anchor */
+  --primary: #10b981; /* Emerald */
+  --primary-foreground: #08301f; /* charcoal-green text on emerald (per guide) */
+  --teal: #10b981;
+  --teal-soft: #d1f5e5; /* mint tint for chips */
+  --secondary: #e8f3ee;
+  --secondary-foreground: #0b3d2e; /* Forest */
+  --muted: #eef2f0;
+  --muted-foreground: #5c6b64;
+  --accent: #a7f3d0; /* Mint Tint */
+  --accent-foreground: #0b3d2e;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --positive: #047857; /* deep emerald — the semantic "yes" */
+  --warning: #b45309; /* amber, off-palette by design (must not read green) */
+  --negative: #dc2626;
+  --border: #e2e8e4;
+  --input: #e2e8e4;
+  --ring: #10b981;
+  /* Sidebar: light mint-tinted paper, Forest text accents */
+  --sidebar: #ecf3ef;
+  --sidebar-foreground: #1b2a24;
+  --sidebar-primary: #10b981;
+  --sidebar-primary-foreground: #08301f;
+  --sidebar-accent: #c9eedc; /* mint active state */
+  --sidebar-accent-foreground: #0b3d2e; /* Forest */
+  --sidebar-border: #dde7e1;
+  --sidebar-ring: #10b981;
 }
 
 .dark {
-  --background: oklch(0.16 0.015 250);
-  --surface: oklch(0.19 0.015 250);
-  --surface-2: oklch(0.22 0.015 250);
-  --foreground: oklch(0.95 0.005 90);
-  --card: oklch(0.2 0.015 250);
-  --card-foreground: oklch(0.95 0.005 90);
-  --popover: oklch(0.2 0.015 250);
-  --popover-foreground: oklch(0.95 0.005 90);
-  --primary: oklch(0.72 0.09 190);
-  --primary-foreground: oklch(0.16 0.015 250);
-  --teal: oklch(0.72 0.09 190);
-  --teal-soft: oklch(0.3 0.05 195);
-  --secondary: oklch(0.25 0.015 250);
-  --secondary-foreground: oklch(0.95 0.005 90);
-  --muted: oklch(0.23 0.015 250);
-  --muted-foreground: oklch(0.68 0.015 250);
-  --accent: oklch(0.28 0.04 195);
-  --accent-foreground: oklch(0.92 0.02 190);
-  --destructive: oklch(0.6 0.2 27);
-  --destructive-foreground: oklch(0.98 0 0);
-  --positive: oklch(0.72 0.13 155);
-  --warning: oklch(0.78 0.14 75);
-  --negative: oklch(0.7 0.18 27);
-  --border: oklch(1 0 0 / 8%);
+  /* Charcoal graduates from ink to canvas */
+  --background: #111827;
+  --surface: #161f2e;
+  --surface-2: #1d2838;
+  --foreground: #f3f5f7;
+  --card: #172131;
+  --card-foreground: #f3f5f7;
+  --popover: #172131;
+  --popover-foreground: #f3f5f7;
+  --primary: #34d399; /* brighter emerald for dark */
+  --primary-foreground: #08241a;
+  --teal: #34d399;
+  --teal-soft: #10402f;
+  --secondary: #1f2a3a;
+  --secondary-foreground: #e3f5ec;
+  --muted: #1c2636;
+  --muted-foreground: #93a3ad;
+  --accent: #14503c; /* forest hover/selected */
+  --accent-foreground: #a7f3d0; /* mint text */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --positive: #34d399;
+  --warning: #f59e0b;
+  --negative: #f87171;
+  --border: oklch(1 0 0 / 9%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.72 0.09 190);
-  --sidebar: oklch(0.18 0.015 250);
-  --sidebar-foreground: oklch(0.9 0.005 90);
-  --sidebar-primary: oklch(0.72 0.09 190);
-  --sidebar-primary-foreground: oklch(0.16 0.015 250);
-  --sidebar-accent: oklch(0.25 0.03 195);
-  --sidebar-accent-foreground: oklch(0.92 0.02 190);
-  --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.72 0.09 190);
+  --ring: #34d399;
+  /* Forest Green sidebar — institutional anchor (works with light text) */
+  --sidebar: #0b3d2e;
+  --sidebar-foreground: #dcefe6;
+  --sidebar-primary: #34d399;
+  --sidebar-primary-foreground: #06281d;
+  --sidebar-accent: #14503c;
+  --sidebar-accent-foreground: #eafbf2;
+  --sidebar-border: #14432f;
+  --sidebar-ring: #34d399;
 }
 
 @layer base {
