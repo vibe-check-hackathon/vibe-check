@@ -325,6 +325,10 @@
       }
       .signoff.in {
         opacity: 1;
+        cursor: pointer;
+      }
+      .signoff.in:hover {
+        background: rgba(63, 185, 80, 0.08);
       }
     </style>
   </head>
@@ -343,7 +347,7 @@
         <!-- ============ 01 SOURCING ============ -->
         <section class="step" data-step="1">
           <div class="step-tag" style="color: var(--blue)">Stage 01</div>
-          <h2>Sourcing</h2>
+          <h2>Source</h2>
           <p class="lede">
             Inbound and outbound signal parsed into verifiable facts. Founders and ideas recognized across opportunities. Data lands in the Card with source
             attached.
@@ -414,7 +418,7 @@
         <!-- ============ 02 RESEARCHING ============ -->
         <section class="step" data-step="2">
           <div class="step-tag" style="color: var(--purple)">Stage 02</div>
-          <h2>Researching</h2>
+          <h2>Research</h2>
           <p class="lede">
             Investment thesis drives evaluation. Due diligence per axis: Founder, Market, Finance, Legal & Ops. Risks and gaps flagged for interview.
           </p>
@@ -470,7 +474,7 @@
               <text x="230" y="317" text-anchor="middle" font-size="11" font-weight="600" fill="#bc8cff">DRAFT TERM SHEET</text>
               <text x="230" y="333" text-anchor="middle" font-size="9" fill="#8b949e">weighted composite evidence</text>
             </svg>
-            <figcaption>fig 2 — three independent lenses</figcaption>
+            <figcaption>fig 2 — thesis driven analysis</figcaption>
           </figure>
         </section>
 
@@ -615,16 +619,19 @@
                 </div>
                 <time>14:32:09</time>
               </div>
-              <div class="signoff">✔ interviewer-agent: deal converged within human-approved bounds — card locked &amp; routed to investor</div>
+              <div class="signoff" id="signoff">✔ interviewer-agent: deal converged within human-approved bounds; card locked &amp; routed to investor</div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <script>
+    <script type="module">
+      import confetti from "https://esm.sh/canvas-confetti@1.9.3";
+
       const statusEl = document.getElementById("status");
       const emptyEl = document.getElementById("empty");
+      const signoffEl = document.getElementById("signoff");
       const steps = [...document.querySelectorAll(".step")];
       const visible = new Set();
       const timers = new Map();
@@ -683,6 +690,11 @@
       );
 
       steps.forEach((step) => observer.observe(step));
+
+      // click the green dashed signoff (revealed at the bottom) to fire confetti
+      signoffEl.addEventListener("click", () => {
+        confetti({ particleCount: 140, spread: 75, origin: { y: 0.6 } });
+      });
     </script>
   </body>
 </html>
