@@ -30,17 +30,16 @@ const QUOTES: Record<string, Record<string, { q: string; t: string }>> = {
   },
 };
 
-type Tab = "FND-0007" | "FND-0008" | "TEAM";
+type Tab = string; // a founder id, or "TEAM"
 
 function FounderPage() {
-  const [tab, setTab] = useState<Tab>("FND-0007");
-  const ada = ACME_FOUNDERS[0];
-  const minh = ACME_FOUNDERS[1];
+  const [tab, setTab] = useState<Tab>(ACME_FOUNDERS[0].id);
+  const active = ACME_FOUNDERS.find((f) => f.id === tab);
 
   return (
     <AppShell>
       <PageHeader
-        crumbs={["Founders", "Acme Robotics", tab === "TEAM" ? "Team overview" : (tab === "FND-0007" ? "Ada Keller" : "Minh Tran")]}
+        crumbs={["Founders", "Acme Robotics", active?.name ?? "Team overview"]}
         eyebrow="Founder psychogram · OPP-2026-0001 · Acme Robotics"
         title="Founder psychogram"
         description="Five-axis, evidence-based founder profiles. Sub-scores stay separate — the headline number never hides its components."
@@ -51,7 +50,7 @@ function FounderPage() {
       <div className="px-8 pt-5">
         <div className="rounded-md border border-warning/40 bg-warning/5 px-4 py-2.5 flex items-start gap-2.5 text-[12px] text-foreground/90">
           <Lock className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
-          <span>This scored psychogram runs only on the fictional <span className="font-medium">Acme</span> demo. Real Maschmeyer founders (Secfix, deskbird, VoiceLine…) are shown from public data and <span className="font-medium">deliberately never scored</span> — the suite does not fabricate psychometric judgments of real people.</span>
+          <span>This scored psychogram runs only on the <span className="font-medium">Acme</span> demo, whose founders are members of this team using their own names and photos with consent. Third-party founders (Secfix, deskbird, VoiceLine…) are shown from public data and <span className="font-medium">deliberately never scored</span> — the suite does not fabricate psychometric judgments of people who have not opted in.</span>
         </div>
       </div>
 
@@ -59,13 +58,22 @@ function FounderPage() {
 
       <div className="px-8 pt-4">
         <div className="flex gap-2">
-          <TabBtn active={tab === "FND-0007"} onClick={() => setTab("FND-0007")} initials="AK" color="var(--primary)">Ada Keller <span className="text-muted-foreground font-normal">CEO</span></TabBtn>
-          <TabBtn active={tab === "FND-0008"} onClick={() => setTab("FND-0008")} initials="MT" color="var(--positive)">Minh Tran <span className="text-muted-foreground font-normal">CTO</span></TabBtn>
+          {ACME_FOUNDERS.map((f) => (
+            <TabBtn
+              key={f.id}
+              active={tab === f.id}
+              onClick={() => setTab(f.id)}
+              initials={f.initials}
+              photo={f.photo}
+            >
+              {f.name} <span className="text-muted-foreground font-normal">{f.role}</span>
+            </TabBtn>
+          ))}
           <TabBtn active={tab === "TEAM"} onClick={() => setTab("TEAM")} initials="✦">Team overview</TabBtn>
         </div>
       </div>
 
-      {tab === "TEAM" ? <TeamView ada={ada} minh={minh} /> : <FounderView founder={tab === "FND-0007" ? ada : minh} />}
+      {active ? <FounderView founder={active} /> : <TeamView ada={ACME_FOUNDERS[0]} minh={ACME_FOUNDERS[1]} />}
     </AppShell>
   );
 }
@@ -78,9 +86,16 @@ function FounderView({ founder }: { founder: DemoFounder }) {
       <div className="space-y-4">
         <Card className="p-5">
           <div className="flex items-center justify-between mb-2">
-            <div>
-              <div className="text-[15px] font-medium">{founder.name} — {founder.role}</div>
-              <div className="text-[11px] text-muted-foreground">{founder.id}</div>
+            <div className="flex items-center gap-3">
+              {founder.photo ? (
+                <img src={founder.photo} alt={founder.name} className="h-11 w-11 rounded-full object-cover" />
+              ) : (
+                <span className="h-11 w-11 rounded-full bg-surface-2 grid place-items-center text-[13px] font-semibold">{founder.initials}</span>
+              )}
+              <div>
+                <div className="text-[15px] font-medium">{founder.name} — {founder.role}</div>
+                <div className="text-[11px] text-muted-foreground">{founder.id}</div>
+              </div>
             </div>
             <div className="text-right">
               <div className="font-serif text-[30px] leading-none">{founder.score}<span className="text-[14px] text-muted-foreground">/100</span></div>
@@ -202,10 +217,14 @@ function TeamView({ ada, minh }: { ada: DemoFounder; minh: DemoFounder }) {
   );
 }
 
-function TabBtn({ active, onClick, initials, color, children }: { active: boolean; onClick: () => void; initials: string; color?: string; children: React.ReactNode }) {
+function TabBtn({ active, onClick, initials, color, photo, children }: { active: boolean; onClick: () => void; initials: string; color?: string; photo?: string | null; children: React.ReactNode }) {
   return (
     <button onClick={onClick} className={"flex items-center gap-2 rounded-full border pl-1.5 pr-3.5 py-1.5 text-[13px] font-medium transition-colors " + (active ? "border-primary text-foreground" : "border-border text-muted-foreground hover:bg-surface")}>
-      <span className="h-6 w-6 rounded-full grid place-items-center text-[10px] font-semibold text-primary-foreground" style={{ background: color ?? "var(--muted-foreground)" }}>{initials}</span>
+      {photo ? (
+        <img src={photo} alt="" className="h-6 w-6 rounded-full object-cover" />
+      ) : (
+        <span className="h-6 w-6 rounded-full grid place-items-center text-[10px] font-semibold text-primary-foreground" style={{ background: color ?? "var(--muted-foreground)" }}>{initials}</span>
+      )}
       {children}
     </button>
   );

@@ -19,7 +19,7 @@ import {
 import logo from "@/assets/vibecheck.svg.asset.json";
 import { PipelineStages, isPipelineRoute, PIPELINE_STAGES } from "@/components/PipelineStages";
 import { Checky } from "@/components/Checky";
-import { STARTUPS, INVESTOR } from "@/lib/data";
+import { STARTUPS, INVESTOR, STARTUP_USER } from "@/lib/data";
 import { useViewMode, type ViewMode } from "@/lib/view-mode";
 
 /**
@@ -58,6 +58,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
    * preview the startup side without logging out. */
   const { mode, setMode } = useViewMode();
   const NAV = mode === "investor" ? INVESTOR_NAV : STARTUP_NAV;
+  const person = mode === "investor" ? INVESTOR : STARTUP_USER;
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const search = useRouterState({ select: (s) => s.location.search as { sector?: string } });
   const navigate = useNavigate();
@@ -221,7 +222,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 )}
               </div>
 
-              <div className="hidden md:flex items-center gap-2">
+              {/* ml-auto keeps the profile block pinned to the top-right corner */}
+              <div className="ml-auto hidden md:flex items-center gap-2">
                 <button className="h-8 rounded-md border border-border bg-surface px-2.5 text-[12px] text-muted-foreground hover:text-foreground">
                   Q3 · 2026
                 </button>
@@ -279,21 +281,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     onClick={() => setMenu(menu === "user" ? null : "user")}
                     className="flex items-center gap-2 h-8 rounded-md border border-border bg-surface pl-1 pr-2 hover:bg-accent transition-colors"
                   >
-                    <Avatar />
+                    <Avatar person={person} />
                     <span className="hidden lg:block text-[12px] font-medium leading-none">
-                      {mode === "investor" ? INVESTOR.name : "Acme Robotics"}
+                      {person.name}
                     </span>
                     <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </button>
                   {menu === "user" && (
                     <div className="absolute right-0 top-10 w-60 rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50 py-1">
                       <div className="px-3 py-2 border-b border-border">
-                        <div className="text-[12.5px] font-medium">
-                          {mode === "investor" ? INVESTOR.name : "Acme Robotics"}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground">
-                          {mode === "investor" ? INVESTOR.role : "Founder · applicant"}
-                        </div>
+                        <div className="text-[12.5px] font-medium">{person.name}</div>
+                        <div className="text-[11px] text-muted-foreground">{person.role}</div>
                       </div>
                       <MenuItem onClick={() => { setMenu(null); navigate({ to: "/settings" as never }); }}>Settings</MenuItem>
                       <MenuItem onClick={() => { logout(); window.location.href = "/apply"; }}>Log out</MenuItem>
@@ -320,57 +318,70 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Investor photo when one is supplied, initials until then. */
-function Avatar() {
-  if (INVESTOR.avatarUrl) {
-    return (
-      <img
-        src={INVESTOR.avatarUrl}
-        alt={INVESTOR.name}
-        className="h-6 w-6 rounded-full object-cover"
-      />
-    );
+/** Photo for whichever profile is active; initials until a photo is supplied. */
+function Avatar({ person }: { person: { name: string; initials: string; avatarUrl: string | null } }) {
+  if (person.avatarUrl) {
+    return <img src={person.avatarUrl} alt={person.name} className="h-6 w-6 rounded-full object-cover" />;
   }
   return (
     <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground grid place-items-center text-[10px] font-semibold">
-      {INVESTOR.initials}
+      {person.initials}
     </span>
   );
 }
 
-/** Segmented investor/startup toggle, pinned in the header's top-right group. */
+/** Dropdown for picking which profile you are viewing. Pinned top-right. */
 function ProfileSwitcher({ mode, setMode }: { mode: ViewMode; setMode: (m: ViewMode) => void }) {
-  const options: { id: ViewMode; label: string; icon: typeof Briefcase }[] = [
-    { id: "investor", label: "Investor", icon: Briefcase },
-    { id: "startup", label: "Startup", icon: Building2 },
+  const [open, setOpen] = useState(false);
+  const options: { id: ViewMode; label: string; sub: string; icon: typeof Briefcase }[] = [
+    { id: "investor", label: "Investor", sub: `${INVESTOR.name} · ${INVESTOR.role}`, icon: Briefcase },
+    { id: "startup", label: "Startup", sub: `${STARTUP_USER.name} · ${STARTUP_USER.company}`, icon: Building2 },
   ];
+  const current = options.find((o) => o.id === mode)!;
+  const Icon = current.icon;
 
   return (
-    <div
-      role="tablist"
-      aria-label="Profile view"
-      className="flex items-center gap-0.5 h-8 rounded-md border border-border bg-surface p-0.5"
-    >
-      {options.map(({ id, label, icon: Icon }) => {
-        const active = mode === id;
-        return (
-          <button
-            key={id}
-            role="tab"
-            aria-selected={active}
-            onClick={() => setMode(id)}
-            className={
-              "h-7 rounded px-2 text-[12px] flex items-center gap-1.5 transition-colors " +
-              (active
-                ? "bg-primary text-primary-foreground font-medium"
-                : "text-muted-foreground hover:text-foreground")
-            }
-          >
-            <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
-            <span className="hidden sm:block">{label}</span>
-          </button>
-        );
-      })}
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className="h-8 rounded-md border border-border bg-surface px-2.5 text-[12px] flex items-center gap-1.5 hover:bg-accent transition-colors"
+      >
+        <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+        <span className="hidden sm:block">{current.label}</span>
+        <ChevronDown className="h-3 w-3 text-muted-foreground" />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div role="listbox" className="absolute right-0 top-10 w-64 rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50 py-1">
+            <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+              View as
+            </div>
+            {options.map((o) => {
+              const OptIcon = o.icon;
+              const active = o.id === mode;
+              return (
+                <button
+                  key={o.id}
+                  role="option"
+                  aria-selected={active}
+                  onClick={() => { setMode(o.id); setOpen(false); }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-surface transition-colors"
+                >
+                  <OptIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" strokeWidth={1.75} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[12.5px] font-medium">{o.label}</span>
+                    <span className="block text-[11px] text-muted-foreground truncate">{o.sub}</span>
+                  </span>
+                  {active && <Check className="h-3.5 w-3.5 text-primary shrink-0" />}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }

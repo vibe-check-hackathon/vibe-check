@@ -112,17 +112,24 @@ const ACME_STARTUP: Startup = {
   founders: [
     {
       id: "FND-0007",
-      name: "Ada Keller",
+      name: "Martin Auer",
       role: "CEO",
       assessed: true,
-      avatar: { type: "initials", value: "AK", basis: "fictional demo founder" },
+      avatar: { type: "initials", value: "MA", basis: "team demo founder" },
     },
     {
       id: "FND-0008",
-      name: "Minh Tran",
+      name: "Sun Chuanqi",
       role: "CTO",
       assessed: true,
-      avatar: { type: "initials", value: "MT", basis: "fictional demo founder" },
+      avatar: { type: "image", value: "/sun-chuanqi.jpg", basis: "team demo founder" },
+    },
+    {
+      id: "FND-0009",
+      name: "Laura Spies",
+      role: "COO",
+      assessed: true,
+      avatar: { type: "image", value: "/laura-spies.png", basis: "team demo founder" },
     },
   ],
   stage: "Interview",
@@ -454,6 +461,8 @@ export type DemoFounder = {
   name: string;
   role: string;
   initials: string;
+  /** Path under public/. Null falls back to initials. */
+  photo: string | null;
   score: number;
   confidence: number;
   trend: "improving" | "stable";
@@ -472,9 +481,11 @@ export const AXIS_FULL: Record<string, string> = {
 export const ACME_FOUNDERS: DemoFounder[] = [
   {
     id: "FND-0007",
-    name: "Ada Keller",
+    name: "Martin Auer",
     role: "CEO",
-    initials: "AK",
+    initials: "MA",
+    photo: null, // no photo file supplied yet — see STARTUP_USER
+
     score: 76,
     confidence: 60,
     trend: "improving",
@@ -490,9 +501,10 @@ export const ACME_FOUNDERS: DemoFounder[] = [
   },
   {
     id: "FND-0008",
-    name: "Minh Tran",
+    name: "Sun Chuanqi",
     role: "CTO",
-    initials: "MT",
+    initials: "SC",
+    photo: "/sun-chuanqi.jpg",
     score: 72,
     confidence: 62,
     trend: "stable",
@@ -503,6 +515,25 @@ export const ACME_FOUNDERS: DemoFounder[] = [
       { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 79, conf: 65 },
       { key: "Curiosity", full: AXIS_FULL.Curiosity, v: 83, conf: 66 },
       { key: "Perseverance", full: AXIS_FULL.Perseverance, v: 70, conf: 52 },
+      { key: "Co-founder fit", full: AXIS_FULL["Co-founder fit"], v: 75, conf: 50 },
+    ],
+  },
+  {
+    id: "FND-0009",
+    name: "Laura Spies",
+    role: "COO",
+    initials: "LS",
+    photo: "/laura-spies.png",
+    score: 74,
+    confidence: 58,
+    trend: "improving",
+    history:
+      "Built the sourcing and screening pipeline end to end; owns the opportunity database and the fund-thesis lens.",
+    axes: [
+      { key: "Resilience", full: AXIS_FULL.Resilience, v: 76, conf: 58 },
+      { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 81, conf: 62 },
+      { key: "Curiosity", full: AXIS_FULL.Curiosity, v: 79, conf: 60 },
+      { key: "Perseverance", full: AXIS_FULL.Perseverance, v: 72, conf: 54 },
       { key: "Co-founder fit", full: AXIS_FULL["Co-founder fit"], v: 75, conf: 50 },
     ],
   },
@@ -538,6 +569,21 @@ export const ACME_TEAM = {
  * `avatarUrl` points at the photo in `public/`. Set it to null to fall back to
  * initials.
  */
+/**
+ * The signed-in founder on the startup side of the switcher.
+ *
+ * `avatarUrl` is null until Martin's photo is saved into `public/` — set it to
+ * "/martin-auer.jpg" (or whatever the file is called) and the header, the
+ * psychogram tab and the founder card all pick it up.
+ */
+export const STARTUP_USER = {
+  name: "Martin Auer",
+  initials: "MA",
+  role: "Founder · applicant",
+  company: "Acme Robotics",
+  avatarUrl: null as string | null,
+};
+
 export const INVESTOR = {
   name: "Carl-Philipp Beichert",
   initials: "CB",
