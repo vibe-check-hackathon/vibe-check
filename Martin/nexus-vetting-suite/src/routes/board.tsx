@@ -1,10 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Section, Card, Badge } from "@/components/ui-kit";
 import { STARTUPS, STAGES, stageColor, scoreTone, fmtScore, type Stage } from "@/lib/data";
-import { Filter, LayoutGrid, Rows, Plus } from "lucide-react";
+import { LayoutGrid, Rows, Plus, X } from "lucide-react";
 
 export const Route = createFileRoute("/board")({
+  validateSearch: (search: Record<string, unknown>): { sector?: string } => ({
+    sector: typeof search.sector === "string" ? search.sector : undefined,
+  }),
   head: () => ({
     meta: [{ title: "Board · VibeCheck" }],
   }),
@@ -12,8 +15,12 @@ export const Route = createFileRoute("/board")({
 });
 
 function BoardPage() {
+  const { sector } = Route.useSearch();
+  const navigate = useNavigate();
+  const deals = sector ? STARTUPS.filter((x) => x.sector === sector) : STARTUPS;
+
   const byStage: Record<Stage, typeof STARTUPS> = Object.fromEntries(
-    STAGES.map((s) => [s, STARTUPS.filter((x) => x.stage === s)]),
+    STAGES.map((s) => [s, deals.filter((x) => x.stage === s)]),
   ) as never;
 
   return (
@@ -32,9 +39,14 @@ function BoardPage() {
                 <Rows className="h-3 w-3" /> Table
               </button>
             </div>
-            <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5">
-              <Filter className="h-3 w-3" /> Filters · 2
-            </button>
+            {sector && (
+              <button
+                onClick={() => navigate({ to: "/board", search: {} })}
+                className="h-8 rounded-md border border-ring bg-accent text-accent-foreground px-3 text-[12px] flex items-center gap-1.5"
+              >
+                {sector} <X className="h-3 w-3" />
+              </button>
+            )}
           </>
         }
       />
@@ -113,7 +125,7 @@ function BoardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {STARTUPS.map((s) => (
+              {deals.map((s) => (
                 <tr key={s.id} className="hover:bg-surface/60 cursor-pointer">
                   <td className="px-4 py-2.5">
                     <div className="font-medium">{s.company}</div>

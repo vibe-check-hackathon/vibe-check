@@ -10,8 +10,9 @@ import {
   Command,
   Bell,
   Mic,
-  Plus,
   CornerDownLeft,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 import logo from "@/assets/vibecheck.svg.asset.json";
 import { STARTUPS } from "@/lib/data";
@@ -25,12 +26,16 @@ const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: bo
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
+const SECTORS = Array.from(new Set(STARTUPS.map((s) => s.sector))).sort();
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const search = useRouterState({ select: (s) => s.location.search as { sector?: string } });
   const navigate = useNavigate();
 
   const [q, setQ] = useState("");
-  const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [menu, setMenu] = useState<null | "bell" | "user" | "sectors">(null);
 
   const results = useMemo(() => {
     const t = q.trim().toLowerCase();
@@ -43,10 +48,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     ).slice(0, 6);
   }, [q]);
 
-  const go = (id: string, demo?: boolean) => {
+  const activeSector = search?.sector;
+
+  const go = (demo?: boolean) => {
     setQ("");
-    setOpen(false);
+    setSearchOpen(false);
     navigate({ to: (demo ? "/applications" : "/board") as never });
+  };
+
+  const pickSector = (sector?: string) => {
+    setMenu(null);
+    navigate({ to: "/board" as never, search: (sector ? { sector } : {}) as never });
   };
 
   return (
@@ -58,7 +70,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           style={{ backgroundImage: "linear-gradient(180deg, var(--sidebar), color-mix(in srgb, var(--sidebar) 80%, #000))" }}
         >
           <div className="flex h-14 items-center gap-2 px-5 border-b border-sidebar-border">
-            <img src={logo.url} alt="Maschmeyer Investment Group" className="h-6 w-6" />
+            <img src={logo.url} alt="Maschmeyer Group" className="h-6 w-6" />
             <div className="flex items-baseline gap-1.5">
               <span className="font-serif text-[17px] leading-none tracking-tight text-sidebar-foreground">
                 Maschmeyer
@@ -104,44 +116,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
-
-          <div className="mx-3 mb-3 rounded-md border border-sidebar-border bg-black/15 p-3">
-            <div className="flex items-center gap-2">
-              <div className="h-1.5 w-1.5 rounded-full bg-sidebar-primary pulse-dot" />
-              <div className="text-[11px] font-medium text-sidebar-foreground">1 memo due · 24h</div>
-            </div>
-            <div className="mt-1 text-[11px] text-sidebar-foreground/60 leading-snug">
-              Acme Robotics awaiting IC · live interview in progress.
-            </div>
-          </div>
-
-          <div className="border-t border-sidebar-border px-3 py-2.5 flex items-center gap-2.5">
-            <div className="h-7 w-7 rounded-full bg-sidebar-primary text-sidebar-primary-foreground grid place-items-center text-[11px] font-semibold">
-              MK
-            </div>
-            <div className="min-w-0">
-              <div className="text-[12px] font-medium truncate text-sidebar-foreground">Marlene Krüger</div>
-              <div className="text-[10px] text-sidebar-foreground/50 truncate">
-                Partner · Screening lead
-              </div>
-            </div>
-          </div>
         </aside>
 
         {/* Main */}
         <div className="flex-1 flex flex-col min-w-0">
           <header className="sticky top-0 z-30 h-14 border-b border-border bg-background/85 backdrop-blur">
             <div className="h-full flex items-center gap-3 px-6">
+              {/* Search */}
               <div className="relative flex-1 max-w-xl">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground z-10" />
                 <input
                   value={q}
-                  onChange={(e) => { setQ(e.target.value); setOpen(true); }}
-                  onFocus={() => setOpen(true)}
-                  onBlur={() => setTimeout(() => setOpen(false), 120)}
+                  onChange={(e) => { setQ(e.target.value); setSearchOpen(true); }}
+                  onFocus={() => setSearchOpen(true)}
+                  onBlur={() => setTimeout(() => setSearchOpen(false), 120)}
                   onKeyDown={(e) => {
-                    if (e.key === "Escape") { setOpen(false); (e.target as HTMLInputElement).blur(); }
-                    if (e.key === "Enter" && results[0]) go(results[0].id, results[0].demo);
+                    if (e.key === "Escape") { setSearchOpen(false); (e.target as HTMLInputElement).blur(); }
+                    if (e.key === "Enter" && results[0]) go(results[0].demo);
                   }}
                   className="w-full h-8 rounded-md border border-border bg-surface pl-8 pr-16 text-[13px] placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-ring"
                   placeholder="Search companies, founders, sectors…"
@@ -151,8 +142,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <Command className="h-2.5 w-2.5" /> K
                   </kbd>
                 </div>
-
-                {open && q.trim() && (
+                {searchOpen && q.trim() && (
                   <div className="absolute left-0 right-0 top-10 rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50">
                     {results.length === 0 ? (
                       <div className="px-3 py-3 text-[12.5px] text-muted-foreground">No matches for “{q}”.</div>
@@ -161,7 +151,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         <button
                           key={s.id}
                           onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => go(s.id, s.demo)}
+                          onClick={() => go(s.demo)}
                           className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-surface transition-colors"
                         >
                           <div className="h-7 w-7 rounded-md bg-surface-2 grid place-items-center text-[11px] font-serif text-foreground/80 shrink-0">
@@ -185,19 +175,77 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   </div>
                 )}
               </div>
+
               <div className="hidden md:flex items-center gap-2">
                 <button className="h-8 rounded-md border border-border bg-surface px-2.5 text-[12px] text-muted-foreground hover:text-foreground">
                   Q3 · 2026
                 </button>
-                <button className="h-8 rounded-md border border-border bg-surface px-2.5 text-[12px] text-muted-foreground hover:text-foreground">
-                  All sectors
-                </button>
-                <button className="h-8 w-8 rounded-md border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground">
-                  <Bell className="h-3.5 w-3.5" />
-                </button>
-                <button className="h-8 rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground hover:opacity-90 flex items-center gap-1.5">
-                  <Plus className="h-3.5 w-3.5" /> Add opportunity
-                </button>
+
+                {/* Sector filter */}
+                <div className="relative">
+                  <button
+                    onClick={() => setMenu(menu === "sectors" ? null : "sectors")}
+                    className={"h-8 rounded-md border px-2.5 text-[12px] flex items-center gap-1.5 " + (activeSector ? "border-ring text-foreground bg-accent" : "border-border bg-surface text-muted-foreground hover:text-foreground")}
+                  >
+                    {activeSector ?? "All sectors"} <ChevronDown className="h-3 w-3" />
+                  </button>
+                  {menu === "sectors" && (
+                    <div className="absolute right-0 top-10 w-56 rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50 py-1">
+                      <MenuItem active={!activeSector} onClick={() => pickSector(undefined)}>All sectors</MenuItem>
+                      {SECTORS.map((sec) => (
+                        <MenuItem key={sec} active={activeSector === sec} onClick={() => pickSector(sec)}>{sec}</MenuItem>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Notifications (moved from sidebar) */}
+                <div className="relative">
+                  <button
+                    onClick={() => setMenu(menu === "bell" ? null : "bell")}
+                    className="relative h-8 w-8 rounded-md border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground"
+                  >
+                    <Bell className="h-3.5 w-3.5" />
+                    <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-teal ring-2 ring-background" />
+                  </button>
+                  {menu === "bell" && (
+                    <div className="absolute right-0 top-10 w-72 rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50">
+                      <div className="px-3 py-2 border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">Notifications</div>
+                      <button
+                        onClick={() => { setMenu(null); navigate({ to: "/interviews" as never }); }}
+                        className="w-full text-left px-3 py-2.5 hover:bg-surface transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-teal pulse-dot" />
+                          <span className="text-[12.5px] font-medium">1 memo due · 24h</span>
+                        </div>
+                        <div className="mt-0.5 pl-3.5 text-[11.5px] text-muted-foreground leading-snug">Acme Robotics awaiting IC · live interview in progress.</div>
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* User (moved from sidebar) */}
+                <div className="relative pl-1">
+                  <button
+                    onClick={() => setMenu(menu === "user" ? null : "user")}
+                    className="flex items-center gap-2 h-8 rounded-md border border-border bg-surface pl-1 pr-2 hover:bg-accent transition-colors"
+                  >
+                    <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground grid place-items-center text-[10px] font-semibold">MK</span>
+                    <span className="hidden lg:block text-[12px] font-medium leading-none">Marlene Krüger</span>
+                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                  </button>
+                  {menu === "user" && (
+                    <div className="absolute right-0 top-10 w-56 rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50 py-1">
+                      <div className="px-3 py-2 border-b border-border">
+                        <div className="text-[12.5px] font-medium">Marlene Krüger</div>
+                        <div className="text-[11px] text-muted-foreground">Partner · Screening lead</div>
+                      </div>
+                      <MenuItem onClick={() => { setMenu(null); navigate({ to: "/settings" as never }); }}>Settings</MenuItem>
+                      <MenuItem onClick={() => setMenu(null)}>Sign out</MenuItem>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </header>
@@ -205,6 +253,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <main className="flex-1 min-w-0">{children}</main>
         </div>
       </div>
+
+      {/* click-away backdrop for header menus */}
+      {menu && <div className="fixed inset-0 z-40" onClick={() => setMenu(null)} />}
     </div>
+  );
+}
+
+function MenuItem({ children, onClick, active }: { children: React.ReactNode; onClick: () => void; active?: boolean }) {
+  return (
+    <button onClick={onClick} className="w-full flex items-center justify-between px-3 py-1.5 text-[12.5px] text-foreground hover:bg-surface transition-colors">
+      <span>{children}</span>
+      {active && <Check className="h-3.5 w-3.5 text-primary" />}
+    </button>
   );
 }
