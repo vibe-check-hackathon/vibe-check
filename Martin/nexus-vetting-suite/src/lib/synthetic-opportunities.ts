@@ -59,6 +59,7 @@ type OutboundOpp = SyntheticOpp & {
   /** Added by the live LLM scan (POST /outbound-scan) rather than the research doc. */
   freshScan?: boolean;
   verification?: string;
+  screening?: { pass: boolean; hardFails: string[]; softFlags: string[] };
 };
 
 function moneyLabel(amount?: number) {
@@ -152,6 +153,7 @@ function mapOutboundSelected(o: OutboundOpp): Startup {
     activitySignal: o.activitySignal,
     outboundRationale: o.outboundRationale,
     sources: o.sources,
+    screening: o.screening,
   };
 }
 

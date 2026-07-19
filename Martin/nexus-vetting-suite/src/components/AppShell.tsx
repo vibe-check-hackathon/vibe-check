@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import { PipelineStages, isPipelineRoute, PIPELINE_STAGES } from "@/components/PipelineStages";
 import { Checky } from "@/components/Checky";
-import { STARTUPS, INVESTOR, STARTUP_USER } from "@/lib/data";
+import { STARTUPS, INVESTOR, STARTUP_USER, type Startup } from "@/lib/data";
+import { loadSyntheticStartups } from "@/lib/synthetic-opportunities";
 import { useViewMode, type ViewMode } from "@/lib/view-mode";
 
 /**
@@ -63,24 +64,34 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [q, setQ] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [menu, setMenu] = useState<null | "bell" | "user" | "sectors">(null);
+  const [synthetic, setSynthetic] = useState<Startup[]>([]);
+  useEffect(() => {
+    loadSyntheticStartups().then(setSynthetic).catch(() => {});
+  }, []);
 
+  // Global search covers every deal on the board — real cards, current
+  // applications, outbound finds — and opens the full pipeline check for it.
   const results = useMemo(() => {
     const t = q.trim().toLowerCase();
     if (!t) return [];
-    return STARTUPS.filter(
-      (s) =>
-        s.company.toLowerCase().includes(t) ||
-        s.sector.toLowerCase().includes(t) ||
-        s.founders.some((f) => f.name.toLowerCase().includes(t)),
-    ).slice(0, 6);
-  }, [q]);
+    return [...STARTUPS, ...synthetic]
+      .filter(
+        (s) =>
+          s.company.toLowerCase().includes(t) ||
+          s.sector.toLowerCase().includes(t) ||
+          s.founders.some((f) => f.name.toLowerCase().includes(t)),
+      )
+      .slice(0, 6);
+  }, [q, synthetic]);
 
   const activeSector = search?.sector;
 
-  const go = (demo?: boolean) => {
+  /** Open the pipeline for this deal: the decision memo fills itself from the
+   *  deal's evidence — the FirstCheck showcase, but for every company. */
+  const go = (s: Startup) => {
     setQ("");
     setSearchOpen(false);
-    navigate({ to: (demo ? "/applications" : "/board") as never });
+    navigate({ to: "/memo" as never, search: { deal: s.id } as never });
   };
 
   const pickSector = (sector?: string) => {
@@ -178,7 +189,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   onBlur={() => setTimeout(() => setSearchOpen(false), 120)}
                   onKeyDown={(e) => {
                     if (e.key === "Escape") { setSearchOpen(false); (e.target as HTMLInputElement).blur(); }
-                    if (e.key === "Enter" && results[0]) go(results[0].demo);
+                    if (e.key === "Enter" && results[0]) go(results[0]);
                   }}
                   className="w-full h-8 rounded-md border border-border bg-surface pl-8 pr-16 text-[13px] placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-ring"
                   placeholder="Search companies, founders, sectors…"
@@ -197,7 +208,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         <button
                           key={s.id}
                           onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => go(s.demo)}
+                          onClick={() => go(s)}
                           className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-surface transition-colors"
                         >
                           <div className="h-7 w-7 rounded-md bg-surface-2 grid place-items-center text-[11px] font-serif text-foreground/80 shrink-0">

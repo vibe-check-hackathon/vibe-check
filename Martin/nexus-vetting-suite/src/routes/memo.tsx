@@ -1,10 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState, type ReactNode } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge, ScoreBar } from "@/components/ui-kit";
-import { ACME_FOUNDERS } from "@/lib/data";
+import { ACME_FOUNDERS, STARTUPS, outcomeOf, type Startup } from "@/lib/data";
+import { loadSyntheticStartups } from "@/lib/synthetic-opportunities";
+import { useSubmittedApplications, applicationToStartup } from "@/lib/applications";
 import { FileText, ShieldCheck, ShieldAlert, Sparkles, ExternalLink } from "lucide-react";
 
 export const Route = createFileRoute("/memo")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    deal: typeof s.deal === "string" ? s.deal : undefined,
+  }),
   head: () => ({
     meta: [{ title: "Decision Memo · VibeCheck" }],
   }),
@@ -22,6 +28,44 @@ function Source({ id, hint }: { id: string; hint: string }) {
 }
 
 export function MemoPage() {
+  const { deal } = Route.useSearch();
+  const navigate = useNavigate();
+  const [synthetic, setSynthetic] = useState<Startup[]>([]);
+  const submitted = useSubmittedApplications();
+  useEffect(() => {
+    loadSyntheticStartups().then(setSynthetic).catch(() => {});
+  }, []);
+
+  // Every deal the board knows gets a memo filled from its actual data;
+  // the polished FirstCheck walkthrough stays as the default showcase.
+  const all = [...STARTUPS, ...synthetic, ...submitted.map(applicationToStartup)];
+  const selected = deal ? all.find((s) => s.id === deal) : undefined;
+
+  const picker = (
+    <select
+      value={selected?.id ?? "firstcheck-demo"}
+      onChange={(e) =>
+        navigate({
+          to: "/memo" as never,
+          search: (e.target.value === "firstcheck-demo" ? {} : { deal: e.target.value }) as never,
+        })
+      }
+      className="h-8 max-w-[220px] rounded-md border border-border bg-card px-2 text-[12px] outline-none"
+      title="Generate the memo for any deal on the board"
+    >
+      <option value="firstcheck-demo">FirstCheck (demo memo)</option>
+      {all.map((s) => (
+        <option key={s.id} value={s.id}>
+          {s.company}
+        </option>
+      ))}
+    </select>
+  );
+
+  if (selected) {
+    return <DealMemo s={selected} picker={picker} />;
+  }
+
   return (
     <AppShell>
       <PageHeader
@@ -31,6 +75,7 @@ export function MemoPage() {
         description="Generated from 14 evidence sources, 4 references, and 1 four-founder interview. Every claim links to its evidence."
         actions={
           <>
+            {picker}
             <Badge tone="teal">Confidence 84</Badge>
             <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5">
               <FileText className="h-3.5 w-3.5" /> Export PDF
@@ -198,6 +243,201 @@ export function MemoPage() {
                   <ExternalLink className="h-2.5 w-2.5 text-muted-foreground shrink-0 mt-0.5" />
                 </li>
               ))}
+            </ol>
+          </Card>
+        </aside>
+      </div>
+    </AppShell>
+  );
+}
+
+/** Memo for any deal on the board, filled ONLY from the data we actually hold —
+ *  screening verdict, evidence, scores where they exist, honest "not assessed"
+ *  where they don't. Same layout as the FirstCheck showcase. */
+function DealMemo({ s, picker }: { s: Startup; picker: ReactNode }) {
+  const outcome = outcomeOf(s);
+  const screenedOut = s.screening ? !s.screening.pass : false;
+  const flags = s.screening?.softFlags ?? [];
+  const hasScores = s.founderScore != null || s.marketScore != null || s.trustScore != null;
+  const confidence = s.trustScore ?? s.founders.find((f) => f.scoreConfidence != null)?.scoreConfidence ?? null;
+  const evidenceBits = [
+    s.sources?.length ? `${s.sources.length} public sources` : null,
+    s.sourceCardUrl ? "opportunity card" : null,
+    s.screening ? "canonical screen" : null,
+    s.founders.length ? `${s.founders.length} founder record${s.founders.length === 1 ? "" : "s"}` : null,
+  ].filter(Boolean);
+
+  const rec = screenedOut
+    ? { title: "Pass", body: `Screened out: ${s.screening!.hardFails.join("; ")}`, alt1: "Re-screen after the round/stage changes", alt2: "Keep on watchlist" }
+    : outcome
+      ? { title: "Retrospective", body: `${outcome.label}. Historical record — use for evaluation calibration, not a new check.`, alt1: "Compare scored-then vs outcome", alt2: "Mine for portfolio alignment" }
+      : s.outboundSelected
+        ? { title: "Verify & outreach", body: `${s.activitySignal ?? "Outbound signal"}. Verify sources, then personalized outreach — cold outreach, not cold investment.`, alt1: "Monitor until a stronger trigger", alt2: "Pass — off focus" }
+        : s.currentApplication || s.sourceChannel === "Inbound application"
+          ? { title: "Advance to interview", body: "Screening passed; hypotheses are open until the agent interview tests them.", alt1: "Request missing materials first", alt2: "Pass with reasons" }
+          : { title: "Screen", body: "Run the canonical first-pass screen and corroboration before partner time.", alt1: "Watchlist", alt2: "Pass" };
+
+  return (
+    <AppShell>
+      <PageHeader
+        crumbs={["Decision Memo", s.company, "generated from evidence base"]}
+        eyebrow="Investment memorandum"
+        title={`${s.company} · ${s.round} · ${s.ask}`}
+        description={
+          evidenceBits.length
+            ? `Generated from ${evidenceBits.join(", ")}. Every claim below traces to the evidence base — gaps stay visible as gaps.`
+            : "Minimal record — this memo shows exactly how little we know, which is the point."
+        }
+        actions={
+          <>
+            {picker}
+            <Badge tone={confidence != null ? "teal" : "outline"}>{confidence != null ? `Confidence ${confidence}` : "Confidence —"}</Badge>
+            <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5">
+              <FileText className="h-3.5 w-3.5" /> Export PDF
+            </button>
+          </>
+        }
+      />
+
+      <div className="px-8 py-8 grid lg:grid-cols-[1fr_320px] gap-8">
+        <article className="max-w-3xl space-y-8">
+          <section>
+            <SectionTitle n="01" title="Company snapshot" />
+            <Card className="p-0">
+              <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
+                <Snap label="Sector" value={s.sector} />
+                <Snap label="Stage · Ask" value={`${s.round} · ${s.ask}`} />
+                <Snap label="Geo · Submitted" value={`${s.geography} · ${s.submitted}`} />
+                <Snap label="Source" value={s.vehicle ?? s.sourceChannel ?? "—"} />
+              </div>
+              <div className="border-t border-border p-5 text-[13.5px] leading-relaxed text-foreground/90">
+                {s.oneLiner}
+                {s.companyStatus ? ` Status: ${s.companyStatus}.` : ""}
+                {s.realEvent ? ` Public record: ${s.realEvent}.` : ""}
+              </div>
+            </Card>
+          </section>
+
+          {(s.outboundRationale || s.activitySignal) && (
+            <section>
+              <SectionTitle n="02" title="Why this deal, why now" />
+              <Card className="p-5 text-[13px] leading-relaxed text-foreground/90 space-y-2">
+                {s.activitySignal && <p><b>Trigger:</b> {s.activitySignal}</p>}
+                {s.outboundRationale && <p>{s.outboundRationale}</p>}
+              </Card>
+            </section>
+          )}
+
+          <section>
+            <SectionTitle n="03" title="Screening verdict" />
+            {s.screening ? (
+              <ul className="space-y-2">
+                <Issue tag={s.screening.pass ? "Open" : "Contradiction"} text={s.screening.pass ? "Passed the canonical first-pass screen (thesis-parameterized)." : `Hard fail: ${s.screening.hardFails.join("; ")}`} />
+                {flags.map((f) => (
+                  <Issue key={f} tag="Open" text={f} />
+                ))}
+              </ul>
+            ) : (
+              <Card className="p-4 text-[12.5px] text-muted-foreground">
+                No stored screening verdict on this record — it predates the canonical screen or entered as a curated card.
+              </Card>
+            )}
+          </section>
+
+          <section>
+            <SectionTitle n="04" title="Founders" />
+            {s.founders.length ? (
+              <ul className="space-y-3 text-[13px] text-foreground/90">
+                {s.founders.map((f) => {
+                  const rationale = f.scoreRationale && f.scores
+                    ? Object.entries(f.scores).sort((a, b) => b[1] - a[1])
+                    : null;
+                  return (
+                    <li key={f.id ?? f.name} className="rounded-md border border-border p-3">
+                      <b>{f.name}</b>
+                      {f.role && <span className="text-muted-foreground"> — {f.role}</span>}
+                      {f.linkedin && (
+                        <>
+                          {" · "}
+                          <a href={f.linkedin} target="_blank" rel="noreferrer" className="text-primary hover:underline">LinkedIn</a>
+                        </>
+                      )}
+                      {rationale ? (
+                        <div className="mt-1.5 space-y-1 text-[12px] text-muted-foreground">
+                          <div><span className="text-positive">▲</span> {rationale[0][0]} {rationale[0][1]} — {f.scoreRationale![rationale[0][0]]}</div>
+                          <div><span className="text-negative">▼</span> {rationale[rationale.length - 1][0]} {rationale[rationale.length - 1][1]} — {f.scoreRationale![rationale[rationale.length - 1][0]]}</div>
+                        </div>
+                      ) : (
+                        <div className="mt-1 text-[12px] text-muted-foreground">
+                          Public facts only — not assessed. Axis scores require interview evidence; nothing is fabricated for real people.
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <Card className="p-4 text-[12.5px] text-muted-foreground">No founder records on file — a gap, recorded as such.</Card>
+            )}
+          </section>
+
+          <section>
+            <SectionTitle n="05" title="Recommendation" />
+            <div className="grid md:grid-cols-3 gap-3">
+              <Rec title={rec.alt1} tone="muted" body="" />
+              <Rec title={rec.title} tone="teal" body={rec.body} recommended />
+              <Rec title={rec.alt2} tone="muted" body="" />
+            </div>
+          </section>
+        </article>
+
+        <aside className="space-y-4 h-fit lg:sticky lg:top-[72px]">
+          <Card className="p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              <div className="text-[13px] font-medium">Composite view</div>
+            </div>
+            {hasScores ? (
+              <div className="space-y-2.5">
+                {s.founderScore != null && <ScoreBar label="Founder" value={s.founderScore} />}
+                {s.marketScore != null && <ScoreBar label="Market" value={s.marketScore} />}
+                {s.ideaMarketScore != null && <ScoreBar label="Idea ↔ Market" value={s.ideaMarketScore} />}
+                {s.trustScore != null && <ScoreBar label="Trust" value={s.trustScore} />}
+                {s.thesisFit != null && <ScoreBar label="Thesis fit" value={Math.round(s.thesisFit * 100)} />}
+              </div>
+            ) : (
+              <div className="flex items-start gap-2 text-[12px] text-muted-foreground leading-relaxed">
+                <ShieldAlert className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                Not assessed. Axes are scored from interview and corroboration evidence only — unknown ≠ false.
+              </div>
+            )}
+          </Card>
+
+          <Card className="p-0">
+            <div className="px-4 py-3 border-b border-border text-[13px] font-medium">
+              Sources · {s.sources?.length ?? 0}
+            </div>
+            <ol className="p-4 space-y-2 text-[11.5px]">
+              {(s.sources ?? []).map((src, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="font-mono text-primary shrink-0">[{i + 1}]</span>
+                  <a href={src.url} target="_blank" rel="noreferrer" className="text-foreground/85 leading-snug hover:underline">
+                    {src.label}
+                  </a>
+                  <ExternalLink className="h-2.5 w-2.5 text-muted-foreground shrink-0 mt-0.5" />
+                </li>
+              ))}
+              {s.sourceCardUrl && (
+                <li className="flex items-start gap-2">
+                  <span className="font-mono text-primary shrink-0">[C]</span>
+                  <a href={s.sourceCardUrl} target="_blank" rel="noreferrer" className="text-primary leading-snug hover:underline">
+                    Full opportunity card (evidence ledger)
+                  </a>
+                </li>
+              )}
+              {!s.sources?.length && !s.sourceCardUrl && (
+                <li className="text-muted-foreground">No sources on file — treat every statement as claimed.</li>
+              )}
             </ol>
           </Card>
         </aside>
