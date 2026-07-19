@@ -47,10 +47,16 @@ stage there and the bar, the redirect target, and the sidebar all follow.
 `/applications` and `/references` are still live and reachable from search and
 in-page links; they are simply not in the sidebar or the stage bar.
 
-## Profile switcher
+## Access and profile switcher
 
-Top-right of the header, next to the account menu. Toggles which side of the
-marketplace you are on; the choice persists in `localStorage`.
+Two separate mechanisms, deliberately kept both:
+
+- **Login gate** (`src/lib/auth.ts`, `/login`) decides *who you are*. Logged-out
+  visitors are sent to the public `/apply` surface; the investor app is behind
+  the gate. Demo-grade client flag, not security.
+- **Profile switcher** (header, top-right) lets an already-authenticated
+  investor *preview* the startup side without logging out. Persists in
+  `localStorage`.
 
 | View | Sidebar | Stage bar |
 | --- | --- | --- |
@@ -66,9 +72,11 @@ hydration does not mismatch.
 Submitting the apply form runs a chain, all of it server-side in the dev
 middleware (`vite.config.ts`):
 
-1. `POST /apply` screens the application against the fund thesis.
-2. `buildFounderProfiles()` resolves each founder's public profile and drafts
-   the personality hypotheses the agent interview must test.
+1. `POST /apply` normalizes the submission into the pipeline intake shape
+   (`normalizeApplication`) and screens it against the fund thesis.
+2. `buildFounderProfiles()` runs on those normalized founders: it uses the
+   LinkedIn URL the form requires, then drafts the personality hypotheses the
+   agent interview must test.
 3. The record is written to `laura/pipeline/inbox/` (gitignored).
 4. `GET /applications` serves them back.
 
