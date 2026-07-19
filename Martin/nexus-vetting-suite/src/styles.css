@@ -49,90 +49,87 @@
 }
 
 /* ------------------------------------------------------------------ */
-/*  Aubergine & Gold — a quiet, editorial palette.                      */
-/*  Deep plum ink + near-black, with gold as the sparing accent.        */
-/*  Muted, low-glare, soft gradient surfaces. Purple = structure,       */
-/*  gold = the one thing that means "of value".                         */
+/*  Growth Signal palette (sun/color-palette.md via laura/color-guide) */
+/*  Paper canvas, charcoal ink, forest = structure, emerald = the one  */
+/*  accent, mint = surfaces. No purple, no tinted greys.               */
 /* ------------------------------------------------------------------ */
 :root {
   --radius: 0.5rem;
-  /* Warm ivory canvas · true white reserved for elevated cards */
-  --background: #faf8f5;
-  --surface: #f3f0ea;
-  --surface-2: #eae4db;
-  --foreground: #241c30; /* plum-black ink */
+  /* Paper White canvas · true white reserved for elevated cards */
+  --background: #f9fafb;
+  --surface: #f3f4f6;
+  --surface-2: #e5e7eb;
+  --foreground: #111827; /* Charcoal ink */
   --card: #ffffff;
-  --card-foreground: #241c30;
+  --card-foreground: #111827;
   --popover: #ffffff;
-  --popover-foreground: #241c30;
-  /* Aubergine = primary structure; gold = sparing accent */
-  --primary: #4a3a63; /* muted aubergine */
-  --primary-foreground: #f7f2e9; /* warm cream */
-  --teal: #9b7c3c; /* muted gold (chips / accents) */
-  --teal-soft: #f1e8d3; /* soft gold tint */
-  --secondary: #efeaf1; /* faint lilac */
-  --secondary-foreground: #3b2f50;
-  --muted: #f0ebe4;
-  --muted-foreground: #6f6678; /* muted plum-grey */
-  --accent: #ece3cd; /* soft gold surface */
-  --accent-foreground: #4a3a63;
-  --destructive: #9b3b3b; /* wine */
+  --popover-foreground: #111827;
+  /* Forest = institutional structure; mint on forest is 12.2:1 */
+  --primary: #0b3d2e;
+  --primary-foreground: #a7f3d0;
+  /* Emerald = the one accent that means "going right" */
+  --teal: #10b981;
+  --teal-soft: #d1fae5;
+  --secondary: #ecfdf5;
+  --secondary-foreground: #0b3d2e;
+  --muted: #f3f4f6;
+  --muted-foreground: #4b5563; /* neutral grey — no plum cast */
+  --accent: #ecfdf5;
+  --accent-foreground: #0b3d2e;
+  --destructive: #d03b3b;
   --destructive-foreground: #ffffff;
-  --positive: #8a6a2e; /* deep gold — the "of value" signal */
-  --warning: #b4622e; /* terracotta */
-  --negative: #9b3b3b; /* wine */
-  --border: #e7e0d6;
-  --input: #e7e0d6;
-  --ring: #9b7c3c; /* gold focus */
-  /* Sidebar: near-black plum rail with gold accents (both themes) */
-  --sidebar: #1c1628;
-  --sidebar-foreground: #d7cfe0;
-  --sidebar-primary: #c6a968; /* gold */
-  --sidebar-primary-foreground: #1c1628;
-  --sidebar-accent: #2a2139; /* active nav bg */
-  --sidebar-accent-foreground: #e7c980; /* gold text */
-  --sidebar-border: #2e2742;
-  --sidebar-ring: #c6a968;
-  --bg-grad: radial-gradient(1200px 620px at 18% -12%, rgba(74, 58, 99, 0.06), transparent 68%);
+  --positive: #047857;
+  --warning: #b45309;
+  --negative: #b91c1c;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #10b981;
+  --sidebar: #f3f4f6;
+  --sidebar-foreground: #111827;
+  --sidebar-primary: #0b3d2e;
+  --sidebar-primary-foreground: #a7f3d0;
+  --sidebar-accent: #ecfdf5;
+  --sidebar-accent-foreground: #0b3d2e;
+  --sidebar-border: #e5e7eb;
+  --sidebar-ring: #10b981;
 }
 
 .dark {
-  /* Near-black plum canvas */
-  --background: #141019;
-  --surface: #1b1624;
-  --surface-2: #241d30;
-  --foreground: #ece6f0;
-  --card: #1d1727;
-  --card-foreground: #ece6f0;
-  --popover: #1d1727;
-  --popover-foreground: #ece6f0;
-  --primary: #a08fc7; /* soft lavender */
-  --primary-foreground: #171220;
-  --teal: #c6a968; /* gold */
-  --teal-soft: #2a2333;
-  --secondary: #241d30;
-  --secondary-foreground: #e7dff0;
-  --muted: #221b2e;
-  --muted-foreground: #9a90a8;
-  --accent: #2e2540; /* purple hover/selected */
-  --accent-foreground: #e7c980; /* gold */
-  --destructive: #c25b5b;
-  --destructive-foreground: #ffffff;
-  --positive: #c6a968; /* gold */
-  --warning: #d08a4e;
-  --negative: #c25b5b;
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: #c6a968;
-  --sidebar: #171220;
-  --sidebar-foreground: #d7cfe0;
-  --sidebar-primary: #c6a968;
-  --sidebar-primary-foreground: #171220;
-  --sidebar-accent: #241d30;
-  --sidebar-accent-foreground: #e7c980;
-  --sidebar-border: #2a2333;
-  --sidebar-ring: #c6a968;
-  --bg-grad: radial-gradient(1200px 620px at 18% -12%, rgba(160, 143, 199, 0.10), transparent 68%);
+  /* Charcoal graduates from ink to canvas (color-guide §4) */
+  --background: #0d1117;
+  --surface: #111827;
+  --surface-2: #1a2332;
+  --foreground: #f9fafb;
+  --card: #1a2332;
+  --card-foreground: #f9fafb;
+  --popover: #1a2332;
+  --popover-foreground: #f9fafb;
+  --primary: #10b981;
+  --primary-foreground: #0d1117; /* charcoal on emerald, never white */
+  --teal: #10b981;
+  --teal-soft: #134e3b;
+  --secondary: #1a2332;
+  --secondary-foreground: #f9fafb;
+  --muted: #1a2332;
+  --muted-foreground: #9ca3af; /* neutral grey, no plum cast */
+  --accent: #134e3b;
+  --accent-foreground: #a7f3d0;
+  --destructive: #e66767;
+  --destructive-foreground: #0d1117;
+  --positive: #34d399;
+  --warning: #fbbf24;
+  --negative: #f87171;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: #10b981;
+  --sidebar: #111827;
+  --sidebar-foreground: #e5e7eb;
+  --sidebar-primary: #10b981;
+  --sidebar-primary-foreground: #0d1117;
+  --sidebar-accent: #134e3b;
+  --sidebar-accent-foreground: #a7f3d0;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #10b981;
 }
 
 @layer base {
@@ -142,8 +139,6 @@
 
   body {
     background-color: var(--color-background);
-    background-image: var(--bg-grad);
-    background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";

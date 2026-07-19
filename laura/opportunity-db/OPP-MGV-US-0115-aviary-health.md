@@ -9,7 +9,7 @@ source_channel: "retrospective_public_research"
 created_at: "2026-07-19T00:00:00Z"
 updated_at: "2026-07-19T00:00:00Z"
 decision_deadline: "unknown"
-founder_ids: []
+founder_ids: [FND-MGV-US-0128, FND-MGV-US-0129, FND-MGV-US-0130]
 thesis_id: "THESIS-US-ENTERPRISE"
 investment_vehicle: "MGV.VC"
 portfolio_year: 2020
@@ -39,7 +39,21 @@ outcome:
 ## Founders and Team
 
 - **Founder Score snapshot:** not assessed — this research bundle does not fabricate evaluations of real people.
-- Founder-level research was outside this enrichment pass; `founder_ids` remains an empty array for deterministic parsing.
+
+### FND-MGV-US-0128 - Abhi Chandra, Co-Founder & CEO
+
+- **Founder Score snapshot:** not assessed.
+- Aviary Health lists Chandra as Co-Founder & CEO [SRC-004].
+
+### FND-MGV-US-0129 - Ed Wu, MD, Co-Founder & COO
+
+- **Founder Score snapshot:** not assessed.
+- Aviary Health lists Wu as Co-Founder & COO [SRC-004].
+
+### FND-MGV-US-0130 - Vivek Vishwanath, Co-Founder & CGO
+
+- **Founder Score snapshot:** not assessed.
+- Aviary Health lists Vishwanath as Co-Founder & CGO [SRC-004].
 
 ## Assessment
 
@@ -63,6 +77,7 @@ outcome:
 - **SRC-001:** MGV.VC portfolio — https://www.mgv.vc/portfolio
 - **SRC-002:** Aviary Health rebrand announcement — https://www.aviaryhealth.com/resources/recora-launches-aviary-health-as-it-expands-beyond-cardiac-recovery
 - **SRC-003:** Current company terms — https://www.aviaryhealth.com/terms-of-service
+- **SRC-004:** Aviary Health about page — https://www.aviaryhealth.com/about
 
 ## Interview
 

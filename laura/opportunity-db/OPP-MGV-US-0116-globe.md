@@ -9,7 +9,7 @@ source_channel: "retrospective_public_research"
 created_at: "2026-07-19T00:00:00Z"
 updated_at: "2026-07-19T00:00:00Z"
 decision_deadline: "unknown"
-founder_ids: []
+founder_ids: [FND-MGV-US-0131, FND-MGV-US-0132, FND-MGV-US-0133, FND-MGV-US-0134]
 thesis_id: "THESIS-US-ENTERPRISE"
 investment_vehicle: "MGV.VC"
 portfolio_year: 2019
@@ -36,7 +36,26 @@ funding:
 ## Founders and Team
 
 - **Founder Score snapshot:** not assessed — this research bundle does not fabricate evaluations of real people.
-- Founder-level research was outside this enrichment pass; `founder_ids` remains an empty array for deterministic parsing.
+
+### FND-MGV-US-0131 - Manny (Emmanuel) Bamfo, co-founder
+
+- **Founder Score snapshot:** not assessed.
+- TechCrunch identifies Bamfo as co-founder and CEO of Globe; Forbes lists Manny Bamfo as a Recharge co-founder [SRC-002][SRC-004].
+
+### FND-MGV-US-0132 - Erix Xu, co-founder
+
+- **Founder Score snapshot:** not assessed.
+- TechCrunch identifies Xu as a Globe co-founder [SRC-002].
+
+### FND-MGV-US-0133 - Will Johnson, Recharge co-founder
+
+- **Founder Score snapshot:** not assessed.
+- Forbes lists Johnson as a Recharge co-founder [SRC-004].
+
+### FND-MGV-US-0134 - Christopher Lo, Recharge co-founder
+
+- **Founder Score snapshot:** not assessed.
+- Forbes lists Lo as a Recharge co-founder [SRC-004].
 
 ## Assessment
 
@@ -60,6 +79,7 @@ funding:
 - **SRC-001:** MGV.VC portfolio — https://www.mgv.vc/portfolio
 - **SRC-002:** TechCrunch company and regulatory report — https://techcrunch.com/2020/05/27/globe-fight/
 - **SRC-003:** Listed historical company domain — https://globeliving.com/
+- **SRC-004:** Forbes Recharge profile — https://www.forbes.com/profile/recharge/
 
 ## Interview
 

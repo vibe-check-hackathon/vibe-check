@@ -44,7 +44,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       (s) =>
         s.company.toLowerCase().includes(t) ||
         s.sector.toLowerCase().includes(t) ||
-        s.founders.some((f) => f.toLowerCase().includes(t)),
+        s.founders.some((f) => f.name.toLowerCase().includes(t)),
     ).slice(0, 6);
   }, [q]);
 

@@ -9,7 +9,7 @@ source_channel: "retrospective_public_research"
 created_at: "2026-07-19T00:00:00Z"
 updated_at: "2026-07-19T00:00:00Z"
 decision_deadline: "unknown"
-founder_ids: []
+founder_ids: [FND-MGV-US-0117, FND-MGV-US-0118]
 thesis_id: "THESIS-US-ENTERPRISE"
 investment_vehicle: "MGV.VC"
 portfolio_year: 2022
@@ -37,7 +37,16 @@ funding:
 ## Founders and Team
 
 - **Founder Score snapshot:** not assessed — this research bundle does not fabricate evaluations of real people.
-- Founder-level research was outside this enrichment pass; `founder_ids` remains an empty array for deterministic parsing.
+
+### FND-MGV-US-0117 - Kathryn Thiele, Founder & CEO
+
+- **Founder Score snapshot:** not assessed.
+- Public founder profiles and company-related posts identify Thiele as Buildstock's Founder & CEO [SRC-004][SRC-005].
+
+### FND-MGV-US-0118 - Wilson Kriegel, co-founder
+
+- **Founder Score snapshot:** not assessed.
+- Kriegel publicly described working with Thiele as co-founder of Buildstock in early company announcements [SRC-005].
 
 ## Assessment
 
@@ -60,6 +69,8 @@ funding:
 - **SRC-001:** MGV.VC portfolio — https://www.mgv.vc/portfolio
 - **SRC-002:** Buildstock funding announcement — https://www.prnewswire.com/news-releases/buildstock-secures-1-6m-in-pre-seed-funding-to-expand-construction-material-marketplace--fintech-platform-302068986.html
 - **SRC-003:** Company website — https://buildstock.com/
+- **SRC-004:** The Org founder profile — https://theorg.com/org/buildstock/org-chart/kathryn-thiele-aia-csi
+- **SRC-005:** Public Buildstock founder announcement thread — https://www.linkedin.com/posts/kathrynthiele_buildstock-activity-6961130836008038400-jHXU
 
 ## Interview
 

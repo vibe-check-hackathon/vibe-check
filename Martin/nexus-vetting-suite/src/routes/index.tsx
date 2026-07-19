@@ -26,7 +26,7 @@ export const Route = createFileRoute("/")({
 
 function PipelinePage() {
   const dueSoon = STARTUPS.filter(
-    (s) => s.stage === "Partner Review" || s.stage === "Term Sheet",
+    (s) => s.stage === "Partner Review" || s.stage === "Term Sheet" || s.stage === "Portfolio",
   ).slice(0, 4);
   const topScreened = [...STARTUPS]
     .sort((a, b) => (b.founderScore ?? -1) - (a.founderScore ?? -1))
@@ -53,9 +53,9 @@ function PipelinePage() {
       {/* Metrics */}
       <Section title="Today">
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-          <Stat label="Opportunities" value={METRICS.activeApplications} hint="6 real · 1 demo" />
+          <Stat label="Opportunities" value={METRICS.activeApplications} hint="official cards + demo" />
           <Stat label="Assessed deals" value={METRICS.assessedDeals} hint="Acme demo only" />
-          <Stat label="Public outcomes" value={METRICS.publicOutcomes} hint="ALSTIN-led rounds" />
+          <Stat label="Public outcomes" value={METRICS.publicOutcomes} hint="public-source records" />
           <Stat label="Diligence in progress" value={METRICS.diligenceInProgress} hint="confidential" />
           <Stat label="Decisions due · 24h" value={METRICS.decisionsDue24h} trend="1 memo" />
           <Stat label="Interviews available" value={METRICS.interviewsAvailable} hint="public founder talks" />
@@ -133,7 +133,7 @@ function PipelinePage() {
                 <AlertCircle className="h-3.5 w-3.5 text-warning" />
                 <div className="text-[13px] font-medium">Decisions due · 24h</div>
               </div>
-              <Badge tone="warning">4</Badge>
+              <Badge tone="warning">{dueSoon.length}</Badge>
             </div>
             <div className="divide-y divide-border">
               {dueSoon.map((s) => (
@@ -173,7 +173,7 @@ function PipelinePage() {
           />
           <SignalCard
             title="Guardrail active"
-            body="deskbird, VoiceLine, Timefold, Climatiq, Pliant: public-source cards only. No fabricated founder assessments of real people."
+            body="Official opportunity cards now include real founder names and company logos. Real founders remain public-source records only, with no fabricated psychometric scoring."
             tone="warning"
           />
         </div>

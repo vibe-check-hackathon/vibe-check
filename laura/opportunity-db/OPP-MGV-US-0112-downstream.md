@@ -9,7 +9,7 @@ source_channel: "retrospective_public_research"
 created_at: "2026-07-19T00:00:00Z"
 updated_at: "2026-07-19T00:00:00Z"
 decision_deadline: "unknown"
-founder_ids: []
+founder_ids: [FND-MGV-US-0121, FND-MGV-US-0122]
 thesis_id: "THESIS-US-ENTERPRISE"
 investment_vehicle: "MGV.VC"
 portfolio_year: 2019
@@ -40,7 +40,16 @@ outcome:
 ## Founders and Team
 
 - **Founder Score snapshot:** not assessed — this research bundle does not fabricate evaluations of real people.
-- Founder-level research was outside this enrichment pass; `founder_ids` remains an empty array for deterministic parsing.
+
+### FND-MGV-US-0121 - Connor Folley, Co-Founder & CEO
+
+- **Founder Score snapshot:** not assessed.
+- Public acquisition coverage identifies Folley as Downstream's co-founder and CEO [SRC-004].
+
+### FND-MGV-US-0122 - Salim Hamed, Co-Founder & CTO
+
+- **Founder Score snapshot:** not assessed.
+- Public acquisition coverage identifies Hamed as Downstream's co-founder and CTO [SRC-004].
 
 ## Assessment
 
@@ -63,6 +72,7 @@ outcome:
 - **SRC-001:** MGV.VC portfolio — https://www.mgv.vc/portfolio
 - **SRC-002:** Jungle Scout confirmation — https://www.junglescout.com/press/press-releases/walmart-connect-now-available-on-downstream-by-jungle-scout/
 - **SRC-003:** Jungle Scout transaction announcement — https://www.prnewswire.com/news-releases/jungle-scout-announces-110-million-in-growth-capital-to-empower-ecommerce-brands-301240437.html
+- **SRC-004:** GeekWire acquisition coverage — https://www.geekwire.com/2021/seattle-startup-downstream-helps-brands-amazon-ads-acquired-jungle-scout/
 
 ## Interview
 

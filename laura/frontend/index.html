@@ -343,6 +343,23 @@
   .opp-card p { font-size: 12.5px; color: var(--ink-2); margin-bottom: 12px; min-height: 38px; }
   .axis-chips { display: flex; gap: 6px; flex-wrap: wrap; }
   .chip { font-size: 10.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--hairline); color: var(--ink-2); }
+  .founder-strip { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 2px; }
+  .founder-mini {
+    display: flex; align-items: center; gap: 7px; min-width: 0; max-width: 100%;
+    padding: 5px 8px 5px 5px; border: 1px solid var(--hairline); border-radius: 999px;
+    background: var(--surface-2); color: var(--ink-2); font-size: 11px; font-weight: 600;
+  }
+  .founder-mini img {
+    width: 26px; height: 26px; border-radius: 50%; object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.55); flex: 0 0 auto;
+  }
+  .founder-mini.founder-initials { text-decoration: none; }
+  .founder-avatar-text {
+    display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--ink); color: var(--surface); font-size: 10px; font-weight: 800;
+    letter-spacing: 0; flex: 0 0 auto;
+  }
+  .founder-mini span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .oc-meta { display: flex; justify-content: space-between; margin-top: 12px; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
 
   /* ---------- approval sheet (human gate) ---------- */
@@ -995,43 +1012,58 @@
       event: "$28M Series A · ALSTIN participating · 2023-02-17 (ext. €33M 2024; Series B $40M 2025)", verified: true, card: "OPP-MGV-0006-pliant.md",
       founders: [["Malte Rau", "CEO"], ["Fabian Terner", "CPO"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0101", company: "Observe.AI", vehicle: "MGV.VC", sector: "sales and marketing", year: 2018, status: "active",
-      event: "$125M Series C; $213M total disclosed (2022)", verified: true, card: "OPP-MGV-US-0101-observe-ai.md", website: "https://observe.ai/", founders: [], interview: { locked: true } },
+      event: "$125M Series C; $213M total disclosed (2022)", verified: true, card: "OPP-MGV-US-0101-observe-ai.md", website: "https://observe.ai/", founders: [["Swapnil Jain", "CEO & Co-Founder"], ["Jithendra Vepa", "CTO & Co-Founder"], ["Akash Singh", "co-founder"], ["Sharath Keshava Narayana", "co-founder"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0102", company: "Modern Health", vehicle: "MGV.VC", sector: "healthcare", year: 2018, status: "active",
-      event: "$74M Series D; $1.17B valuation (2021)", verified: true, card: "OPP-MGV-US-0102-modern-health.md", website: "https://www.modernhealth.com/", founders: [], interview: { locked: true } },
+      event: "$74M Series D; $1.17B valuation (2021)", verified: true, card: "OPP-MGV-US-0102-modern-health.md", website: "https://www.modernhealth.com/", founders: [["Alyson Watson", "Founder and Executive Chair"], ["Erica Johnson", "co-founder"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0103", company: "Origin", vehicle: "MGV.VC", sector: "finance and insurance", year: 2019, status: "active",
-      event: "$56M Series B at $400M valuation (2021)", verified: true, card: "OPP-MGV-US-0103-origin.md", website: "https://useorigin.com/", founders: [], interview: { locked: true } },
+      event: "$56M Series B at $400M valuation (2021)", verified: true, card: "OPP-MGV-US-0103-origin.md", website: "https://useorigin.com/", founders: [["Matt Watson", "Founder & CEO"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0104", company: "Prodigal", vehicle: "MGV.VC", sector: "finance and insurance", year: 2018, status: "active",
-      event: "$12M Series A (2021); MGV participated", verified: true, card: "OPP-MGV-US-0104-prodigal.md", website: "https://www.prodigaltech.com/", founders: [], interview: { locked: true } },
+      event: "$12M Series A (2021); MGV participated", verified: true, card: "OPP-MGV-US-0104-prodigal.md", website: "https://www.prodigaltech.com/", founders: [["Shantanu Gangal", "CEO & Co-Founder"], ["Sangram Raje", "CTO & Co-Founder"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0105", company: "Ascend", vehicle: "MGV.VC", sector: "finance and insurance", year: 2021, status: "active",
-      event: "$30M Series A + $250M lending commitment (2022)", verified: true, card: "OPP-MGV-US-0105-ascend.md", website: "https://www.useascend.com/", founders: [], interview: { locked: true } },
+      event: "$30M Series A + $250M lending commitment (2022)", verified: true, card: "OPP-MGV-US-0105-ascend.md", website: "https://www.useascend.com/", founders: [["Andrew Wynn", "Co-Founder & Co-CEO"], ["Praveen Chekuri", "Co-Founder & Co-CEO"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0106", company: "Authentic Insurance", vehicle: "MGV.VC", sector: "finance and insurance", year: 2022, status: "active",
-      event: "$11M Series A (2024)", verified: true, card: "OPP-MGV-US-0106-authentic-insurance.md", website: "https://www.authenticinsurance.com/", founders: [], interview: { locked: true } },
+      event: "$11M Series A (2024)", verified: true, card: "OPP-MGV-US-0106-authentic-insurance.md", website: "https://www.authenticinsurance.com/", founders: [["Cole Riccardi", "CEO & Cofounder"], ["Kyle Babirad", "COO & Cofounder"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0107", company: "Attention", vehicle: "MGV.VC", sector: "sales and marketing", year: 2022, status: "active",
-      event: "$30M Series B · 2026-06-23", verified: true, card: "OPP-MGV-US-0107-attention.md", website: "https://www.attention.com/", founders: [], interview: { locked: true } },
+      event: "$30M Series B · 2026-06-23", verified: true, card: "OPP-MGV-US-0107-attention.md", website: "https://www.attention.com/", founders: [["Anis Bennaceur", "Co-Founder & CEO"], ["Matthias Wickenburg", "Co-Founder & CTO"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0108", company: "District Cover", vehicle: "MGV.VC", sector: "finance and insurance", year: 2022, status: "active",
-      event: ">$7M raised in 2024", verified: true, card: "OPP-MGV-US-0108-district-cover.md", website: "https://districtcover.com/", founders: [], interview: { locked: true } },
+      event: ">$7M raised in 2024", verified: true, card: "OPP-MGV-US-0108-district-cover.md", website: "https://districtcover.com/", founders: [["Patrick Girouard", "Founder and Chief Executive Officer"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0109", company: "Buildstock", vehicle: "MGV.VC", sector: "property and real estate", year: 2022, status: "active",
-      event: "$1.6M pre-seed (2024); MGV participated", verified: true, card: "OPP-MGV-US-0109-buildstock.md", website: "https://buildstock.com/", founders: [], interview: { locked: true } },
+      event: "$1.6M pre-seed (2024); MGV participated", verified: true, card: "OPP-MGV-US-0109-buildstock.md", website: "https://buildstock.com/", founders: [["Kathryn Thiele", "Founder & CEO"], ["Wilson Kriegel", "co-founder"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0110", company: "Salut", vehicle: "MGV.VC", sector: "healthcare", year: 2020, status: "unclear",
-      event: "$1.25M financing (2020)", verified: true, card: "OPP-MGV-US-0110-salut.md", website: "https://joinsalut.com/", founders: [], interview: { locked: true } },
+      event: "$1.25M financing (2020)", verified: true, card: "OPP-MGV-US-0110-salut.md", website: "https://joinsalut.com/", founders: [["Matthew DiPietro", "Founder"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0111", company: "OfficeTogether", vehicle: "MGV.VC", sector: "human resources", year: 2020, status: "acquired",
-      event: "$2.2M seed; acquired by Envoy 2022", verified: true, card: "OPP-MGV-US-0111-officetogether.md", founders: [], interview: { locked: true } },
+      event: "$2.2M seed; acquired by Envoy 2022", verified: true, card: "OPP-MGV-US-0111-officetogether.md", founders: [["Amy Yin", "CEO and Founder"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0112", company: "Downstream", vehicle: "MGV.VC", sector: "sales and marketing", year: 2019, status: "acquired",
-      event: "Acquired by Jungle Scout, March 2021", verified: true, card: "OPP-MGV-US-0112-downstream.md", founders: [], interview: { locked: true } },
+      event: "Acquired by Jungle Scout, March 2021", verified: true, card: "OPP-MGV-US-0112-downstream.md", founders: [["Connor Folley", "Co-Founder & CEO"], ["Salim Hamed", "Co-Founder & CTO"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0113", company: "HeyDoctor", vehicle: "MGV.VC", sector: "healthcare", year: 2018, status: "acquired",
-      event: "Acquired by GoodRx 2019 for $14.3M cash", verified: true, card: "OPP-MGV-US-0113-heydoctor.md", website: "https://www.goodrx.com/care", founders: [], interview: { locked: true } },
+      event: "Acquired by GoodRx 2019 for $14.3M cash", verified: true, card: "OPP-MGV-US-0113-heydoctor.md", website: "https://www.goodrx.com/care", founders: [["Brendan Levy", "Founder/CEO"], ["Kyle Alwyn", "Founder/Chief Technical Officer"], ["Rohit Malhotra", "Founder"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0114", company: "Buzzle.ai", vehicle: "MGV.VC", sector: "sales and marketing", year: 2021, status: "inactive",
-      event: "YC marks the company inactive", verified: true, card: "OPP-MGV-US-0114-buzzle-ai.md", founders: [], interview: { locked: true } },
+      event: "YC marks the company inactive", verified: true, card: "OPP-MGV-US-0114-buzzle-ai.md", founders: [["Bhairav Mehta", "Founder"], ["Adithya Ramanathan", "Founder"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0115", company: "Aviary Health", vehicle: "MGV.VC", sector: "healthcare", year: 2020, status: "active",
-      event: "Recora rebranded to Aviary Health, 2026-04", verified: true, card: "OPP-MGV-US-0115-aviary-health.md", website: "https://www.aviaryhealth.com/", founders: [], interview: { locked: true } },
+      event: "Recora rebranded to Aviary Health, 2026-04", verified: true, card: "OPP-MGV-US-0115-aviary-health.md", website: "https://www.aviaryhealth.com/", founders: [["Abhi Chandra", "Co-Founder & CEO"], ["Ed Wu, MD", "Co-Founder & COO"], ["Vivek Vishwanath", "Co-Founder & CGO"]], interview: { locked: true } },
     { id: "OPP-MGV-US-0116", company: "Globe", vehicle: "MGV.VC", sector: "property and real estate", year: 2019, status: "unclear",
-      event: "Predecessor Recharge raised ~$10M; regulatory pressure 2020", verified: true, card: "OPP-MGV-US-0116-globe.md", website: "https://globeliving.com/", founders: [], interview: { locked: true } },
+      event: "Predecessor Recharge raised ~$10M; regulatory pressure 2020", verified: true, card: "OPP-MGV-US-0116-globe.md", website: "https://globeliving.com/", founders: [["Manny (Emmanuel) Bamfo", "co-founder"], ["Erix Xu", "co-founder"], ["Will Johnson", "Recharge co-founder"], ["Christopher Lo", "Recharge co-founder"]], interview: { locked: true } },
   ] };
 
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const dbBase = () => (location.protocol.startsWith("http") ? "/opportunity-db/" : "../opportunity-db/");
   const linkedinUrl = (name, company) =>
     "https://www.linkedin.com/search/results/all/?keywords=" + encodeURIComponent(name + " " + company);
+  const founderInitials = (name) => name
+    .replace(/\([^)]*\)/g, "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+  const founderPills = (founders, company) => founders.length ? `
+    <div class="founder-strip">
+      ${founders.map(([name, role]) => `
+        <span class="founder-mini founder-initials" title="${esc(name + " - " + role)}">
+          <span class="founder-avatar-text">${esc(founderInitials(name))}</span>
+          <span>${esc(name.split(" ")[0])}</span>
+        </span>`).join("")}
+    </div>` : "";
 
   /* Normalize a full index.json entry to the render shape used above. */
   function normalizeOpp(o) {
@@ -1064,6 +1096,7 @@
           <span class="chip">${o.interview.locked ? "🔒 interview confidential" : "▶ public interview"}</span>
           ${o.founders.length ? `<span class="chip">${o.founders.length} founder${o.founders.length > 1 ? "s" : ""}</span>` : ""}
         </div>
+        ${founderPills(o.founders, o.company)}
         <div class="oc-meta"><span>${esc(o.event)}</span></div>
       </button>`).join("");
     document.getElementById("euGrid").innerHTML = grid(eu);
@@ -1082,12 +1115,21 @@
       <button class="opp-card" data-syn="${esc(o.id)}">
         <div class="oc-top"><span class="oc-id">${esc(o.id)}</span>
           <span class="oc-status">${esc(o.status)}</span></div>
-        <h3>${esc(o.company)}</h3>
+        <h3><img class="oc-logo" src="${dbBase()}synthetic/${esc(o.logo ?? "")}"
+          alt="" onerror="this.style.display='none'">${esc(o.company)}</h3>
         <p>${esc(o.oneLiner)}</p>
         <div class="axis-chips">
           <span class="chip">SYNTHETIC</span>
           <span class="chip">full data · scored</span>
           <span class="chip">${o.founders.length} founders</span>
+        </div>
+        <div class="founder-strip">
+          ${o.founders.map((f) => `
+            <span class="founder-mini" title="${esc(f.name + " - " + f.role)}">
+              <img src="${dbBase()}synthetic/${esc(f.avatar ?? "")}" alt=""
+                onerror="this.style.display='none'">
+              <span>${esc(f.name.split(" ")[0])}</span>
+            </span>`).join("")}
         </div>
         <div class="oc-meta"><span>${esc(o.stage)} · ${esc(o.location)} · asking $${(o.raiseUsd / 1e6).toFixed(1)}M</span></div>
       </button>`).join("");
@@ -1167,7 +1209,8 @@
       </div>`).join("");
     detailModal.innerHTML = `
       <button class="ctl d-close" id="dClose">Close</button>
-      <h3>${esc(o.company)}</h3>
+      <h3><img class="d-logo" src="${dbBase()}synthetic/${esc(o.logo ?? "")}"
+        alt="" onerror="this.style.display='none'">${esc(o.company)}</h3>
       <div class="d-meta">${esc(o.id)} · ${esc(o.sector)} · ${esc(o.location)} · <b style="color: var(--accent-warm-text)">SYNTHETIC</b></div>
       <h4>Deal</h4>
       <div class="d-event">${esc(o.event)}</div>

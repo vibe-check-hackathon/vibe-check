@@ -9,7 +9,7 @@ source_channel: "retrospective_public_research"
 created_at: "2026-07-19T00:00:00Z"
 updated_at: "2026-07-19T00:00:00Z"
 decision_deadline: "unknown"
-founder_ids: []
+founder_ids: [FND-MGV-US-0105, FND-MGV-US-0106]
 thesis_id: "THESIS-US-ENTERPRISE"
 investment_vehicle: "MGV.VC"
 portfolio_year: 2018
@@ -38,7 +38,16 @@ funding:
 ## Founders and Team
 
 - **Founder Score snapshot:** not assessed — this research bundle does not fabricate evaluations of real people.
-- Founder-level research was outside this enrichment pass; `founder_ids` remains an empty array for deterministic parsing.
+
+### FND-MGV-US-0105 - Alyson Watson, Founder and Executive Chair
+
+- **Founder Score snapshot:** not assessed.
+- Modern Health's current site lists Alyson Watson as Founder and Executive Chair of the Board [SRC-003].
+
+### FND-MGV-US-0106 - Erica Johnson, co-founder
+
+- **Founder Score snapshot:** not assessed.
+- Historical funding coverage identifies Modern Health as founded by Alyson Friedensohn and neuroscientist Erica Johnson [SRC-004].
 
 ## Assessment
 
@@ -61,6 +70,7 @@ funding:
 - **SRC-001:** MGV.VC portfolio — https://www.mgv.vc/portfolio
 - **SRC-002:** Modern Health funding announcement — https://www.modernhealth.com/press-media-news/modern-health-continues-to-innovate-grow-as-demand-for-mental-health-in-the-workplace-skyrockets
 - **SRC-003:** Company website — https://www.modernhealth.com/
+- **SRC-004:** TechCrunch seed funding coverage — https://techcrunch.com/2018/06/15/yc-alum-modern-health-a-startup-focused-on-emotional-wellbeing-gets-2-26m-seed-funding/
 
 ## Interview
 
