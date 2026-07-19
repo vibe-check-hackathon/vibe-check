@@ -174,7 +174,7 @@ function ApplyPage() {
                     <FounderField
                       label="Name *"
                       value={founder.name}
-                      placeholder="Ada Keller"
+                      placeholder="Jane Rivera"
                       onChange={(value) => setFounders(founders.map((f, i) => i === index ? { ...f, name: value } : f))}
                     />
                     <FounderField
@@ -186,7 +186,7 @@ function ApplyPage() {
                     <FounderField
                       label="Email"
                       value={founder.email}
-                      placeholder="ada@company.com"
+                      placeholder="jane@company.com"
                       onChange={(value) => setFounders(founders.map((f, i) => i === index ? { ...f, email: value } : f))}
                     />
                     <FounderField
@@ -289,14 +289,14 @@ function ApplyPage() {
                   <AlertTriangle className="h-4 w-4 text-negative" />
                 )}
                 <span className="text-[13.5px] font-medium">
-                  {verdict.pass ? "Passed first-pass screening" : "Screened out"}
+                  {verdict.pass ? "You successfully submitted your startup idea!" : "Screened out"}
                 </span>
                 <Badge tone="outline">{verdict.id}</Badge>
               </div>
               {verdict.pass ? (
                 <p className="mt-2 text-[12.5px] text-muted-foreground">
-                  Your application entered the research funnel. We only research the links you provided; expect a
-                  decision within 24 hours.
+                  We&rsquo;ll get back to you in the next couple of hours! Your application entered the research
+                  funnel — we only research the links you provided.
                 </p>
               ) : (
                 <ul className="mt-2 space-y-1 text-[12.5px] text-negative">
