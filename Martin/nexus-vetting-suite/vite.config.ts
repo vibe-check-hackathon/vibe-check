@@ -28,6 +28,98 @@ const MIME: Record<string, string> = {
 const THESIS_PATH = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "laura", "pipeline", "thesis.json");
 const INBOX_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "laura", "pipeline", "inbox");
 
+const slug = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const initials = (value: string) => value.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("");
+const parseUsd = (value: unknown) => {
+  if (typeof value === "number") return value;
+  const text = String(value ?? "").replace(/,/g, "").trim();
+  const match = text.match(/([\d.]+)\s*([mbk])?/i);
+  if (!match) return undefined;
+  const n = Number(match[1]);
+  const unit = (match[2] ?? "").toLowerCase();
+  if (unit === "b") return Math.round(n * 1_000_000_000);
+  if (unit === "m") return Math.round(n * 1_000_000);
+  if (unit === "k") return Math.round(n * 1_000);
+  return Math.round(n);
+};
+
+function normalizeFounders(application: any, appId: string) {
+  const raw = Array.isArray(application.founders) && application.founders.length
+    ? application.founders
+    : [{ name: application.founderName, email: application.founderEmail, linkedin: application.linkedin, role: "Founder" }];
+  return raw
+    .map((f: any, index: number) => ({
+      id: `FND-${appId}-${String(index + 1).padStart(2, "0")}`,
+      name: String(f.name ?? "").trim(),
+      role: String(f.role ?? (index === 0 ? "CEO" : "Co-founder")).trim(),
+      email: String(f.email ?? "").trim(),
+      linkedin: String(f.linkedin ?? f.linkedinUrl ?? "").trim(),
+      github: String(f.github ?? "").trim(),
+    }))
+    .filter((f: any) => f.name);
+}
+
+function normalizeApplication(application: any, id: string) {
+  const opportunityId = `OPP-${id}`;
+  const founders = normalizeFounders(application, id);
+  const materials = [
+    application.deck && { description: "Pitch deck", origin: "founder", url: application.deck },
+    application.website && { description: "Company website", origin: "founder", url: application.website },
+    application.productDemo && { description: "Product demo", origin: "founder", url: application.productDemo },
+    ...founders.flatMap((f: any) => [
+      f.linkedin && { description: `${f.name} LinkedIn`, origin: "founder", url: f.linkedin },
+      f.github && { description: `${f.name} GitHub / personal site`, origin: "founder", url: f.github },
+    ]),
+  ].filter(Boolean);
+  const intake = {
+    opportunityId,
+    company: application.company,
+    thesisId: "THESIS-001",
+    oneLiner: application.oneLiner ?? "",
+    stage: application.stage ?? application.round,
+    round: application.round,
+    location: application.geography ?? application.location ?? "",
+    raiseUsd: parseUsd(application.raiseUsd ?? application.ask),
+    permissions: application.permissions,
+    materials,
+    founders: founders.map((f: any) => ({
+      id: f.id,
+      name: f.name,
+      role: f.role,
+      email: f.email || undefined,
+      linkedin: f.linkedin,
+      github: f.github || undefined,
+      assessed: false,
+      avatar: { type: "initials", value: initials(f.name), basis: "neutral placeholder; submitted application" },
+      background: [
+        `${f.role || "Founder"} submitted as part of application`,
+        `LinkedIn supplied: ${f.linkedin}`,
+        f.github ? `GitHub / personal site supplied: ${f.github}` : "",
+      ].filter(Boolean),
+    })),
+    claims: [
+      application.oneLiner && { text: application.oneLiner, subject: "company", sourceIndex: 0 },
+      application.traction && { text: application.traction, subject: "traction", sourceIndex: 0 },
+      application.problem && { text: application.problem, subject: "market", sourceIndex: 0 },
+    ].filter(Boolean),
+    companyProfile: {
+      sector: application.sector ?? "",
+      problem: application.problem ?? "",
+      market: application.market ?? "",
+      businessModel: application.businessModel ?? "",
+      technology: application.technology ?? "",
+      website: application.website ?? "",
+    },
+  };
+  return { opportunityId, founders, intake };
+}
+
+function applicationMarkdown(id: string, receivedAt: string, screening: any, normalized: ReturnType<typeof normalizeApplication>) {
+  const founderRows = normalized.intake.founders.map((f: any) => `- ${f.id}: ${f.name}, ${f.role} — LinkedIn: ${f.linkedin}${f.github ? `; GitHub/site: ${f.github}` : ""}`).join("\n");
+  const materialRows = normalized.intake.materials.map((m: any, i: number) => `- SRC-${String(i + 1).padStart(3, "0")}: ${m.description}${m.url ? ` — ${m.url}` : ""}`).join("\n");
+  return `# ${normalized.intake.company} application\n\n- **Application ID:** ${id}\n- **Opportunity ID:** ${normalized.opportunityId}\n- **Received:** ${receivedAt}\n- **Screening:** ${screening.pass ? "pass" : "screened out"}\n\n## Company\n\n${normalized.intake.oneLiner}\n\n- **Stage:** ${normalized.intake.stage}\n- **Location:** ${normalized.intake.location}\n- **Raise USD:** ${normalized.intake.raiseUsd ?? "unknown"}\n- **Sector:** ${normalized.intake.companyProfile.sector}\n\n## Founders\n\n${founderRows}\n\n## Materials\n\n${materialRows}\n\n## Screening\n\n- **Hard fails:** ${screening.hardFails.length ? screening.hardFails.join("; ") : "none"}\n- **Soft flags:** ${screening.softFlags.length ? screening.softFlags.join("; ") : "none"}\n`;
+}
+
 async function readThesisFlat() {
   const raw = JSON.parse(await readFile(THESIS_PATH, "utf8"));
   return { raw, sectors: raw.fund.sectors, maxCheckUsd: raw.fund.checkSizeUsd.max };
@@ -80,15 +172,29 @@ const lauraOpportunityDb = () => ({
             res.end(JSON.stringify({ error: "company and deck are the minimum bar (challenge brief #4)" }));
             return;
           }
-          const verdict = screenOpportunity(application, await readThesisFlat());
           const id = `APP-${Date.now()}`;
+          const normalized = normalizeApplication(application, id);
+          if (!normalized.intake.founders.length || normalized.intake.founders.some((f: any) => !f.linkedin)) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: "at least one founder is required, and every founder needs LinkedIn" }));
+            return;
+          }
+          const verdict = screenOpportunity({
+            ...application,
+            stage: normalized.intake.stage,
+            round: normalized.intake.round,
+            sector: normalized.intake.companyProfile.sector,
+            oneLiner: normalized.intake.oneLiner,
+          }, await readThesisFlat());
+          const receivedAt = new Date().toISOString();
           await mkdir(INBOX_DIR, { recursive: true });
           await writeFile(
             join(INBOX_DIR, `${id}.json`),
-            JSON.stringify({ id, receivedAt: new Date().toISOString(), screening: verdict, application }, null, 2),
+            JSON.stringify({ id, opportunityId: normalized.opportunityId, receivedAt, screening: verdict, application, intake: normalized.intake }, null, 2),
             "utf8",
           );
-          res.end(JSON.stringify({ id, ...verdict }));
+          await writeFile(join(INBOX_DIR, `${id}.md`), applicationMarkdown(id, receivedAt, verdict, normalized), "utf8");
+          res.end(JSON.stringify({ id, opportunityId: normalized.opportunityId, founders: normalized.intake.founders.length, ...verdict }));
         } catch {
           res.statusCode = 400;
           res.end(JSON.stringify({ error: "invalid json" }));

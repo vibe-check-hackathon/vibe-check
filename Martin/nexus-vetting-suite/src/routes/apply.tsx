@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, Badge } from "@/components/ui-kit";
-import { AlertTriangle, CheckCircle2, ExternalLink, Send } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ExternalLink, Plus, Send, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/apply")({
   head: () => ({ meta: [{ title: "Apply · VibeCheck" }] }),
@@ -17,20 +17,41 @@ type ThesisDoc = {
   fund: { sectors: string[]; stages: string[]; geographies: string[]; checkSizeUsd: { min: number; max: number } };
 };
 
-const FIELDS = [
+type FounderInput = {
+  name: string;
+  role: string;
+  email: string;
+  linkedin: string;
+  github: string;
+};
+
+const COMPANY_FIELDS = [
   ["company", "Company name *", "Acme Robotics"],
   ["deck", "Pitch deck URL *", "https://drive.example/deck.pdf"],
+  ["website", "Company website", "https://acme-robotics.example"],
   ["oneLiner", "One-line pitch", "What you do, in one sentence"],
   ["sector", "Sector", "AI infrastructure"],
   ["geography", "Location", "Berlin, DE"],
-  ["ask", "Raise", "$1.2M pre-seed"],
-  ["founderName", "Founder name", "Ada Example"],
-  ["founderEmail", "Founder email", "ada@company.example"],
-  ["links", "Public links (website, LinkedIn, GitHub)", "https://…, https://…"],
+  ["raiseUsd", "Target raise, USD", "1200000"],
+  ["problem", "Problem", "What painful workflow are you replacing?"],
+  ["market", "Market", "Who buys and why now?"],
+  ["businessModel", "Business model", "SaaS, usage, marketplace, hardware margin..."],
+  ["technology", "Technology / moat", "What is technically hard or differentiated?"],
+  ["traction", "Traction", "Revenue, pilots, users, LOIs, waitlist, usage..."],
+  ["productDemo", "Product demo URL", "https://..."],
 ] as const;
+
+const emptyFounder = (role = "CEO"): FounderInput => ({
+  name: "",
+  role,
+  email: "",
+  linkedin: "",
+  github: "",
+});
 
 function ApplyPage() {
   const [form, setForm] = useState<Record<string, string>>({});
+  const [founders, setFounders] = useState<FounderInput[]>([emptyFounder("CEO"), emptyFounder("CTO")]);
   const [round, setRound] = useState("Pre-seed");
   const [consentResearch, setConsentResearch] = useState(false);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
@@ -43,6 +64,21 @@ function ApplyPage() {
   }, []);
 
   async function submit() {
+    const cleanFounders = founders
+      .map((f) => ({ ...f, name: f.name.trim(), linkedin: f.linkedin.trim() }))
+      .filter((f) => f.name || f.email || f.linkedin || f.github);
+    if (!form.company?.trim() || !form.deck?.trim()) {
+      setError("company and deck are required");
+      return;
+    }
+    if (!cleanFounders.length) {
+      setError("add at least one founder or co-founder");
+      return;
+    }
+    if (cleanFounders.some((f) => !f.name || !f.linkedin)) {
+      setError("each founder needs a name and LinkedIn URL/search link");
+      return;
+    }
     if (!consentResearch) {
       setError("research consent is required — we only enrich what you allow");
       return;
@@ -56,6 +92,7 @@ function ApplyPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          founders: cleanFounders,
           round,
           stage: round,
           permissions: { "public research": "granted", "interview recording": "pending", "reference calls": "pending" },
@@ -95,7 +132,7 @@ function ApplyPage() {
           </div>
 
           <Card className="p-5 space-y-3">
-            {FIELDS.map(([key, label, placeholder]) => (
+            {COMPANY_FIELDS.map(([key, label, placeholder]) => (
               <label key={key} className="block">
                 <div className="mb-1 text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
                 <input
@@ -118,6 +155,67 @@ function ApplyPage() {
                 ))}
               </select>
             </label>
+            <div className="space-y-2 pt-2">
+              <div className="flex items-center justify-between">
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                  Founders and co-founders *
+                </div>
+                <button
+                  onClick={() => setFounders([...founders, emptyFounder("Co-founder")])}
+                  className="h-7 rounded-md border border-border bg-surface px-2 text-[11px] flex items-center gap-1.5"
+                  type="button"
+                >
+                  <Plus className="h-3 w-3" /> Add co-founder
+                </button>
+              </div>
+              {founders.map((founder, index) => (
+                <div key={index} className="rounded-md border border-border bg-surface p-3">
+                  <div className="grid md:grid-cols-2 gap-2">
+                    <FounderField
+                      label="Name *"
+                      value={founder.name}
+                      placeholder="Ada Keller"
+                      onChange={(value) => setFounders(founders.map((f, i) => i === index ? { ...f, name: value } : f))}
+                    />
+                    <FounderField
+                      label="Role"
+                      value={founder.role}
+                      placeholder="CEO / CTO / Co-founder"
+                      onChange={(value) => setFounders(founders.map((f, i) => i === index ? { ...f, role: value } : f))}
+                    />
+                    <FounderField
+                      label="Email"
+                      value={founder.email}
+                      placeholder="ada@company.com"
+                      onChange={(value) => setFounders(founders.map((f, i) => i === index ? { ...f, email: value } : f))}
+                    />
+                    <FounderField
+                      label="LinkedIn *"
+                      value={founder.linkedin}
+                      placeholder="https://www.linkedin.com/in/..."
+                      onChange={(value) => setFounders(founders.map((f, i) => i === index ? { ...f, linkedin: value } : f))}
+                    />
+                    <div className="md:col-span-2">
+                      <FounderField
+                        label="GitHub / personal site"
+                        value={founder.github}
+                        placeholder="https://github.com/... or https://..."
+                        onChange={(value) => setFounders(founders.map((f, i) => i === index ? { ...f, github: value } : f))}
+                      />
+                    </div>
+                  </div>
+                  {founders.length > 1 && (
+                    <button
+                      onClick={() => setFounders(founders.filter((_, i) => i !== index))}
+                      className="mt-2 h-7 rounded-md border border-border bg-card px-2 text-[11px] text-muted-foreground flex items-center gap-1.5"
+                      type="button"
+                    >
+                      <Trash2 className="h-3 w-3" /> Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
             <label className="flex items-start gap-2 pt-1 text-[12px] text-muted-foreground">
               <input
                 type="checkbox"
@@ -219,5 +317,29 @@ function ApplyPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function FounderField({
+  label,
+  value,
+  placeholder,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  placeholder: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="block">
+      <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full rounded-md border border-border bg-card px-3 py-2 text-[13px] outline-none focus:border-ring"
+      />
+    </label>
   );
 }

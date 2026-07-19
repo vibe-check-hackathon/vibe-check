@@ -2,7 +2,6 @@ import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { isInvestor, logout } from "@/lib/auth";
 import {
-  LayoutDashboard,
   Kanban,
   FileText,
   ScrollText,
@@ -14,12 +13,12 @@ import {
   CornerDownLeft,
   ChevronDown,
   Check,
+  type LucideIcon,
 } from "lucide-react";
 import logo from "@/assets/vibecheck.svg.asset.json";
 import { STARTUPS } from "@/lib/data";
 
-const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
-  { to: "/", label: "Pipeline", icon: LayoutDashboard, exact: true },
+const NAV: { to: string; label: string; icon: LucideIcon; exact?: boolean }[] = [
   { to: "/board", label: "Board", icon: Kanban },
   { to: "/applications", label: "Opportunity", icon: FileText },
   { to: "/interviews", label: "Live Interview", icon: Mic },
