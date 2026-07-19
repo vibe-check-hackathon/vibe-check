@@ -90,7 +90,8 @@ unmerged `numeric-confidence-trust` branch — details in `laura/note-for-sun.md
 ## Team blockers (not code)
 
 - [ ] Sun: reconcile status vocab (card template vs tech spec §4.2) — `note-for-sun.md`
-- [ ] Sun: review/merge `numeric-confidence-trust`
+- [x] ~~Sun: review/merge `numeric-confidence-trust`~~ merged to main 2026-07-19;
+      Sun to review post-merge (it edits his card files)
 - [ ] All: freeze event schema §3.3 as the contract (then it only changes by team decision)
 - [ ] Record the 60-second video from `sun/tech-video-staging/pitch-deck.md`
 
