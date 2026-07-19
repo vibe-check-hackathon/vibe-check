@@ -52,6 +52,7 @@ function BoardPage() {
   const [sortDir, setSortDir] = useState<1 | -1>(-1);
   const [filters, setFilters] = useState<TableFilters>(NO_FILTERS);
   const [query, setQuery] = useState("");
+  const [attrQuery, setAttrQuery] = useState("");
   const [command, setCommand] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
@@ -65,6 +66,7 @@ function BoardPage() {
       setSortKey(null);
       setSortDir(-1);
       setQuery("");
+      setAttrQuery("");
       setFeedback("Reset - showing all deals, original order.");
       return;
     }
@@ -125,7 +127,14 @@ function BoardPage() {
       notes.push("official cards only");
     }
     if (!notes.length) {
-      setFeedback('Did not catch a command - try "sort by money", "hide portfolio", "current apps", "outbound", "reset".');
+      const attrs = parseAttributeQuery(t);
+      if (attrs.length) {
+        setAttrQuery(t);
+        setView("table");
+        setFeedback(`attribute search: ${attrs.map((a) => a.label).join(" + ")} (all must match) — "reset" to clear`);
+        return;
+      }
+      setFeedback('Did not catch a command - try "sort by money", "hide portfolio", "outbound", "reset", or an attribute query like "technical founder, berlin, ai infra, no prior vc backing".');
       return;
     }
     setSortKey(sk);
@@ -166,7 +175,9 @@ function BoardPage() {
 
   const all = [...STARTUPS, ...synthetic];
   const normalizedQuery = query.trim().toLowerCase();
+  const attrPreds = attrQuery ? parseAttributeQuery(attrQuery) : [];
   const visibleDeals = all
+    .filter((s) => attrPreds.every((p) => p.ok(s)))
     .filter((s) => !(filters.historical && s.stage === "Portfolio"))
     .filter((s) => !(filters.synthetic && s.synthetic))
     .filter((s) => !(filters.syntheticOnly && !s.synthetic))
@@ -623,6 +634,54 @@ function parseDateKey(submitted: string): number {
   if (!Number.isNaN(full)) return full;
   const year = submitted.match(/^\d{4}$/);
   return year ? Date.parse(`${submitted}-01-01`) : 0;
+}
+
+/* ---------- multi-attribute reasoning (challenge brief MVP #3) ----------
+   Parses free text like "technical founder, Berlin, AI infra, enterprise
+   traction, no prior VC backing" into predicates over structured deal data —
+   every attribute must match (AND), not keyword-anywhere search. */
+type AttrPredicate = { label: string; ok: (s: Startup) => boolean };
+
+const GEO_QUERIES: [RegExp, string, (g: string) => boolean][] = [
+  [/berlin/, "Berlin", (g) => g.includes("berlin")],
+  [/munich/, "Munich", (g) => g.includes("munich")],
+  [/amsterdam/, "Amsterdam", (g) => g.includes("amsterdam")],
+  [/zurich|zürich/, "Zurich", (g) => g.includes("zurich")],
+  [/copenhagen/, "Copenhagen", (g) => g.includes("copenhagen")],
+  [/vienna/, "Vienna", (g) => g.includes("vienna")],
+  [/germany|german\b/, "Germany", (g) => g.includes("de")],
+  [/switzerland|swiss/, "Switzerland", (g) => g.includes("ch")],
+  [/\bus\b|united states|american/, "US", (g) => g.includes("us")],
+  [/europe(an)?/, "Europe", (g) => !/(^|\s)us$/.test(g.trim())],
+];
+
+function parseAttributeQuery(t: string): AttrPredicate[] {
+  const preds: AttrPredicate[] = [];
+  for (const [re, domain] of DOMAIN_MAP) {
+    if (re.test(t)) preds.push({ label: domain, ok: (s) => domainsOf(s).includes(domain) });
+  }
+  if (/ai infra|ai infrastructure|\bai\b/.test(t)) {
+    preds.push({ label: "AI", ok: (s) => /\bai\b|artificial intelligence/i.test(`${s.sector} ${s.oneLiner}`) });
+  }
+  for (const [re, label, ok] of GEO_QUERIES) {
+    if (re.test(t)) {
+      preds.push({ label, ok: (s) => ok(s.geography.toLowerCase()) });
+      break;
+    }
+  }
+  if (/technical (co-?)?founder|cto/.test(t)) {
+    preds.push({ label: "technical founder", ok: (s) => s.founders.some((f) => /cto|technical|engineer/i.test(f.role ?? "")) });
+  }
+  if (/no (prior )?(vc|venture|backing|funding)|unbacked|first[- ]time raise/.test(t)) {
+    preds.push({ label: "no prior VC backing", ok: (s) => /pre/i.test(s.round) || (!s.realEvent && s.stage !== "Portfolio") });
+  }
+  if (/traction|revenue|enterprise customers|paying customers/.test(t)) {
+    preds.push({ label: "traction signal", ok: (s) => Boolean(s.realEvent) || /arr|customer|traction|pilot|enterprise/i.test(s.oneLiner) });
+  }
+  if (/accelerator|y ?combinator|\byc\b/.test(t)) {
+    preds.push({ label: "accelerator", ok: (s) => /combinator|accelerator/i.test(`${s.website ?? ""} ${s.oneLiner} ${s.realEvent ?? ""}`) });
+  }
+  return preds;
 }
 
 /** The five founder-evaluation axes (laura/founder-axis-scoring.md). */
