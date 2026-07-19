@@ -67,9 +67,9 @@ export function ReferencesPage() {
   return (
     <AppShell>
       <PageHeader
-        crumbs={["References", "Helix Bio"]}
+        crumbs={["References", "FirstCheck"]}
         eyebrow="Voice-agent reference calls"
-        title="References · Helix Bio"
+        title="References · FirstCheck"
         description="4 references contacted, 3 completed. Every quote is timestamped, linked to a source, and cross-checked against founder claims."
         actions={
           <>

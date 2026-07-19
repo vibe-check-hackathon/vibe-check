@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge, ScoreBar } from "@/components/ui-kit";
+import { ACME_FOUNDERS } from "@/lib/data";
 import { FileText, ShieldCheck, ShieldAlert, Sparkles, ExternalLink } from "lucide-react";
 
 export const Route = createFileRoute("/memo")({
@@ -24,10 +25,10 @@ export function MemoPage() {
   return (
     <AppShell>
       <PageHeader
-        crumbs={["Decision Memo", "Helix Bio", "v3 · draft"]}
+        crumbs={["Decision Memo", "FirstCheck", "v3 · draft"]}
         eyebrow="Investment memorandum"
-        title="Helix Bio · Seed · €3.5M"
-        description="Generated from 14 evidence sources, 4 references, and 1 founder interview. Every claim links to its evidence."
+        title="FirstCheck · Pre-seed · $1.2M"
+        description="Generated from 14 evidence sources, 4 references, and 1 four-founder interview. Every claim links to its evidence."
         actions={
           <>
             <Badge tone="teal">Confidence 84</Badge>
@@ -46,13 +47,13 @@ export function MemoPage() {
             <SectionTitle n="01" title="Company snapshot" />
             <Card className="p-0">
               <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
-                <Snap label="Sector" value="Climate / Biotech" />
-                <Snap label="Stage · Ask" value="Seed · €3.5M" />
-                <Snap label="Geo · Founded" value="Zürich · 2024" />
-                <Snap label="Round lead" value="Nordwind II" />
+                <Snap label="Sector" value="AI / Venture infrastructure" />
+                <Snap label="Stage · Ask" value="Pre-seed · $1.2M" />
+                <Snap label="Geo · Founded" value="Berlin · 2026" />
+                <Snap label="Round lead" value="MIG Ventures III" />
               </div>
               <div className="border-t border-border p-5 text-[13.5px] leading-relaxed text-foreground/90">
-                Helix Bio designs and licenses engineered enzymes for industrial carbon capture. The wedge is a licensable enzyme library sold into cement and steel decarbonization retrofits, with early-bench evidence of 3.4× energy-efficiency uplift over incumbent amine capture<Source id="1" hint="Deck v3.2 · slide 8" />.
+                FirstCheck replaces the analyst hours a fund spends turning an inbound application into a first-check decision. An application enters, the pipeline sources and corroborates every claim with a trust score, an agent interview tests the open hypotheses live, and a human investor approves at the gate — memo out in 48 hours with the evidence attached to each line<Source id="1" hint="Deck v3.2 · slide 8" />.
               </div>
             </Card>
           </section>
@@ -61,9 +62,9 @@ export function MemoPage() {
           <section>
             <SectionTitle n="02" title="Investment hypotheses" />
             <ol className="space-y-3">
-              <Hypothesis n="H1" text="Industrial carbon capture becomes procurement-mandated for cement and steel in the EU by 2028 under CBAM tightening." conf={78} />
-              <Hypothesis n="H2" text="Enzyme-based capture becomes cost-competitive with amine capture at ≥ 60h @ 70°C stability." conf={71} />
-              <Hypothesis n="H3" text="Helix's founder-market fit (ETH + Ginkgo pairing) will translate lab results to industrial pilot within 18 months." conf={82} />
+              <Hypothesis n="H1" text="Funds will accept an agent-run first interview when every claim stays traceable to its source and the human keeps the approval gate." conf={74} />
+              <Hypothesis n="H2" text="The thesis lens generalises: a second fund is a config change, not a second rule set." conf={58} />
+              <Hypothesis n="H3" text="Evidence provenance — founder-claimed vs corroborated — is the durable moat, because it is what a fund cannot safely skip." conf={81} />
             </ol>
           </section>
 
@@ -71,10 +72,10 @@ export function MemoPage() {
           <section>
             <SectionTitle n="03" title="SWOT" />
             <div className="grid md:grid-cols-2 gap-3">
-              <SwotCard title="Strengths" tone="positive" items={["Verified research pedigree (h-index 14)", "Signed Holcim LoI", "CTO with industrial scale-up background"]} />
-              <SwotCard title="Weaknesses" tone="warning" items={["Overstated pilot scale in deck", "Fractional Chief Scientist", "No third-party benchmark yet"]} />
-              <SwotCard title="Opportunities" tone="teal" items={["CBAM tightening 2027–2028", "Cement decarb: €40B addressable spend", "Licensable enzyme library → capital-light model"]} />
-              <SwotCard title="Threats" tone="negative" items={["Amine incumbents dropping cost curve", "IP contested by EPFL license terms", "Grant-funded competitors from KAUST, MIT"]} />
+              <SwotCard title="Strengths" tone="positive" items={["Working end-to-end pipeline, not a mock", "Four complementary founders, conflict aired in-call", "Every claim carries a source and trust score"]} />
+              <SwotCard title="Weaknesses" tone="warning" items={["Deck overstated time-to-memo (24h vs 48h)", "Screening still deterministic, not scored", "No paying fund yet — two pilots pending"]} />
+              <SwotCard title="Opportunities" tone="teal" items={["Seed-stage deal volume rising faster than analyst headcount", "Opportunity DB reusable across funds", "Interview transcript becomes proprietary training data"]} />
+              <SwotCard title="Threats" tone="negative" items={["Incumbent CRMs adding AI screening", "Founder resistance to being interviewed by an agent", "Data-protection terms around interview recordings"]} />
             </div>
           </section>
 
@@ -83,10 +84,10 @@ export function MemoPage() {
             <SectionTitle n="04" title="Problem & product" />
             <div className="space-y-3 text-[13.5px] leading-relaxed text-foreground/90">
               <p>
-                Amine-based carbon capture consumes 2.5–4 GJ/tCO<sub>2</sub>, making retrofits uneconomic below €120/t carbon prices<Source id="2" hint="IEA CCUS 2025 report" />. Helix's engineered carbonic anhydrase variant B4 has achieved 40h stability at 65°C in synthetic flue-gas in lab conditions<Source id="3" hint="Interview 12:12" />, with a target of 60h at 70°C for procurement-grade validation<Source id="4" hint="Reference · M. Vlček (Holcim)" />.
+                A partner running screening reads one memo before deciding whether a deal survives. Producing that memo today means an analyst manually reconciling a deck, a website and a call — days of work in which nothing is traceable afterwards<Source id="2" hint="Fund workflow interviews" />. FirstCheck runs sourcing and developing as an explicit pipeline: claims enter as <em>claimed</em> with self-reported trust, corroboration moves them, contradictions are recorded rather than smoothed over, and gaps stay visible as gaps<Source id="3" hint="Interview 12:12" />.
               </p>
               <p>
-                Product is a licensed variant library plus a bench-to-plant validation service. Revenue accrues via per-facility license fees plus tonnage royalties<Source id="1" hint="Deck v3.2 · slide 12" />.
+                The product is the board, the four-stage pipeline (company snapshot → founder profiles → agent interview → due diligence) and the negotiation model that moves BATNA and ZOPA live during the call. Founder profiles carry five scored axes plus an open 16-personalities hypothesis that only the interview can confirm — never a psychometric verdict issued from a deck<Source id="1" hint="Deck v3.2 · slide 12" />.
               </p>
             </div>
           </section>
@@ -119,12 +120,21 @@ export function MemoPage() {
           {/* Team */}
           <section>
             <SectionTitle n="06" title="Team history" />
-            <ul className="space-y-2 text-[13px] text-foreground/90">
-              <li>· <b>Amina Osei</b> — CEO. ETH Zürich, ENZYME-CCS PI. 12 papers, h-index 14<Source id="5" hint="Google Scholar" />.</li>
-              <li>· <b>Lukas Berger</b> — CTO. Ginkgo Bioworks (2019–2023). Prior 2019 exit reclassified as partial acqui-hire<Source id="6" hint="Reference · J. Patel" />.</li>
-              <li>· <b>Dr. Marie Roche</b> — Chief Scientist (fractional). Led B4 discovery.</li>
-              <li>· <b>Nikhil Rao</b> — Founding engineer. Simulation and ML infrastructure.</li>
+            <ul className="space-y-2.5 text-[13px] text-foreground/90">
+              {ACME_FOUNDERS.map((f) => (
+                <li key={f.id}>
+                  · <b>{f.name}</b> — {f.role}.{" "}
+                  <a href={f.linkedin} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                    LinkedIn
+                  </a>
+                  <div className="pl-3 text-[12.5px] text-muted-foreground leading-relaxed">{f.history}</div>
+                </li>
+              ))}
             </ul>
+            <p className="mt-3 text-[11.5px] text-muted-foreground">
+              Contribution split sourced from the repository history. Prior career history is founder-supplied and not
+              yet corroborated — LinkedIn is not machine-readable without authentication.
+            </p>
           </section>
 
           {/* Diligence log */}

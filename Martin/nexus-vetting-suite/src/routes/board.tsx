@@ -317,7 +317,7 @@ function BoardPage() {
       <PageHeader
         eyebrow="Board"
         title="Deal board"
-        description="The live Acme demo plus the official public-source Maschmeyer opportunity cards from Laura's database."
+        description="The live FirstCheck demo plus the official public-source Maschmeyer opportunity cards from Laura's database."
         actions={
           <>
             <div className="flex items-center rounded-md border border-border bg-surface p-0.5">
@@ -806,7 +806,7 @@ const SYNTHETIC_SCORE_KEYS: Record<(typeof FOUNDER_AXES)[number], string> = {
   "Co-founder fit": "teamComplementarity",
 };
 
-/** Axis values for a founder: synthetic → generated scores, Acme demo → psychogram, real → null (never fabricated). */
+/** Axis values for a founder: synthetic → generated scores, FirstCheck demo → psychogram, real → null (never fabricated). */
 function axisValuesFor(s: Startup, f: FounderRef): Record<string, number> | null {
   if (s.synthetic && f.scores) {
     return Object.fromEntries(FOUNDER_AXES.map((a) => [a, f.scores![SYNTHETIC_SCORE_KEYS[a]] ?? 0]));

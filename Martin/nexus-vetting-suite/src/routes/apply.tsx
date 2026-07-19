@@ -26,7 +26,7 @@ type FounderInput = {
 };
 
 const COMPANY_FIELDS = [
-  ["company", "Company name *", "Acme Robotics"],
+  ["company", "Company name *", "FirstCheck"],
   ["deck", "Pitch deck URL *", "https://drive.example/deck.pdf"],
   ["website", "Company website", "https://acme-robotics.example"],
   ["oneLiner", "One-line pitch", "What you do, in one sentence"],

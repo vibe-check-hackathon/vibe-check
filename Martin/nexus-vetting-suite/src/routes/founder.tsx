@@ -5,7 +5,7 @@ import {
 } from "recharts";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge } from "@/components/ui-kit";
-import { Sparkles, Lock, ChevronRight, UserPlus } from "lucide-react";
+import { Sparkles, Lock, ChevronRight, UserPlus, BrainCircuit } from "lucide-react";
 import { useSubmittedApplications } from "@/lib/applications";
 import { ACME_FOUNDERS, ACME_TEAM, type DemoFounder } from "@/lib/data";
 
@@ -30,18 +30,17 @@ const QUOTES: Record<string, Record<string, { q: string; t: string }>> = {
   },
 };
 
-type Tab = "FND-0007" | "FND-0008" | "TEAM";
+type Tab = string; // a founder id, or "TEAM"
 
 function FounderPage() {
-  const [tab, setTab] = useState<Tab>("FND-0007");
-  const ada = ACME_FOUNDERS[0];
-  const minh = ACME_FOUNDERS[1];
+  const [tab, setTab] = useState<Tab>(ACME_FOUNDERS[0].id);
+  const active = ACME_FOUNDERS.find((f) => f.id === tab);
 
   return (
     <AppShell>
       <PageHeader
-        crumbs={["Founders", "Acme Robotics", tab === "TEAM" ? "Team overview" : (tab === "FND-0007" ? "Ada Keller" : "Minh Tran")]}
-        eyebrow="Founder psychogram · OPP-2026-0001 · Acme Robotics"
+        crumbs={["Founders", "FirstCheck", active?.name ?? "Team overview"]}
+        eyebrow="Founder psychogram · OPP-2026-0001 · FirstCheck"
         title="Founder psychogram"
         description="Five-axis, evidence-based founder profiles. Sub-scores stay separate — the headline number never hides its components."
         actions={<Link to={"/interviews" as never} className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5">← Live interview</Link>}
@@ -51,7 +50,7 @@ function FounderPage() {
       <div className="px-8 pt-5">
         <div className="rounded-md border border-warning/40 bg-warning/5 px-4 py-2.5 flex items-start gap-2.5 text-[12px] text-foreground/90">
           <Lock className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
-          <span>This scored psychogram runs only on the fictional <span className="font-medium">Acme</span> demo. Real Maschmeyer founders (Secfix, deskbird, VoiceLine…) are shown from public data and <span className="font-medium">deliberately never scored</span> — the suite does not fabricate psychometric judgments of real people.</span>
+          <span>This scored psychogram runs only on the <span className="font-medium">FirstCheck</span> demo, whose founders are members of this team using their own names and photos with consent. Third-party founders (Secfix, deskbird, VoiceLine…) are shown from public data and <span className="font-medium">deliberately never scored</span> — the suite does not fabricate psychometric judgments of people who have not opted in.</span>
         </div>
       </div>
 
@@ -59,13 +58,22 @@ function FounderPage() {
 
       <div className="px-8 pt-4">
         <div className="flex gap-2">
-          <TabBtn active={tab === "FND-0007"} onClick={() => setTab("FND-0007")} initials="AK" color="var(--primary)">Ada Keller <span className="text-muted-foreground font-normal">CEO</span></TabBtn>
-          <TabBtn active={tab === "FND-0008"} onClick={() => setTab("FND-0008")} initials="MT" color="var(--positive)">Minh Tran <span className="text-muted-foreground font-normal">CTO</span></TabBtn>
+          {ACME_FOUNDERS.map((f) => (
+            <TabBtn
+              key={f.id}
+              active={tab === f.id}
+              onClick={() => setTab(f.id)}
+              initials={f.initials}
+              photo={f.photo}
+            >
+              {f.name} <span className="text-muted-foreground font-normal">{f.role}</span>
+            </TabBtn>
+          ))}
           <TabBtn active={tab === "TEAM"} onClick={() => setTab("TEAM")} initials="✦">Team overview</TabBtn>
         </div>
       </div>
 
-      {tab === "TEAM" ? <TeamView ada={ada} minh={minh} /> : <FounderView founder={tab === "FND-0007" ? ada : minh} />}
+      {active ? <FounderView founder={active} /> : <TeamView founders={ACME_FOUNDERS} />}
     </AppShell>
   );
 }
@@ -78,9 +86,21 @@ function FounderView({ founder }: { founder: DemoFounder }) {
       <div className="space-y-4">
         <Card className="p-5">
           <div className="flex items-center justify-between mb-2">
-            <div>
-              <div className="text-[15px] font-medium">{founder.name} — {founder.role}</div>
-              <div className="text-[11px] text-muted-foreground">{founder.id}</div>
+            <div className="flex items-center gap-3">
+              {founder.photo ? (
+                <img src={founder.photo} alt={founder.name} className="h-11 w-11 rounded-full object-cover" />
+              ) : (
+                <span className="h-11 w-11 rounded-full bg-surface-2 grid place-items-center text-[13px] font-semibold">{founder.initials}</span>
+              )}
+              <div>
+                <div className="text-[15px] font-medium">{founder.name} — {founder.role}</div>
+                <div className="text-[11px] text-muted-foreground">
+                  {founder.id} ·{" "}
+                  <a href={founder.linkedin} target="_blank" rel="noreferrer" className="hover:underline text-primary">
+                    LinkedIn
+                  </a>
+                </div>
+              </div>
             </div>
             <div className="text-right">
               <div className="font-serif text-[30px] leading-none">{founder.score}<span className="text-[14px] text-muted-foreground">/100</span></div>
@@ -101,8 +121,9 @@ function FounderView({ founder }: { founder: DemoFounder }) {
         </Card>
       </div>
 
-      {/* right: axis breakdown w/ collapsible live evidence */}
+      {/* right: personality hypothesis, then axis breakdown */}
       <div className="lg:col-span-2 space-y-4">
+        <PersonalityCard founder={founder} />
         <Card className="p-0">
           <div className="px-5 py-3.5 border-b border-border flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary" /><span className="text-[13px] font-medium">Axis breakdown &amp; evidence</span></div>
           <div className="divide-y divide-border">
@@ -146,13 +167,17 @@ function FounderView({ founder }: { founder: DemoFounder }) {
   );
 }
 
-function TeamView({ ada, minh }: { ada: DemoFounder; minh: DemoFounder }) {
-  const keys = ada.axes.map((a) => a.key);
-  const radarData = keys.map((k) => ({
-    axis: k,
-    Ada: ada.axes.find((a) => a.key === k)!.v,
-    Minh: minh.axes.find((a) => a.key === k)!.v,
-  }));
+/** One colour per founder, so the overlay stays readable at four series. */
+const TEAM_COLORS = ["var(--series-1)", "var(--series-2)", "var(--series-3)", "var(--series-4)"];
+
+function TeamView({ founders }: { founders: DemoFounder[] }) {
+  const keys = founders[0].axes.map((a) => a.key);
+  // Every founder overlaid on the same five axes.
+  const radarData = keys.map((k) => {
+    const row: Record<string, string | number> = { axis: k };
+    for (const f of founders) row[f.name] = f.axes.find((a) => a.key === k)!.v;
+    return row;
+  });
   return (
     <div className="px-8 py-6 grid lg:grid-cols-3 gap-4">
       <div className="space-y-4">
@@ -167,14 +192,27 @@ function TeamView({ ada, minh }: { ada: DemoFounder; minh: DemoFounder }) {
                 <PolarGrid stroke="var(--border)" />
                 <PolarAngleAxis dataKey="axis" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
                 <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
-                <Radar name="Ada" dataKey="Ada" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.16} />
-                <Radar name="Minh" dataKey="Minh" stroke="var(--positive)" fill="var(--positive)" fillOpacity={0.14} />
+                {founders.map((f, i) => (
+                  <Radar
+                    key={f.id}
+                    name={f.name}
+                    dataKey={f.name}
+                    stroke={TEAM_COLORS[i % TEAM_COLORS.length]}
+                    fill={TEAM_COLORS[i % TEAM_COLORS.length]}
+                    fillOpacity={0.1}
+                    strokeWidth={2}
+                  />
+                ))}
               </RadarChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex justify-center gap-4 text-[12px]">
-            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-primary" /> Ada · CEO</span>
-            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-positive" /> Minh · CTO</span>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-[12px]">
+            {founders.map((f, i) => (
+              <span key={f.id} className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: TEAM_COLORS[i % TEAM_COLORS.length] }} />
+                {f.name.split(" ")[0]} · {f.role}
+              </span>
+            ))}
           </div>
         </Card>
       </div>
@@ -202,10 +240,14 @@ function TeamView({ ada, minh }: { ada: DemoFounder; minh: DemoFounder }) {
   );
 }
 
-function TabBtn({ active, onClick, initials, color, children }: { active: boolean; onClick: () => void; initials: string; color?: string; children: React.ReactNode }) {
+function TabBtn({ active, onClick, initials, color, photo, children }: { active: boolean; onClick: () => void; initials: string; color?: string; photo?: string | null; children: React.ReactNode }) {
   return (
     <button onClick={onClick} className={"flex items-center gap-2 rounded-full border pl-1.5 pr-3.5 py-1.5 text-[13px] font-medium transition-colors " + (active ? "border-primary text-foreground" : "border-border text-muted-foreground hover:bg-surface")}>
-      <span className="h-6 w-6 rounded-full grid place-items-center text-[10px] font-semibold text-primary-foreground" style={{ background: color ?? "var(--muted-foreground)" }}>{initials}</span>
+      {photo ? (
+        <img src={photo} alt="" className="h-6 w-6 rounded-full object-cover" />
+      ) : (
+        <span className="h-6 w-6 rounded-full grid place-items-center text-[10px] font-semibold text-primary-foreground" style={{ background: color ?? "var(--muted-foreground)" }}>{initials}</span>
+      )}
       {children}
     </button>
   );
@@ -285,5 +327,45 @@ function InboundFounders() {
         </div>
       </Card>
     </div>
+  );
+}
+
+
+/**
+ * The 16-personalities read, deliberately rendered as an *open hypothesis*
+ * rather than a result: it is inferred from written material and only the
+ * agent interview can support or contradict it.
+ */
+function PersonalityCard({ founder }: { founder: DemoFounder }) {
+  const { type, label, hypothesis, basis, status, confidence } = founder.personality;
+  const tone = status === "supported" ? "positive" : status === "contradicted" ? "negative" : "warning";
+
+  return (
+    <Card className="p-0">
+      <div className="px-5 py-3.5 border-b border-border flex items-center gap-2">
+        <BrainCircuit className="h-3.5 w-3.5 text-primary" />
+        <span className="text-[13px] font-medium">Personality hypothesis</span>
+        <Badge tone="outline">16 personalities</Badge>
+        <span className={"ml-auto text-[10px] uppercase tracking-wider text-" + tone}>
+          {status === "open" ? "open · to be tested" : status}
+        </span>
+      </div>
+      <div className="p-5">
+        <div className="flex items-baseline gap-2.5">
+          <span className="font-serif text-[26px] leading-none">{type}</span>
+          <span className="text-[13px] text-muted-foreground">{label}</span>
+          <span className="ml-auto text-[11px] text-muted-foreground">confidence {confidence}/100</span>
+        </div>
+        <div className="mt-2 h-1.5 rounded-full bg-muted overflow-hidden">
+          <div className="h-full rounded-full bg-warning" style={{ width: confidence + "%" }} />
+        </div>
+        <p className="mt-3 text-[13px] leading-relaxed text-foreground/90">{hypothesis}</p>
+        <p className="mt-2 text-[11.5px] text-muted-foreground">{basis}</p>
+        <p className="mt-3 pt-2.5 border-t border-border text-[11.5px] text-muted-foreground">
+          Held open on purpose. A type inferred from written material is a prompt for the interview, not a
+          judgment — the agent tests it live and the confidence moves with the evidence.
+        </p>
+      </div>
+    </Card>
   );
 }

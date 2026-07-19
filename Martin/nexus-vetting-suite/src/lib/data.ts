@@ -53,7 +53,7 @@ export type Startup = {
   /**
    * Real founders sourced from public data are intentionally NOT scored — the
    * suite never fabricates psychometric judgments of real people. Only the
-   * fictional demo opportunity (Acme) is `assessed`.
+   * team demo opportunity (FirstCheck) is `assessed`.
    */
   assessed: boolean;
   founderScore: number | null;
@@ -101,32 +101,39 @@ export type Startup = {
 
 /**
  * Pipeline = the real Maschmeyer Group opportunity DB (public sources only,
- * from `laura/opportunity-db`) + one fictional demo card (Acme) that the live
+ * from `laura/opportunity-db`) + the team's own demo card (FirstCheck) that the live
  * interview studio and founder psychogram run on. Real founders stay unassessed.
  */
 const ACME_STARTUP: Startup = {
-  id: "acme",
-  company: "Acme Robotics",
+  id: "firstcheck",
+  company: "FirstCheck",
   oneLiner:
-    "Vision-guided picking software - warehouse robots learn new objects from a short operator demonstration.",
+    "AI-native first-check screening for venture funds - evidence-backed founder profiles and an agent interview that turns an inbound application into a decision memo in 24 hours.",
   founders: [
     {
       id: "FND-0007",
-      name: "Ada Keller",
+      name: "Martin Auer",
       role: "CEO",
       assessed: true,
-      avatar: { type: "initials", value: "AK", basis: "fictional demo founder" },
+      avatar: { type: "initials", value: "MA", basis: "team demo founder" },
     },
     {
       id: "FND-0008",
-      name: "Minh Tran",
+      name: "Sun Chuanqi",
       role: "CTO",
       assessed: true,
-      avatar: { type: "initials", value: "MT", basis: "fictional demo founder" },
+      avatar: { type: "image", value: "/sun-chuanqi.jpg", basis: "team demo founder" },
+    },
+    {
+      id: "FND-0009",
+      name: "Laura Spies",
+      role: "COO",
+      assessed: true,
+      avatar: { type: "image", value: "/laura-spies.png", basis: "team demo founder" },
     },
   ],
   stage: "Interview",
-  sector: "Robotics / AI",
+  sector: "AI / Venture infrastructure",
   geography: "Berlin, DE",
   round: "Pre-seed",
   ask: "EUR 1.2M",
@@ -159,7 +166,7 @@ export const METRICS = {
 export const FUNNEL = [
   { stage: "Sourcing", count: 214, delta: "public + inbound" },
   { stage: "Screening", count: STARTUPS.length, delta: `${OFFICIAL_STARTUPS.length} official + 1 demo` },
-  { stage: "Interview", count: 1, delta: "Acme - live" },
+  { stage: "Interview", count: 1, delta: "FirstCheck - live" },
   { stage: "Diligence", count: METRICS.diligenceInProgress, delta: "confidential" },
   { stage: "Portfolio", count: OFFICIAL_STARTUPS.length, delta: "official cards" },
 ];
@@ -209,7 +216,7 @@ export function companyInitials(company: string) {
       "Vision-guided picking software — warehouse robots learn new objects from a short operator demonstration.",
     founders: ["Ada Keller", "Minh Tran"],
     stage: "Interview",
-    sector: "Robotics / AI",
+    sector: "AI / Venture infrastructure",
     geography: "Berlin, DE",
     round: "Pre-seed",
     ask: "€1.2M",
@@ -371,7 +378,7 @@ export const METRICS = {
 export const FUNNEL = [
   { stage: "Sourcing", count: 214, delta: "public + inbound" },
   { stage: "Screening", count: 7, delta: "6 real · 1 demo" },
-  { stage: "Interview", count: 1, delta: "Acme · live" },
+  { stage: "Interview", count: 1, delta: "FirstCheck · live" },
   { stage: "Diligence", count: 3, delta: "confidential" },
   { stage: "Term Sheet", count: 3, delta: "ALSTIN-led (real)" },
 ];
@@ -443,7 +450,7 @@ export function fmtScore(n: number | null) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Acme demo — the fictional card the live interview + psychogram use */
+/*  FirstCheck demo — the team's own card, powering the live interview + psychogram */
 /*  (mirrors laura/frontend + sun/opportunity-card-example.md)         */
 /* ------------------------------------------------------------------ */
 
@@ -454,6 +461,23 @@ export type DemoFounder = {
   name: string;
   role: string;
   initials: string;
+  /** Path under public/. Null falls back to initials. */
+  photo: string | null;
+  /** Public profile, as supplied by the founder. */
+  linkedin: string;
+  /**
+   * 16-personalities read, held as an open hypothesis. Never a verdict: the
+   * type is inferred from written material and must be confirmed or dropped by
+   * the agent interview.
+   */
+  personality: {
+    type: string;
+    label: string;
+    hypothesis: string;
+    basis: string;
+    status: "open" | "supported" | "contradicted";
+    confidence: number;
+  };
   score: number;
   confidence: number;
   trend: "improving" | "stable";
@@ -472,14 +496,25 @@ export const AXIS_FULL: Record<string, string> = {
 export const ACME_FOUNDERS: DemoFounder[] = [
   {
     id: "FND-0007",
-    name: "Ada Keller",
+    name: "Martin Auer",
     role: "CEO",
-    initials: "AK",
+    initials: "MA",
+    photo: null, // no photo file supplied yet — see STARTUP_USER
+    linkedin: "https://www.linkedin.com/in/martin-auer/",
+    personality: {
+      type: "ENTJ",
+      label: "Commander",
+      hypothesis: "Frames the roadmap as a sequence of commitments and drives the room to a decision; the risk is closing a debate before the technical objection has fully landed.",
+      basis: "Written application and deck framing; no interview evidence yet.",
+      status: "open",
+      confidence: 41,
+    },
+
     score: 76,
     confidence: 60,
     trend: "improving",
     history:
-      "Former robotics research engineer; led a picking-system deployment at two distribution centres. Full-time since Jan 2026.",
+      "Owns the investor-facing product: the board, the four-stage pipeline navigation, the profile model and the inbound application flow. 23 commits across the vetting suite.",
     axes: [
       { key: "Resilience", full: AXIS_FULL.Resilience, v: 82, conf: 62 },
       { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 80, conf: 60 },
@@ -490,19 +525,86 @@ export const ACME_FOUNDERS: DemoFounder[] = [
   },
   {
     id: "FND-0008",
-    name: "Minh Tran",
+    name: "Sun Chuanqi",
     role: "CTO",
-    initials: "MT",
+    initials: "SC",
+    photo: "/sun-chuanqi.jpg",
+    linkedin: "https://www.linkedin.com/in/chuanqi-sun/",
+    personality: {
+      type: "INTP",
+      label: "Logician",
+      hypothesis: "Reaches for the underlying mechanism before the business framing, and will reopen a settled question if the model does not hold; the risk is depth at the cost of shipping.",
+      basis: "Technical writing and architecture notes; no interview evidence yet.",
+      status: "open",
+      confidence: 38,
+    },
     score: 72,
     confidence: 62,
     trend: "stable",
     history:
-      "Published relevant imitation-learning research and built the current product prototype. Model IP ownership not yet documented (GAP-002).",
+      "Owns the system architecture and the narrative layer — the conceptual pipeline the implementation follows, plus the deck and talk track. 43 commits, the second-largest contribution.",
     axes: [
       { key: "Resilience", full: AXIS_FULL.Resilience, v: 68, conf: 55 },
       { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 79, conf: 65 },
       { key: "Curiosity", full: AXIS_FULL.Curiosity, v: 83, conf: 66 },
       { key: "Perseverance", full: AXIS_FULL.Perseverance, v: 70, conf: 52 },
+      { key: "Co-founder fit", full: AXIS_FULL["Co-founder fit"], v: 75, conf: 50 },
+    ],
+  },
+  {
+    id: "FND-0009",
+    name: "Laura Spies",
+    role: "COO",
+    initials: "LS",
+    photo: "/laura-spies.png",
+    linkedin: "https://www.linkedin.com/in/laura-spies-75bb27109/",
+    personality: {
+      type: "INFJ",
+      label: "Advocate",
+      hypothesis: "Optimises for the system nobody asked for yet — pipelines, taxonomies, the shape of the data; the risk is building the general case before the specific one is proven.",
+      basis: "Pipeline and schema design decisions; no interview evidence yet.",
+      status: "open",
+      confidence: 44,
+    },
+    score: 74,
+    confidence: 58,
+    trend: "improving",
+    history:
+      "Built the sourcing and developing pipeline end to end: screening against the fund thesis, the opportunity database, the LLM adapter and the investor login gate. 48 commits, the largest contribution.",
+    axes: [
+      { key: "Resilience", full: AXIS_FULL.Resilience, v: 76, conf: 58 },
+      { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 81, conf: 62 },
+      { key: "Curiosity", full: AXIS_FULL.Curiosity, v: 79, conf: 60 },
+      { key: "Perseverance", full: AXIS_FULL.Perseverance, v: 72, conf: 54 },
+      { key: "Co-founder fit", full: AXIS_FULL["Co-founder fit"], v: 75, conf: 50 },
+    ],
+  },
+  {
+    id: "FND-0010",
+    name: "Mehdi Gouasmi",
+    role: "Head of Product",
+    initials: "MG",
+    photo: "/mehdi-gouasmi.png",
+    linkedin: "https://www.linkedin.com/in/mgou/",
+    personality: {
+      type: "ENFP",
+      label: "Campaigner",
+      hypothesis:
+        "Reframes the problem from the user's side and generates options quickly; the risk is momentum outrunning the evidence the other three are still gathering.",
+      basis: "Product framing and demo narrative; no interview evidence yet.",
+      status: "open",
+      confidence: 36,
+    },
+    score: 70,
+    confidence: 52,
+    trend: "improving",
+    history:
+      "Owns the demo requirements and screenplay — how the product is shown and in what order. Defined what the walkthrough has to prove before it was built.",
+    axes: [
+      { key: "Resilience", full: AXIS_FULL.Resilience, v: 71, conf: 52 },
+      { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 74, conf: 55 },
+      { key: "Curiosity", full: AXIS_FULL.Curiosity, v: 85, conf: 63 },
+      { key: "Perseverance", full: AXIS_FULL.Perseverance, v: 68, conf: 50 },
       { key: "Co-founder fit", full: AXIS_FULL["Co-founder fit"], v: 75, conf: 50 },
     ],
   },
@@ -515,12 +617,12 @@ export const ACME_TEAM = {
     {
       name: "Skill complementarity",
       v: 85,
-      why: "Commercial CEO × technical CTO — different critical functions, not duplicate strengths.",
+      why: "Commercial CEO × technical CTO × operations COO × product lead — four different critical functions, not duplicate strengths.",
     },
     {
       name: "Decision clarity",
       v: 74,
-      why: "Both founders describe the same decision process and split product vs. commercial calls cleanly.",
+      why: "All four describe the same decision process and split product, technical and commercial calls cleanly.",
     },
     {
       name: "Pressure-tested history",
@@ -528,7 +630,7 @@ export const ACME_TEAM = {
       why: "Conflict handling not yet observed under real pressure — the ceiling-gating component.",
     },
   ],
-  note: "Scored as a pair, never as an average of the two founders. Per Wasserman, ~65% of startup failures trace to people problems, so the co-founder dynamic carries its own gated score.",
+  note: "Scored as a team, never as an average of the four founders. Per Wasserman, ~65% of startup failures trace to people problems, so the co-founder dynamic carries its own gated score.",
 };
 
 /**
@@ -538,6 +640,21 @@ export const ACME_TEAM = {
  * `avatarUrl` points at the photo in `public/`. Set it to null to fall back to
  * initials.
  */
+/**
+ * The signed-in founder on the startup side of the switcher.
+ *
+ * `avatarUrl` is null until Martin's photo is saved into `public/` — set it to
+ * "/martin-auer.jpg" (or whatever the file is called) and the header, the
+ * psychogram tab and the founder card all pick it up.
+ */
+export const STARTUP_USER = {
+  name: "Martin Auer",
+  initials: "MA",
+  role: "Founder · applicant",
+  company: "FirstCheck",
+  avatarUrl: null as string | null,
+};
+
 export const INVESTOR = {
   name: "Carl-Philipp Beichert",
   initials: "CB",

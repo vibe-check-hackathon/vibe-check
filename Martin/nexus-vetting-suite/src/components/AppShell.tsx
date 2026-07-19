@@ -9,17 +9,14 @@ import {
   Command,
   Bell,
   FileText,
-  Building2,
-  Briefcase,
   CornerDownLeft,
   ChevronDown,
   Check,
   type LucideIcon,
 } from "lucide-react";
-import logo from "@/assets/vibecheck.svg.asset.json";
 import { PipelineStages, isPipelineRoute, PIPELINE_STAGES } from "@/components/PipelineStages";
 import { Checky } from "@/components/Checky";
-import { STARTUPS, INVESTOR } from "@/lib/data";
+import { STARTUPS, INVESTOR, STARTUP_USER } from "@/lib/data";
 import { useViewMode, type ViewMode } from "@/lib/view-mode";
 
 /**
@@ -58,6 +55,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
    * preview the startup side without logging out. */
   const { mode, setMode } = useViewMode();
   const NAV = mode === "investor" ? INVESTOR_NAV : STARTUP_NAV;
+  const person = mode === "investor" ? INVESTOR : STARTUP_USER;
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const search = useRouterState({ select: (s) => s.location.search as { sector?: string } });
   const navigate = useNavigate();
@@ -114,17 +112,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           style={{ backgroundImage: "linear-gradient(180deg, var(--sidebar), color-mix(in srgb, var(--sidebar) 80%, #000))" }}
         >
           <div className="flex h-14 items-center gap-2 px-5 border-b border-sidebar-border">
-            <img src={logo.url} alt="Maschmeyer Group" className="h-6 w-6" />
+            {/* Inline mark: the previous asset URL 404s (external Lovable CDN). */}
+            <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0" role="img" aria-label="FirstCheck">
+              <rect x="1.5" y="1.5" width="21" height="21" rx="6" fill="none" stroke="currentColor" strokeWidth="1.6" opacity="0.55" />
+              <path d="M7 12.4l3.4 3.4L17 8.8" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
             <div className="flex items-baseline gap-1.5">
               <span className="font-serif text-[17px] leading-none tracking-tight text-sidebar-foreground">
-                Maschmeyer
-              </span>
-              <span className="text-[10px] uppercase tracking-[0.14em] text-sidebar-foreground/45">
-                Group
+                FirstCheck
               </span>
             </div>
           </div>
 
+          {mode === "investor" && (
           <div className="px-3 py-3">
             <div className="rounded-md border border-sidebar-border bg-black/15 px-2.5 py-2">
               <div className="text-[10px] uppercase tracking-wider text-sidebar-foreground/55">
@@ -136,6 +136,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           </div>
+          )}
 
           <nav className="flex-1 px-2 space-y-0.5">
             {NAV.map((item) => {
@@ -165,7 +166,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* Main */}
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="sticky top-0 z-30 h-14 border-b border-border bg-background/85 backdrop-blur">
+          <header className="sticky top-0 z-50 h-14 border-b border-border bg-background/85 backdrop-blur">
             <div className="h-full flex items-center gap-3 px-6">
               {/* Search */}
               <div className="relative flex-1 max-w-xl">
@@ -221,7 +222,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 )}
               </div>
 
-              <div className="hidden md:flex items-center gap-2">
+              {/* ml-auto keeps the profile block pinned to the top-right corner */}
+              <div className="ml-auto hidden md:flex items-center gap-2">
                 <button className="h-8 rounded-md border border-border bg-surface px-2.5 text-[12px] text-muted-foreground hover:text-foreground">
                   Q3 · 2026
                 </button>
@@ -264,40 +266,55 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                           <span className="h-1.5 w-1.5 rounded-full bg-teal pulse-dot" />
                           <span className="text-[12.5px] font-medium">1 memo due · 24h</span>
                         </div>
-                        <div className="mt-0.5 pl-3.5 text-[11.5px] text-muted-foreground leading-snug">Acme Robotics awaiting IC · live interview in progress.</div>
+                        <div className="mt-0.5 pl-3.5 text-[11.5px] text-muted-foreground leading-snug">FirstCheck awaiting IC · live interview in progress.</div>
                       </button>
                     </div>
                   )}
                 </div>
 
-                {/* Profile switcher — which side of the marketplace you are on */}
-                <ProfileSwitcher mode={mode} setMode={setMode} />
-
-                {/* User (moved from sidebar) */}
-                <div className="relative pl-1">
+                {/* One control, top-right: the active profile's photo IS the
+                    role switcher. */}
+                <div className="relative">
                   <button
                     onClick={() => setMenu(menu === "user" ? null : "user")}
+                    aria-haspopup="listbox"
+                    aria-expanded={menu === "user"}
                     className="flex items-center gap-2 h-8 rounded-md border border-border bg-surface pl-1 pr-2 hover:bg-accent transition-colors"
                   >
-                    <Avatar />
+                    <Avatar person={person} />
                     <span className="hidden lg:block text-[12px] font-medium leading-none">
-                      {mode === "investor" ? INVESTOR.name : "Acme Robotics"}
+                      {person.name}
                     </span>
                     <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </button>
                   {menu === "user" && (
-                    <div className="absolute right-0 top-10 w-60 rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50 py-1">
-                      <div className="px-3 py-2 border-b border-border">
-                        <div className="text-[12.5px] font-medium">
-                          {mode === "investor" ? INVESTOR.name : "Acme Robotics"}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground">
-                          {mode === "investor" ? INVESTOR.role : "Founder · applicant"}
-                        </div>
+                    <div role="listbox" className="absolute right-0 top-10 w-64 rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50 py-1">
+                      <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                        Switch profile
                       </div>
-                      <MenuItem onClick={() => { setMenu(null); navigate({ to: "/settings" as never }); }}>Settings</MenuItem>
-                      <MenuItem onClick={() => { logout(); window.location.href = "/apply"; }}>Log out</MenuItem>
-                      <MenuItem onClick={() => setMenu(null)}>Sign out</MenuItem>
+                      {PROFILES.map((o) => {
+                        const active = o.id === mode;
+                        return (
+                          <button
+                            key={o.id}
+                            role="option"
+                            aria-selected={active}
+                            onClick={() => { setMode(o.id); setMenu(null); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-surface transition-colors"
+                          >
+                            <Avatar person={o.person} />
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-[12.5px] font-medium">{o.person.name}</span>
+                              <span className="block text-[11px] text-muted-foreground truncate">{o.label} · {o.person.role}</span>
+                            </span>
+                            {active && <Check className="h-3.5 w-3.5 text-primary shrink-0" />}
+                          </button>
+                        );
+                      })}
+                      <div className="mt-1 border-t border-border pt-1">
+                        <MenuItem onClick={() => { setMenu(null); navigate({ to: "/settings" as never }); }}>Settings</MenuItem>
+                        <MenuItem onClick={() => { logout(); window.location.href = "/apply"; }}>Log out</MenuItem>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -320,58 +337,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Investor photo when one is supplied, initials until then. */
-function Avatar() {
-  if (INVESTOR.avatarUrl) {
-    return (
-      <img
-        src={INVESTOR.avatarUrl}
-        alt={INVESTOR.name}
-        className="h-6 w-6 rounded-full object-cover"
-      />
-    );
+/** The two profiles the avatar control switches between. */
+const PROFILES: { id: ViewMode; label: string; person: typeof INVESTOR }[] = [
+  { id: "investor", label: "Investor", person: INVESTOR },
+  { id: "startup", label: "Startup", person: STARTUP_USER },
+];
+
+/** Photo for whichever profile is active; initials until a photo is supplied. */
+function Avatar({ person }: { person: { name: string; initials: string; avatarUrl: string | null } }) {
+  if (person.avatarUrl) {
+    return <img src={person.avatarUrl} alt={person.name} className="h-6 w-6 rounded-full object-cover" />;
   }
   return (
     <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground grid place-items-center text-[10px] font-semibold">
-      {INVESTOR.initials}
+      {person.initials}
     </span>
-  );
-}
-
-/** Segmented investor/startup toggle, pinned in the header's top-right group. */
-function ProfileSwitcher({ mode, setMode }: { mode: ViewMode; setMode: (m: ViewMode) => void }) {
-  const options: { id: ViewMode; label: string; icon: typeof Briefcase }[] = [
-    { id: "investor", label: "Investor", icon: Briefcase },
-    { id: "startup", label: "Startup", icon: Building2 },
-  ];
-
-  return (
-    <div
-      role="tablist"
-      aria-label="Profile view"
-      className="flex items-center gap-0.5 h-8 rounded-md border border-border bg-surface p-0.5"
-    >
-      {options.map(({ id, label, icon: Icon }) => {
-        const active = mode === id;
-        return (
-          <button
-            key={id}
-            role="tab"
-            aria-selected={active}
-            onClick={() => setMode(id)}
-            className={
-              "h-7 rounded px-2 text-[12px] flex items-center gap-1.5 transition-colors " +
-              (active
-                ? "bg-primary text-primary-foreground font-medium"
-                : "text-muted-foreground hover:text-foreground")
-            }
-          >
-            <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
-            <span className="hidden sm:block">{label}</span>
-          </button>
-        );
-      })}
-    </div>
   );
 }
 
