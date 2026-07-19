@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge } from "@/components/ui-kit";
-import { Play, RotateCcw, Sparkles, TrendingUp, Gavel, BrainCircuit } from "lucide-react";
+import { Play, RotateCcw, Sparkles, TrendingUp, Gavel, BrainCircuit, Mic } from "lucide-react";
 import { ACME_FOUNDERS } from "@/lib/data";
+import { useLiveInterview } from "@/lib/live-interview";
 
 export const Route = createFileRoute("/interviews")({
   head: () => ({ meta: [{ title: "Live Interview · VibeCheck" }] }),
@@ -138,6 +139,7 @@ function InterviewsPage() {
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const model = deriveModel(levers);
+  const live = useLiveInterview();
 
   const reset = useCallback(() => {
     timers.current.forEach(clearTimeout);
@@ -193,6 +195,24 @@ function InterviewsPage() {
             <Badge tone={status === "Decision ready" ? "warning" : "teal"}>
               {status === "Decision ready" ? "Decision ready" : "● Interviewing"}
             </Badge>
+            {live.available && (
+              <button
+                onClick={live.status === "connected" ? live.stop : live.start}
+                className={
+                  "h-8 rounded-md px-3 text-[12px] font-medium flex items-center gap-1.5 " +
+                  (live.status === "connected"
+                    ? "bg-negative text-white"
+                    : "border border-primary text-primary hover:bg-accent")
+                }
+              >
+                <Mic className="h-3.5 w-3.5" />
+                {live.status === "connecting"
+                  ? "Connecting…"
+                  : live.status === "connected"
+                    ? "End live interview"
+                    : "Start live interview"}
+              </button>
+            )}
             <button onClick={play} className="h-8 rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground flex items-center gap-1.5">
               <Play className="h-3.5 w-3.5" /> {playing ? "Playing…" : "Play demo"}
             </button>
@@ -231,7 +251,32 @@ function InterviewsPage() {
               <span className="text-[11px] text-muted-foreground">{shown} / {SCRIPT.length}</span>
             </div>
             <div className="p-5 space-y-3 max-h-[360px] overflow-y-auto">
-              {shown === 0 && <div className="text-[12.5px] text-muted-foreground">Press “Play demo” to run the scripted FirstCheck interview.</div>}
+              {live.error && <div className="text-[12.5px] text-negative">{live.error}</div>}
+              {live.status !== "idle" && (
+                <div className="space-y-3">
+                  <div className="text-[11px] uppercase tracking-wider text-primary">
+                    Live call · {live.status}
+                    {live.mode ? ` · agent ${live.mode}` : ""}
+                  </div>
+                  {live.turns.map((t, i) => (
+                    <div key={i} className="grid grid-cols-[64px_1fr] gap-3">
+                      <div className="text-[11px] uppercase tracking-wider pt-0.5 text-muted-foreground">
+                        {t.who === "agent" ? "Agent" : "Founder"}
+                      </div>
+                      <div className="text-[13px] leading-relaxed text-foreground/90">{t.text}</div>
+                    </div>
+                  ))}
+                  {live.turns.length === 0 && live.status === "connected" && (
+                    <div className="text-[12.5px] text-muted-foreground">Connected — the agent speaks first.</div>
+                  )}
+                </div>
+              )}
+              {shown === 0 && live.status === "idle" && (
+                <div className="text-[12.5px] text-muted-foreground">
+                  Press “Play demo” to run the scripted FirstCheck interview
+                  {live.available ? ", or start a live call with the agent." : "."}
+                </div>
+              )}
               {SCRIPT.slice(0, shown).map((s, i) => (
                 <div key={i} className="grid grid-cols-[64px_1fr] gap-3">
                   <div className={"text-[11px] uppercase tracking-wider pt-0.5 " + (s.evt ? "text-warning" : s.who === "Agent" ? "text-primary" : "text-muted-foreground")}>

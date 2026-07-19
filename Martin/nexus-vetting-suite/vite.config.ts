@@ -20,6 +20,12 @@ import { askAssistant } from "../../laura/pipeline/lib/assistant.js";
 import { saveKey, clearKey } from "../../laura/pipeline/lib/llm.js";
 // @ts-expect-error — same pipeline: founder profiling + interview hypotheses
 import { buildFounderProfiles } from "../../laura/pipeline/lib/founder-profiles.js";
+// @ts-expect-error — Resend invitation mail
+import { sendInterviewInvite } from "../../laura/pipeline/lib/email.js";
+// @ts-expect-error — ElevenLabs live interview
+import { getSignedUrl, buildDynamicVariables } from "../../laura/pipeline/lib/interview-agent.js";
+// @ts-expect-error — service key store
+import { serviceStatus, serviceConfig } from "../../laura/pipeline/lib/service-keys.js";
 
 /* Serve laura/opportunity-db as /opportunity-db/* directly from the single
  * source of truth — no copied data in public/. The old copy used a cards/
@@ -219,6 +225,7 @@ const lauraOpportunityDb = () => ({
     // rule parser can't handle. Key comes from set-key.js (24h) or env vars;
     // the key file is read per request, so no dev-server restart after set-key.
     console.log(`  ➜  LLM: ${keyStatus()}`);
+    for (const line of serviceStatus()) console.log(`  ➜  ${line}`);
     server.middlewares.use("/nl-query", (req, res, next) => {
       if (req.method !== "POST") return next();
       let body = "";
@@ -367,6 +374,75 @@ const lauraOpportunityDb = () => ({
         res.end("[]"); // no inbox yet — nobody has applied
       }
     });
+    // Interview invitation (Resend). Previews by default; only delivers when
+    // the caller explicitly asks, so a rehearsal cannot mail a real founder.
+    server.middlewares.use("/invite", (req, res, next) => {
+      if (req.method !== "POST") return next();
+      let body = "";
+      req.on("data", (c: string) => (body += c));
+      req.on("end", async () => {
+        res.setHeader("Content-Type", "application/json");
+        try {
+          const { applicationId, live } = JSON.parse(body || "{}");
+          const record = JSON.parse(await readFile(join(INBOX_DIR, `${applicationId}.json`), "utf8"));
+          const founder = record.founders?.[0] ?? record.intake?.founders?.[0];
+          const result = await sendInterviewInvite({
+            to: founder?.email ?? record.application?.founderEmail,
+            founderName: founder?.name,
+            company: record.application?.company,
+            interviewUrl: `${req.headers.origin ?? "http://localhost:8080"}/interviews?opp=${record.opportunityId ?? applicationId}`,
+            hypothesisCount: (record.founders ?? []).reduce((n: number, f: any) => n + (f.hypotheses?.length ?? 0), 0),
+            live: live === true,
+          });
+          res.end(JSON.stringify(result));
+        } catch (e) {
+          res.statusCode = 400;
+          res.end(JSON.stringify({ error: e instanceof Error ? e.message : "invite failed" }));
+        }
+      });
+    });
+
+    // Mints a short-lived signed URL so the ElevenLabs key never reaches the
+    // browser, and returns the founder context as dynamic variables.
+    server.middlewares.use("/interview-session", (req, res, next) => {
+      if (req.method !== "POST") return next();
+      let body = "";
+      req.on("data", (c: string) => (body += c));
+      req.on("end", async () => {
+        res.setHeader("Content-Type", "application/json");
+        try {
+          const opportunity = JSON.parse(body || "{}");
+          const signed = await getSignedUrl();
+          if (!signed.ok) {
+            res.statusCode = 501;
+            res.end(JSON.stringify({ error: signed.reason }));
+            return;
+          }
+          res.end(
+            JSON.stringify({
+              signedUrl: signed.signedUrl,
+              dynamicVariables: buildDynamicVariables(opportunity),
+            }),
+          );
+        } catch (e) {
+          res.statusCode = 400;
+          res.end(JSON.stringify({ error: e instanceof Error ? e.message : "session failed" }));
+        }
+      });
+    });
+
+    // Which integrations are live — drives the UI so it never offers a button
+    // that cannot work.
+    server.middlewares.use("/integrations", (req, res, next) => {
+      if (req.method !== "GET") return next();
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({
+        resend: Boolean(serviceConfig("resend")),
+        elevenlabs: Boolean(serviceConfig("elevenlabs")),
+        detail: serviceStatus(),
+      }));
+    });
+
     server.middlewares.use("/opportunity-db", async (req, res, next) => {
       try {
         let rel = decodeURIComponent((req.url ?? "/").split("?")[0]);
