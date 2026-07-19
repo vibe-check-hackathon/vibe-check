@@ -173,17 +173,19 @@
   .ss-src { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
   .ss-src b { color: var(--ink-2); font-weight: 600; }
   .conf-tag { font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); margin-left: 8px; }
-  /* live quote pulled from the interview transcript */
-  .ss-quote {
-    margin-top: 9px; padding: 9px 12px; border-left: 3px solid var(--investor);
-    background: var(--surface-2); border-radius: 0 8px 8px 0;
+  /* live quote pulled from the interview transcript — collapsible */
+  .ss-quote { margin-top: 9px; border-left: 3px solid var(--investor); background: var(--surface-2); border-radius: 0 8px 8px 0; }
+  .ss-quote > summary {
+    list-style: none; cursor: pointer; user-select: none;
+    display: flex; align-items: center; gap: 7px; padding: 8px 12px;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted);
   }
-  .ss-quote .q { font-size: 12.5px; color: var(--ink); font-style: italic; line-height: 1.5; }
-  .ss-quote .meta {
-    display: block; margin-top: 4px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em;
-    text-transform: uppercase; color: var(--muted);
-  }
-  .ss-quote .meta b { color: var(--good); }
+  .ss-quote > summary::-webkit-details-marker { display: none; }
+  .ss-quote > summary .caret { transition: transform 0.2s ease; color: var(--investor); font-size: 9px; }
+  .ss-quote[open] > summary .caret { transform: rotate(90deg); }
+  .ss-quote > summary b { color: var(--good); }
+  .ss-quote > summary .ts { margin-left: auto; color: var(--muted); }
+  .ss-quote .q { display: block; padding: 0 12px 10px; font-size: 12.5px; color: var(--ink); font-style: italic; line-height: 1.5; }
 
   /* ---------- behavioral signals ---------- */
   .behav { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -493,7 +495,7 @@
         </div>
         <div class="ss-bar"><i style="width:${ax.v}%;background:${ax.color}"></i></div>
         <div class="ss-why">${ax.why}</div>
-        ${ax.quote ? `<div class="ss-quote"><span class="q">“${ax.quote}”</span><span class="meta"><b>Live evidence</b> · ${ax.qt}</span></div>` : ``}
+        ${ax.quote ? `<details class="ss-quote"><summary><span class="caret">▶</span><b>Live evidence</b><span class="ts">${ax.qt}</span></summary><span class="q">“${ax.quote}”</span></details>` : ``}
         <div class="ss-src"><b>Evidence basis:</b> ${ax.src}</div>
       </div>`).join("");
 
