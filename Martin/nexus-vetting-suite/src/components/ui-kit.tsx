@@ -78,12 +78,15 @@ export function Section({
 export function Card({
   children,
   className = "",
+  onClick,
 }: {
   children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }) {
   return (
     <div
+      onClick={onClick}
       className={
         "rounded-lg border border-border bg-card shadow-[0_1px_0_rgba(0,0,0,0.02),0_1px_2px_rgba(15,23,42,0.03)] " +
         className

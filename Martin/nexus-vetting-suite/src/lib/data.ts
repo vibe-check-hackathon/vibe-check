@@ -1,3 +1,5 @@
+import { OFFICIAL_STARTUPS } from "./official-opportunities";
+
 export type Stage =
   | "Inbound"
   | "Screened"
@@ -5,7 +7,8 @@ export type Stage =
   | "Reference"
   | "Diligence"
   | "Partner Review"
-  | "Term Sheet";
+  | "Term Sheet"
+  | "Portfolio";
 
 export const STAGES: Stage[] = [
   "Inbound",
@@ -15,13 +18,31 @@ export const STAGES: Stage[] = [
   "Diligence",
   "Partner Review",
   "Term Sheet",
+  "Portfolio",
 ];
+
+export type FounderRef = {
+  id?: string;
+  name: string;
+  role?: string;
+  assessed?: boolean;
+  avatar?: {
+    type: "initials" | "image";
+    value: string;
+    basis?: string;
+  };
+  /** Synthetic-cohort founders only: fully generated contact + sub-scores. */
+  email?: string;
+  linkedin?: string;
+  scores?: Record<string, number>;
+  scoreConfidence?: number;
+};
 
 export type Startup = {
   id: string;
   company: string;
   oneLiner: string;
-  founders: string[];
+  founders: FounderRef[];
   stage: Stage;
   sector: string;
   geography: string;
@@ -44,8 +65,22 @@ export type Startup = {
   realEvent?: string;
   /** Public founder interview URL, if one exists. */
   interviewUrl?: string | null;
+  /** Public website, if captured in the opportunity DB. */
+  website?: string | null;
+  /** Static logo copied from Laura's opportunity DB assets into Martin's public folder. */
+  logoUrl?: string | null;
+  /** Static markdown card copied into Martin's public folder. */
+  sourceCardUrl?: string | null;
+  /** Historical portfolio status from the official card. */
+  companyStatus?: string | null;
+  /** Investment vehicle or source program, when known. */
+  vehicle?: string | null;
+  /** Portfolio year, when known. */
+  portfolioYear?: number | null;
   /** The single fictional card that powers the live interview + psychogram demo. */
   demo?: boolean;
+  /** Faker-generated cohort from laura/opportunity-db/synthetic — nobody real. */
+  synthetic?: boolean;
 };
 
 /**
@@ -53,7 +88,104 @@ export type Startup = {
  * from `laura/opportunity-db`) + one fictional demo card (Acme) that the live
  * interview studio and founder psychogram run on. Real founders stay unassessed.
  */
+const ACME_STARTUP: Startup = {
+  id: "acme",
+  company: "Acme Robotics",
+  oneLiner:
+    "Vision-guided picking software - warehouse robots learn new objects from a short operator demonstration.",
+  founders: [
+    {
+      id: "FND-0007",
+      name: "Ada Keller",
+      role: "CEO",
+      assessed: true,
+      avatar: { type: "initials", value: "AK", basis: "fictional demo founder" },
+    },
+    {
+      id: "FND-0008",
+      name: "Minh Tran",
+      role: "CTO",
+      assessed: true,
+      avatar: { type: "initials", value: "MT", basis: "fictional demo founder" },
+    },
+  ],
+  stage: "Interview",
+  sector: "Robotics / AI",
+  geography: "Berlin, DE",
+  round: "Pre-seed",
+  ask: "EUR 1.2M",
+  assessed: true,
+  founderScore: 76,
+  marketScore: 62,
+  ideaMarketScore: 58,
+  trustScore: 55,
+  urgency: "High",
+  submitted: "2026-07-18",
+  thesisFit: 0.72,
+  interviewUrl: null,
+  demo: true,
+};
+
 export const STARTUPS: Startup[] = [
+  ACME_STARTUP,
+  ...OFFICIAL_STARTUPS,
+];
+
+export const METRICS = {
+  activeApplications: STARTUPS.length,
+  assessedDeals: STARTUPS.filter((s) => s.assessed).length,
+  publicOutcomes: STARTUPS.filter((s) => s.realEvent).length,
+  diligenceInProgress: STARTUPS.filter((s) => s.stage === "Diligence" || s.stage === "Partner Review").length,
+  decisionsDue24h: STARTUPS.filter((s) => s.stage === "Partner Review" || s.stage === "Term Sheet").length || 1,
+  interviewsAvailable: STARTUPS.filter((s) => s.interviewUrl).length,
+};
+
+export const FUNNEL = [
+  { stage: "Sourcing", count: 214, delta: "public + inbound" },
+  { stage: "Screening", count: STARTUPS.length, delta: `${OFFICIAL_STARTUPS.length} official + 1 demo` },
+  { stage: "Interview", count: 1, delta: "Acme - live" },
+  { stage: "Diligence", count: METRICS.diligenceInProgress, delta: "confidential" },
+  { stage: "Portfolio", count: OFFICIAL_STARTUPS.length, delta: "official cards" },
+];
+
+export function stageColor(stage: Stage) {
+  const map: Record<Stage, string> = {
+    Inbound: "bg-muted text-muted-foreground",
+    Screened: "bg-accent text-accent-foreground",
+    Interview: "bg-teal-soft text-foreground",
+    Reference: "bg-teal-soft text-foreground",
+    Diligence: "bg-teal-soft text-foreground",
+    "Partner Review": "bg-primary/10 text-primary",
+    "Term Sheet": "bg-primary text-primary-foreground",
+    Portfolio: "bg-primary/10 text-primary",
+  };
+  return map[stage];
+}
+
+export function founderNames(founders: FounderRef[]) {
+  return founders.map((f) => f.name).join(", ");
+}
+
+export function founderInitials(founder: FounderRef) {
+  if (founder.avatar?.type === "initials") return founder.avatar.value;
+  return founder.name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
+export function companyInitials(company: string) {
+  return company
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
+/*
   {
     id: "acme",
     company: "Acme Robotics",
@@ -240,6 +372,7 @@ export function stageColor(stage: Stage) {
   };
   return map[stage];
 }
+*/
 
 export function scoreTone(n: number | null) {
   if (n === null) return "text-muted-foreground";
