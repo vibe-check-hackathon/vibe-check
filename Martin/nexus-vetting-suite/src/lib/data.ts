@@ -535,13 +535,12 @@ export const ACME_TEAM = {
  * The signed-in investor. Single source for the header, settings and the
  * diligence activity log.
  *
- * `avatarUrl` stays null until a real photo is supplied — drop the file in
- * `public/` and point this at it (e.g. "/carl-philipp-beichert.jpg") and the
- * header and settings pick it up automatically. Initials render until then.
+ * `avatarUrl` points at the photo in `public/`. Set it to null to fall back to
+ * initials.
  */
 export const INVESTOR = {
   name: "Carl-Philipp Beichert",
   initials: "CB",
   role: "Partner · Screening lead",
-  avatarUrl: null as string | null,
+  avatarUrl: "/carl-philipp-beichert.jpg" as string | null,
 };
