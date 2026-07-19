@@ -76,14 +76,22 @@ const server = createServer((req, res) => {
     return;
   }
 
-  // static files, path-traversal safe
-  let file = normalize(url.pathname === "/" ? "/index.html" : url.pathname).replace(/^([.][.][/\\])+/, "");
-  const path = join(webRoot, file);
-  if (!path.startsWith(webRoot) || !existsSync(path)) {
+  // static files, path-traversal safe; /opportunity-db/* serves the card DB
+  const dbRoot = join(here, "..", "opportunity-db");
+  let root = webRoot;
+  let pathname = url.pathname === "/" ? "/index.html" : url.pathname;
+  if (pathname.startsWith("/opportunity-db/")) {
+    root = dbRoot;
+    pathname = pathname.slice("/opportunity-db".length);
+  }
+  const file = normalize(pathname).replace(/^([.][.][/\\])+/, "");
+  const path = join(root, file);
+  if (!path.startsWith(root) || !existsSync(path)) {
     res.writeHead(404).end("not found");
     return;
   }
-  res.writeHead(200, { "Content-Type": MIME[extname(path)] ?? "application/octet-stream" });
+  const type = MIME[extname(path)] ?? (extname(path) === ".md" ? "text/plain; charset=utf-8" : "application/octet-stream");
+  res.writeHead(200, { "Content-Type": type });
   res.end(readFileSync(path));
 });
 
