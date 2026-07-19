@@ -5,7 +5,7 @@ import { PageHeader, Card, Badge, ScoreBar } from "@/components/ui-kit";
 import { ACME_FOUNDERS, STARTUPS, outcomeOf, type Startup } from "@/lib/data";
 import { loadSyntheticStartups } from "@/lib/synthetic-opportunities";
 import { useSubmittedApplications, applicationToStartup } from "@/lib/applications";
-import { FileText, ShieldCheck, ShieldAlert, Sparkles, ExternalLink } from "lucide-react";
+import { FileText, Lock, ShieldCheck, ShieldAlert, Sparkles, ExternalLink } from "lucide-react";
 
 export const Route = createFileRoute("/memo")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -260,6 +260,11 @@ function DealMemo({ s, picker }: { s: Startup; picker: ReactNode }) {
   const flags = s.screening?.softFlags ?? [];
   const hasScores = s.founderScore != null || s.marketScore != null || s.trustScore != null;
   const confidence = s.trustScore ?? s.founders.find((f) => f.scoreConfidence != null)?.scoreConfidence ?? null;
+  /* A company the fund actually invested in has internal IC materials — real
+   * and confidential, so they render as locked tabs, never as invented data. */
+  const invested = s.stage === "Portfolio" || s.portfolioYear != null;
+  let sectionNo = 0;
+  const num = () => String(++sectionNo).padStart(2, "0");
   const evidenceBits = [
     s.sources?.length ? `${s.sources.length} public sources` : null,
     s.sourceCardUrl ? "opportunity card" : null,
@@ -302,7 +307,7 @@ function DealMemo({ s, picker }: { s: Startup; picker: ReactNode }) {
       <div className="px-8 py-8 grid lg:grid-cols-[1fr_320px] gap-8">
         <article className="max-w-3xl space-y-8">
           <section>
-            <SectionTitle n="01" title="Company snapshot" />
+            <SectionTitle n={num()} title="Company snapshot" />
             <Card className="p-0">
               <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
                 <Snap label="Sector" value={s.sector} />
@@ -320,7 +325,7 @@ function DealMemo({ s, picker }: { s: Startup; picker: ReactNode }) {
 
           {(s.outboundRationale || s.activitySignal) && (
             <section>
-              <SectionTitle n="02" title="Why this deal, why now" />
+              <SectionTitle n={num()} title="Why this deal, why now" />
               <Card className="p-5 text-[13px] leading-relaxed text-foreground/90 space-y-2">
                 {s.activitySignal && <p><b>Trigger:</b> {s.activitySignal}</p>}
                 {s.outboundRationale && <p>{s.outboundRationale}</p>}
@@ -328,8 +333,56 @@ function DealMemo({ s, picker }: { s: Startup; picker: ReactNode }) {
             </section>
           )}
 
+          {invested && (
+            <section>
+              <SectionTitle n={num()} title="Market validation — public record" />
+              <Card className="p-5 space-y-2 text-[13px] leading-relaxed text-foreground/90">
+                {outcome && (
+                  <p>
+                    <Badge tone={outcome.tone as never}>{outcome.tone === "positive" ? "Validated" : outcome.tone === "negative" ? "Did not validate" : "Mixed"}</Badge>{" "}
+                    <span className="ml-1">{outcome.label}</span>
+                  </p>
+                )}
+                {s.realEvent && <p><b>Since investment:</b> {s.realEvent}</p>}
+                {s.companyStatus && <p><b>Current status:</b> {s.companyStatus}</p>}
+                {s.portfolioYear != null && <p><b>Entered portfolio:</b> {s.portfolioYear}{s.vehicle ? ` · ${s.vehicle}` : ""}</p>}
+                <p className="text-[12px] text-muted-foreground">
+                  The market's answer to the entry evaluation: follow-on rounds, acquisitions, or inactivity are the
+                  real-world scoreboard the locked internal scores below were betting on.
+                </p>
+              </Card>
+            </section>
+          )}
+
+          {invested && (
+            <section>
+              <SectionTitle n={num()} title="Internal IC materials — confidential" />
+              <div className="space-y-2">
+                {[
+                  ["Entry memo & thesis at investment", "The memo this company was approved on."],
+                  ["Founder evaluation at entry (five axes)", "Scored during original diligence and interviews."],
+                  ["Entry valuation & round terms", "Pre-money, check size, ownership, side letters."],
+                  ["Reference calls & diligence log", "Customer, co-investor and personal references."],
+                ].map(([title, hint]) => (
+                  <details key={title} className="group rounded-md border border-border bg-surface">
+                    <summary className="flex cursor-pointer items-center gap-2.5 px-3 py-2.5 text-[12.5px] font-medium list-none">
+                      <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                      {title}
+                      <span className="ml-auto text-[10px] uppercase tracking-wider text-muted-foreground">confidential</span>
+                    </summary>
+                    <div className="border-t border-border px-3 py-2.5 text-[12px] text-muted-foreground leading-relaxed">
+                      {hint} These records exist in the fund's internal data room but are confidential and are
+                      excluded from this repository by policy — nothing here is reconstructed or invented. Request
+                      access through the fund's document controls.
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </section>
+          )}
+
           <section>
-            <SectionTitle n="03" title="Screening verdict" />
+            <SectionTitle n={num()} title="Screening verdict" />
             {s.screening ? (
               <ul className="space-y-2">
                 <Issue tag={s.screening.pass ? "Open" : "Contradiction"} text={s.screening.pass ? "Passed the canonical first-pass screen (thesis-parameterized)." : `Hard fail: ${s.screening.hardFails.join("; ")}`} />
@@ -345,7 +398,7 @@ function DealMemo({ s, picker }: { s: Startup; picker: ReactNode }) {
           </section>
 
           <section>
-            <SectionTitle n="04" title="Founders" />
+            <SectionTitle n={num()} title="Founders" />
             {s.founders.length ? (
               <ul className="space-y-3 text-[13px] text-foreground/90">
                 {s.founders.map((f) => {
@@ -382,7 +435,7 @@ function DealMemo({ s, picker }: { s: Startup; picker: ReactNode }) {
           </section>
 
           <section>
-            <SectionTitle n="05" title="Recommendation" />
+            <SectionTitle n={num()} title="Recommendation" />
             <div className="grid md:grid-cols-3 gap-3">
               <Rec title={rec.alt1} tone="muted" body="" />
               <Rec title={rec.title} tone="teal" body={rec.body} recommended />
