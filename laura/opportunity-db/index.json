@@ -1,0 +1,81 @@
+{
+  "compiled": "2026-07-19",
+  "basis": "public sources only; founder evaluations intentionally not assessed for real people",
+  "group": {
+    "name": "Maschmeyer Group",
+    "vehicles": [
+      { "name": "ALSTIN Capital", "focus": "B2B software, Seed/Series A, Europe", "location": "Munich", "latestFund": "ALSTIN III, EUR 175M" },
+      { "name": "seed + speed Ventures", "focus": "pre-seed/seed B2B software", "location": "Berlin", "latestFund": "Fund III, EUR 90M (closed 2026-01)" }
+    ]
+  },
+  "opportunities": [
+    {
+      "id": "OPP-MGV-0001",
+      "company": "Secfix",
+      "card": "OPP-MGV-0001-secfix.md",
+      "sector": "security compliance automation",
+      "location": "Berlin/Munich, DE",
+      "realEvent": { "type": "series_a", "amountUsd": 12000000, "lead": ["ALSTIN Capital"], "announced": "2026-02-25", "verified": true },
+      "founders": [
+        { "id": "FND-MGV-0001", "name": "Fabiola Munguia", "role": "CEO", "assessed": false },
+        { "id": "FND-MGV-0002", "name": "Grigory Emelianov", "role": "co-founder", "assessed": false }
+      ],
+      "interview": { "public": true, "url": "https://www.youtube.com/watch?v=k_Rkq40O3kU", "note": "Founders Talk, Founders Foundation (2021)" }
+    },
+    {
+      "id": "OPP-MGV-0002",
+      "company": "deskbird",
+      "card": "OPP-MGV-0002-deskbird.md",
+      "sector": "hybrid workplace management",
+      "location": "St. Gallen, CH",
+      "realEvent": { "type": "series_a", "amountUsd": 13000000, "lead": ["ALSTIN Capital", "AXA Venture Partners"], "announced": "2023-09-06", "verified": true },
+      "founders": [
+        { "id": "FND-MGV-0003", "name": "Ivan Cossu", "role": "CEO", "assessed": false },
+        { "id": "FND-MGV-0004", "name": "Jonas Hess", "role": "co-founder", "assessed": false }
+      ],
+      "interview": { "public": true, "url": "https://www.youtube.com/watch?v=Flx_ZmOau68", "note": "#164 Flexibles Desk Booking mit Ivan Cossu (2024)" }
+    },
+    {
+      "id": "OPP-MGV-0003",
+      "company": "VoiceLine",
+      "card": "OPP-MGV-0003-voiceline.md",
+      "sector": "voice AI for enterprise frontline",
+      "location": "Munich, DE",
+      "realEvent": { "type": "series_a", "amountEur": 10000000, "lead": ["ALSTIN Capital", "Peak"], "announced": "2026-02-24", "verified": true },
+      "founders": [
+        { "id": "FND-MGV-0005", "name": "Dr. Nicolas Höflinger", "role": "CEO", "assessed": false }
+      ],
+      "interview": { "public": false, "locked": true, "note": "confidential — no public interview found (searched 2026-07-19)" }
+    },
+    {
+      "id": "OPP-MGV-0004",
+      "company": "Timefold",
+      "card": "OPP-MGV-0004-timefold.md",
+      "sector": "scheduling optimization",
+      "location": "unverified",
+      "realEvent": { "type": "portfolio_listing", "announced": null, "verified": false },
+      "founders": [{ "id": "FND-MGV-0006", "name": "unverified", "assessed": false }],
+      "interview": { "public": false, "locked": true, "note": "confidential — no public interview found" }
+    },
+    {
+      "id": "OPP-MGV-0005",
+      "company": "Climatiq",
+      "card": "OPP-MGV-0005-climatiq.md",
+      "sector": "carbon intelligence API",
+      "location": "Berlin, DE",
+      "realEvent": { "type": "portfolio_listing", "announced": null, "verified": false },
+      "founders": [{ "id": "FND-MGV-0007", "name": "unverified", "assessed": false }],
+      "interview": { "public": false, "locked": true, "note": "confidential — no public interview found" }
+    },
+    {
+      "id": "OPP-MGV-0006",
+      "company": "Pliant",
+      "card": "OPP-MGV-0006-pliant.md",
+      "sector": "corporate cards / spend management",
+      "location": "Berlin, DE",
+      "realEvent": { "type": "portfolio_listing", "announced": null, "verified": false },
+      "founders": [{ "id": "FND-MGV-0008", "name": "unverified", "assessed": false }],
+      "interview": { "public": false, "locked": true, "note": "confidential — no public interview found" }
+    }
+  ]
+}
