@@ -5,5 +5,7 @@ pipeline/output/
 pipeline/inbox/
 # LLM API key (24h cache written by set-key.js) — never push
 pipeline/.llm-key.json
+# Resend / ElevenLabs keys written by set-service-key.js — never push
+pipeline/.service-keys.json
 # Person-level link collections stay local by policy — never push
 opportunity-db/founder-profiles/
