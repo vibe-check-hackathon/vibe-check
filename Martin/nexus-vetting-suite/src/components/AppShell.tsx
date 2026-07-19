@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import logo from "@/assets/vibecheck.svg.asset.json";
 import { PipelineStages, isPipelineRoute, PIPELINE_STAGES } from "@/components/PipelineStages";
+import { Checky } from "@/components/Checky";
 import { STARTUPS, INVESTOR } from "@/lib/data";
 import { useViewMode, type ViewMode } from "@/lib/view-mode";
 
@@ -312,6 +313,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* click-away backdrop for header menus */}
       {menu && <div className="fixed inset-0 z-40" onClick={() => setMenu(null)} />}
+
+      {/* Checky: evidence-grounded diligence assistant, investor-side only */}
+      <Checky />
     </div>
   );
 }

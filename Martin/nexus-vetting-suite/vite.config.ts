@@ -13,7 +13,11 @@ import { screenOpportunity } from "../../laura/pipeline/lib/screening.js";
 // @ts-expect-error — same pipeline convention: provider-agnostic LLM adapter, key set via laura/pipeline/set-key.js
 import { filterDealsWithLLM, keyStatus, loadConfig } from "../../laura/pipeline/lib/llm.js";
 // @ts-expect-error — live outbound refresh: template-driven LLM scan, screened before it reaches the board
-import { scanOutbound } from "../../laura/pipeline/lib/outbound-scan.js";
+import { scanOutbound, briefMarkdown } from "../../laura/pipeline/lib/outbound-scan.js";
+// @ts-expect-error — Checky: retrieval-grounded assistant over the opportunity DB
+import { askAssistant } from "../../laura/pipeline/lib/assistant.js";
+// @ts-expect-error — key management shared with set-key.js (24h cache, gitignored)
+import { saveKey, clearKey } from "../../laura/pipeline/lib/llm.js";
 // @ts-expect-error — same pipeline: founder profiling + interview hypotheses
 import { buildFounderProfiles } from "../../laura/pipeline/lib/founder-profiles.js";
 
@@ -267,12 +271,78 @@ const lauraOpportunityDb = () => ({
             existingCompanies,
             thesis: await readThesisFlat(),
           });
+          // Each find gets a filled intelligence-brief card in the DB, per the
+          // template — the record's card link points at it.
+          const scansDir = join(dirname(indexPath), "..", "outbound-scans");
+          await mkdir(scansDir, { recursive: true });
+          for (const r of records as { id: string; card: string }[]) {
+            await writeFile(join(scansDir, `${r.id}.md`), briefMarkdown(r), "utf8");
+            r.card = `../outbound-scans/${r.id}.md`;
+          }
           index.outboundSelected = [...(index.outboundSelected ?? []), ...records];
           await writeFile(indexPath, JSON.stringify(index, null, 2) + "\n", "utf8");
           res.end(JSON.stringify({ added: records.length, mode, companies: records.map((r: { company: string }) => r.company) }));
         } catch (e) {
           res.statusCode = 502;
           res.end(JSON.stringify({ error: `scan failed: ${e instanceof Error ? e.message : "unknown"}` }));
+        }
+      });
+    });
+    // Checky (frontend assistant): retrieval-grounded chat over the DB.
+    server.middlewares.use("/assistant", (req, res, next) => {
+      if (req.method !== "POST") return next();
+      let body = "";
+      req.on("data", (c: string) => (body += c));
+      req.on("end", async () => {
+        res.setHeader("Content-Type", "application/json");
+        if (!loadConfig()) {
+          res.statusCode = 501;
+          res.end(JSON.stringify({ error: "no-key" }));
+          return;
+        }
+        try {
+          const { messages } = JSON.parse(body);
+          if (!Array.isArray(messages)) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: "expected { messages }" }));
+            return;
+          }
+          res.end(JSON.stringify(await askAssistant(messages)));
+        } catch (e) {
+          res.statusCode = 502;
+          res.end(JSON.stringify({ error: `assistant failed: ${e instanceof Error ? e.message : "unknown"}` }));
+        }
+      });
+    });
+    // Token management from the UI: status, set/switch, forget. Same 24h
+    // gitignored cache as the set-key.js terminal flow.
+    server.middlewares.use("/llm-key", (req, res, next) => {
+      res.setHeader("Content-Type", "application/json");
+      if (req.method === "GET") {
+        res.end(JSON.stringify({ status: keyStatus(), active: !!loadConfig(), provider: loadConfig()?.provider ?? null }));
+        return;
+      }
+      if (req.method === "DELETE") {
+        clearKey();
+        res.end(JSON.stringify({ status: keyStatus(), active: false }));
+        return;
+      }
+      if (req.method !== "POST") return next();
+      let body = "";
+      req.on("data", (c: string) => (body += c));
+      req.on("end", () => {
+        try {
+          const { key, baseUrl, model } = JSON.parse(body);
+          if (!key || typeof key !== "string") {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: "expected { key }" }));
+            return;
+          }
+          const saved = saveKey({ key: key.trim(), baseUrl, model });
+          res.end(JSON.stringify({ status: keyStatus(), active: true, provider: saved.provider }));
+        } catch {
+          res.statusCode = 400;
+          res.end(JSON.stringify({ error: "invalid json" }));
         }
       });
     });
