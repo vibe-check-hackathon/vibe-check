@@ -532,6 +532,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     role: "CTO",
     initials: "SC",
     photo: "/sun-chuanqi.jpg",
+    video: "/sun-chuanqi.mp4",
     linkedin: "https://www.linkedin.com/in/chuanqi-sun/",
     personality: {
       type: "INTP",
@@ -560,6 +561,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     role: "COO",
     initials: "LS",
     photo: "/laura-spies.png",
+    video: "/laura-spies.mp4",
     linkedin: "https://www.linkedin.com/in/laura-spies-75bb27109/",
     personality: {
       type: "INFJ",
@@ -588,6 +590,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     role: "Head of Product",
     initials: "MG",
     photo: "/mehdi-gouasmi.png",
+    video: "/mehdi-gouasmi.mp4",
     linkedin: "https://www.linkedin.com/in/mgou/",
     personality: {
       type: "ENFP",
