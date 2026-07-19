@@ -6,6 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createBus, founderView } from "./lib/events.js";
 import { serializeCard } from "./lib/card.js";
+import { loadThesis } from "./lib/thesis.js";
 import { runSourcing } from "./sourcing.js";
 import { runDeveloping } from "./developing.js";
 
@@ -13,17 +14,9 @@ const here = dirname(fileURLToPath(import.meta.url));
 const intake = JSON.parse(readFileSync(join(here, "sample", "intake-acme.json"), "utf8"));
 const research = JSON.parse(readFileSync(join(here, "sample", "research-acme.json"), "utf8"));
 
-// The fund thesis a lean investor configures themselves (the only manual input).
-const thesis = {
-  sectors: ["AI infrastructure", "robotics"],
-  maxCheckUsd: 100000,
-  targetOwnership: 0.08,
-  compsMultiple: 7.5,      /* pre-money target as multiple of the ask, from comparable rounds */
-  founderAskMultiple: 10,
-  maxOpenGaps: 3,
-  batnaRef: "OPP-2026-0008",
-  levers: ["valuation", "check size", "pro-rata", "closing speed", "board rights", "milestones"],
-};
+// The fund thesis a lean investor configures themselves (the only manual
+// input) — single source: thesis.json.
+const thesis = loadThesis();
 
 const bus = createBus();
 bus.subscribe((e) => {

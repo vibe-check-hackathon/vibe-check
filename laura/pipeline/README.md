@@ -4,8 +4,12 @@ JavaScript implementation of the first two stages of Sun's conceptual pipeline
 (`sun/system-architecture.md`). Zero dependencies, Node 18+.
 
 ```bash
-node run-demo.js     # runs Acme Robotics sample end to end
+node run-demo.js     # runs Acme Robotics sample end to end (terminal)
+node serve.js        # live mode: serves the frontend at http://localhost:4173
+                     # and streams pipeline + interview events over SSE
 ```
+
+Fund criteria live in `thesis.json` (single source — see `../vc-criteria.md`).
 
 What it does:
 

@@ -1,0 +1,21 @@
+[
+  { "t": 0,    "event": { "type": "transcript.line", "who": "Agent", "tile": "agent", "text": "Ada, Minh — thanks for joining. Let's start with the two pilot deployments. What changed between the first and the second?" } },
+  { "t": 4,    "event": { "type": "transcript.line", "who": "Ada", "tile": "ada", "text": "The first took nine days on site. We rebuilt the demonstration capture flow, and the second was live in under two days." } },
+  { "t": 4.2,  "event": { "type": "signal.update", "who": "ada", "sentiment": 78, "tone": 72, "confidence": 80, "expression": "engaged", "signalConfidence": 62 } },
+  { "t": 8.5,  "event": { "type": "card.update", "ref": "HYP-001", "state": "supported", "trust": 74, "evidence": "INT-001 00:41" } },
+  { "t": 12,   "event": { "type": "transcript.line", "who": "Agent", "tile": "agent", "text": "Your deck states $120K ARR, but the application says $80K. Help me reconcile those." } },
+  { "t": 16,   "event": { "type": "transcript.line", "who": "Minh", "tile": "minh", "text": "The $120K includes the second pilot that's signed but starts billing next quarter. Contracted today is $80K." } },
+  { "t": 16.2, "event": { "type": "signal.update", "who": "minh", "sentiment": 62, "tone": 55, "confidence": 68, "expression": "composed", "signalConfidence": 58 } },
+  { "t": 20.5, "event": { "type": "card.update", "ref": "CON-001", "state": "resolving", "trust": 45, "evidence": "INT-001 01:22 — request revenue export to verify" } },
+  { "t": 24.5, "event": { "type": "transcript.line", "who": "Agent", "tile": "agent", "text": "What matters more to you in this round — valuation, or speed to close?" } },
+  { "t": 28.5, "event": { "type": "transcript.line", "who": "Ada", "tile": "ada", "text": "Honestly? Speed. We have two warehouses waiting and want to be deploying by September." } },
+  { "t": 28.7, "event": { "type": "signal.update", "who": "ada", "sentiment": 84, "tone": 86, "confidence": 85, "expression": "animated", "signalConfidence": 66 } },
+  { "t": 29,   "event": { "type": "model.update", "party": "founder", "range": [9, 13], "zopa": [9, 12], "confidence": 62, "lever": "closing speed", "note": "speed > price signal — closing speed added as high-value lever" } },
+  { "t": 34,   "event": { "type": "transcript.line", "who": "Agent", "tile": "agent", "text": "If we closed in ten days at a $9M cap with full pro-rata, is that a conversation you'd want to have?" } },
+  { "t": 38.5, "event": { "type": "transcript.line", "who": "Minh", "tile": "minh", "text": "Ten days is… fast. We'd need our counsel to confirm the IP assignment timeline first." } },
+  { "t": 38.7, "event": { "type": "signal.update", "who": "minh", "sentiment": 48, "tone": 42, "confidence": 55, "expression": "hesitant", "signalConfidence": 60 } },
+  { "t": 39,   "event": { "type": "card.update", "ref": "GAP-001", "state": "open", "trust": "unknown", "evidence": "CTO hesitation confirms IP assignment is a real blocker, not a bluff" } },
+  { "t": 43.5, "event": { "type": "transcript.line", "who": "Ada", "tile": "ada", "text": "At nine million with full pro-rata — yes, that's a conversation we want to have." } },
+  { "t": 43.7, "event": { "type": "signal.update", "who": "ada", "sentiment": 88, "tone": 82, "confidence": 88, "expression": "engaged", "signalConfidence": 64 } },
+  { "t": 48,   "event": { "type": "status.change", "status": "decision", "recommendation": "$100K SAFE at $9M cap, full pro-rata", "requiresHuman": true } }
+]
