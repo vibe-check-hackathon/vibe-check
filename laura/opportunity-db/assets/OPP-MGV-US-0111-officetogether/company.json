@@ -1,0 +1,10 @@
+{
+  "company": "OfficeTogether (Envoy)",
+  "website": "https://envoy.com/",
+  "channels": {
+    "website": "https://envoy.com/",
+    "linkedinCompanySearch": "https://www.linkedin.com/search/results/companies/?keywords=OfficeTogether%20(Envoy)"
+  },
+  "assets": { "logo": "logo.png", "logoSource": "favicon via google s2 service, domain envoy.com", "fetched": "2026-07-19" },
+  "policy": "company-level public assets only; no personal data of founders stored (consent-gated per system design)"
+}

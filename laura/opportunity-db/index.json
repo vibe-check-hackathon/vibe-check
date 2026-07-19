@@ -1,81 +1,753 @@
 {
-  "compiled": "2026-07-19",
-  "basis": "public sources only; founder evaluations intentionally not assessed for real people",
-  "group": {
-    "name": "Maschmeyer Group",
-    "vehicles": [
-      { "name": "ALSTIN Capital", "focus": "B2B software, Seed/Series A, Europe", "location": "Munich", "latestFund": "ALSTIN III, EUR 175M" },
-      { "name": "seed + speed Ventures", "focus": "pre-seed/seed B2B software", "location": "Berlin", "latestFund": "Fund III, EUR 90M (closed 2026-01)" }
-    ]
-  },
-  "opportunities": [
-    {
-      "id": "OPP-MGV-0001",
-      "company": "Secfix",
-      "card": "OPP-MGV-0001-secfix.md",
-      "sector": "security compliance automation",
-      "location": "Berlin/Munich, DE",
-      "realEvent": { "type": "series_a", "amountUsd": 12000000, "lead": ["ALSTIN Capital"], "announced": "2026-02-25", "verified": true },
-      "founders": [
-        { "id": "FND-MGV-0001", "name": "Fabiola Munguia", "role": "CEO", "assessed": false },
-        { "id": "FND-MGV-0002", "name": "Grigory Emelianov", "role": "co-founder", "assessed": false }
-      ],
-      "interview": { "public": true, "url": "https://www.youtube.com/watch?v=k_Rkq40O3kU", "note": "Founders Talk, Founders Foundation (2021)" }
-    },
-    {
-      "id": "OPP-MGV-0002",
-      "company": "deskbird",
-      "card": "OPP-MGV-0002-deskbird.md",
-      "sector": "hybrid workplace management",
-      "location": "St. Gallen, CH",
-      "realEvent": { "type": "series_a", "amountUsd": 13000000, "lead": ["ALSTIN Capital", "AXA Venture Partners"], "announced": "2023-09-06", "verified": true },
-      "founders": [
-        { "id": "FND-MGV-0003", "name": "Ivan Cossu", "role": "CEO", "assessed": false },
-        { "id": "FND-MGV-0004", "name": "Jonas Hess", "role": "co-founder", "assessed": false }
-      ],
-      "interview": { "public": true, "url": "https://www.youtube.com/watch?v=Flx_ZmOau68", "note": "#164 Flexibles Desk Booking mit Ivan Cossu (2024)" }
-    },
-    {
-      "id": "OPP-MGV-0003",
-      "company": "VoiceLine",
-      "card": "OPP-MGV-0003-voiceline.md",
-      "sector": "voice AI for enterprise frontline",
-      "location": "Munich, DE",
-      "realEvent": { "type": "series_a", "amountEur": 10000000, "lead": ["ALSTIN Capital", "Peak"], "announced": "2026-02-24", "verified": true },
-      "founders": [
-        { "id": "FND-MGV-0005", "name": "Dr. Nicolas Höflinger", "role": "CEO", "assessed": false }
-      ],
-      "interview": { "public": false, "locked": true, "note": "confidential — no public interview found (searched 2026-07-19)" }
-    },
-    {
-      "id": "OPP-MGV-0004",
-      "company": "Timefold",
-      "card": "OPP-MGV-0004-timefold.md",
-      "sector": "scheduling optimization",
-      "location": "unverified",
-      "realEvent": { "type": "portfolio_listing", "announced": null, "verified": false },
-      "founders": [{ "id": "FND-MGV-0006", "name": "unverified", "assessed": false }],
-      "interview": { "public": false, "locked": true, "note": "confidential — no public interview found" }
-    },
-    {
-      "id": "OPP-MGV-0005",
-      "company": "Climatiq",
-      "card": "OPP-MGV-0005-climatiq.md",
-      "sector": "carbon intelligence API",
-      "location": "Berlin, DE",
-      "realEvent": { "type": "portfolio_listing", "announced": null, "verified": false },
-      "founders": [{ "id": "FND-MGV-0007", "name": "unverified", "assessed": false }],
-      "interview": { "public": false, "locked": true, "note": "confidential — no public interview found" }
-    },
-    {
-      "id": "OPP-MGV-0006",
-      "company": "Pliant",
-      "card": "OPP-MGV-0006-pliant.md",
-      "sector": "corporate cards / spend management",
-      "location": "Berlin, DE",
-      "realEvent": { "type": "portfolio_listing", "announced": null, "verified": false },
-      "founders": [{ "id": "FND-MGV-0008", "name": "unverified", "assessed": false }],
-      "interview": { "public": false, "locked": true, "note": "confidential — no public interview found" }
-    }
-  ]
+    "compiled":  "2026-07-19",
+    "basis":  "public sources only; founder evaluations intentionally not assessed for real people",
+    "group":  {
+                  "name":  "Maschmeyer Group",
+                  "vehicles":  [
+                                   {
+                                       "name":  "ALSTIN Capital",
+                                       "focus":  "B2B software, Seed/Series A, Europe",
+                                       "location":  "Munich",
+                                       "latestFund":  "ALSTIN III, EUR 175M"
+                                   },
+                                   {
+                                       "name":  "seed + speed Ventures",
+                                       "focus":  "pre-seed/seed B2B software",
+                                       "location":  "Berlin",
+                                       "latestFund":  "Fund III, EUR 90M (closed 2026-01)"
+                                   },
+                                   {
+                                       "name":  "MGV.VC",
+                                       "focus":  "United States early-stage enterprise technology",
+                                       "location":  "San Francisco",
+                                       "latestFund":  "MGV Fund I / historical portfolio bundle"
+                                   }
+                               ]
+              },
+    "opportunities":  [
+                          {
+                              "id":  "OPP-MGV-0001",
+                              "company":  "Secfix",
+                              "card":  "OPP-MGV-0001-secfix.md",
+                              "sector":  "security compliance automation",
+                              "location":  "Berlin/Munich, DE",
+                              "realEvent":  {
+                                                "type":  "series_a",
+                                                "amountUsd":  12000000,
+                                                "lead":  [
+                                                             "ALSTIN Capital"
+                                                         ],
+                                                "announced":  "2026-02-25",
+                                                "verified":  true
+                                            },
+                              "founders":  [
+                                               {
+                                                   "id":  "FND-MGV-0001",
+                                                   "name":  "Fabiola Munguia",
+                                                   "role":  "CEO",
+                                                   "assessed":  false
+                                               },
+                                               {
+                                                   "id":  "FND-MGV-0002",
+                                                   "name":  "Grigory Emelianov",
+                                                   "role":  "co-founder",
+                                                   "assessed":  false
+                                               }
+                                           ],
+                              "interview":  {
+                                                "public":  true,
+                                                "url":  "https://www.youtube.com/watch?v=k_Rkq40O3kU",
+                                                "note":  "Founders Talk, Founders Foundation (2021)"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-0002",
+                              "company":  "deskbird",
+                              "card":  "OPP-MGV-0002-deskbird.md",
+                              "sector":  "hybrid workplace management",
+                              "location":  "St. Gallen, CH",
+                              "realEvent":  {
+                                                "type":  "series_a",
+                                                "amountUsd":  13000000,
+                                                "lead":  [
+                                                             "ALSTIN Capital",
+                                                             "AXA Venture Partners"
+                                                         ],
+                                                "announced":  "2023-09-06",
+                                                "verified":  true,
+                                                "laterMilestones":  [
+                                                                        {
+                                                                            "type":  "series_b",
+                                                                            "amountUsd":  23000000,
+                                                                            "lead":  [
+                                                                                         "Octopus Ventures"
+                                                                                     ],
+                                                                            "participants":  [
+                                                                                                 "Neva SGR",
+                                                                                                 "AVP",
+                                                                                                 "Alstin Capital",
+                                                                                                 "session.vc",
+                                                                                                 "PortfoLion"
+                                                                                             ],
+                                                                            "announced":  "2025-09-24",
+                                                                            "verified":  true
+                                                                        }
+                                                                    ]
+                                            },
+                              "founders":  [
+                                               {
+                                                   "id":  "FND-MGV-0003",
+                                                   "name":  "Ivan Cossu",
+                                                   "role":  "CEO",
+                                                   "assessed":  false
+                                               },
+                                               {
+                                                   "id":  "FND-MGV-0004",
+                                                   "name":  "Jonas Hess",
+                                                   "role":  "co-founder",
+                                                   "assessed":  false
+                                               }
+                                           ],
+                              "interview":  {
+                                                "public":  true,
+                                                "url":  "https://www.youtube.com/watch?v=Flx_ZmOau68",
+                                                "note":  "#164 Flexibles Desk Booking mit Ivan Cossu (2024)"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-0003",
+                              "company":  "VoiceLine",
+                              "card":  "OPP-MGV-0003-voiceline.md",
+                              "sector":  "voice AI for enterprise frontline",
+                              "location":  "Munich, DE",
+                              "realEvent":  {
+                                                "type":  "series_a",
+                                                "amountEur":  10000000,
+                                                "lead":  [
+                                                             "ALSTIN Capital",
+                                                             "Peak"
+                                                         ],
+                                                "announced":  "2026-02-24",
+                                                "verified":  true
+                                            },
+                              "founders":  [
+                                               {
+                                                   "id":  "FND-MGV-0005",
+                                                   "name":  "Dr. Nicolas Höflinger",
+                                                   "role":  "CEO",
+                                                   "assessed":  false
+                                               },
+                                               {
+                                                   "id":  "FND-MGV-0010",
+                                                   "name":  "Sebastian Pinkas",
+                                                   "role":  "CTO",
+                                                   "assessed":  false
+                                               }
+                                           ],
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public interview found (searched 2026-07-19)"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-0004",
+                              "company":  "Timefold",
+                              "card":  "OPP-MGV-0004-timefold.md",
+                              "sector":  "scheduling optimization",
+                              "location":  "Ghent, BE",
+                              "realEvent":  {
+                                                "type":  "series_a",
+                                                "amountUsd":  13000000,
+                                                "lead":  [
+                                                             "Alstin Capital"
+                                                         ],
+                                                "participants":  [
+                                                                     "Kompas VC",
+                                                                     "Lakestar",
+                                                                     "Smartfin"
+                                                                 ],
+                                                "announced":  "2026-06-23",
+                                                "verified":  true
+                                            },
+                              "founders":  [
+                                               {
+                                                   "id":  "FND-MGV-0006",
+                                                   "name":  "Maarten Vandenbroucke",
+                                                   "role":  "CEO",
+                                                   "assessed":  false
+                                               },
+                                               {
+                                                   "id":  "FND-MGV-0009",
+                                                   "name":  "Geoffrey De Smet",
+                                                   "role":  "co-founder",
+                                                   "assessed":  false
+                                               }
+                                           ],
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public interview found"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-0005",
+                              "company":  "Climatiq",
+                              "card":  "OPP-MGV-0005-climatiq.md",
+                              "sector":  "carbon intelligence API",
+                              "location":  "Berlin, DE",
+                              "realEvent":  {
+                                                "type":  "series_a",
+                                                "amountEur":  10000000,
+                                                "lead":  [
+                                                             "ALSTIN Capital"
+                                                         ],
+                                                "participants":  [
+                                                                     "Singular",
+                                                                     "Cherry Ventures"
+                                                                 ],
+                                                "announced":  "2025-06-25",
+                                                "verified":  true
+                                            },
+                              "founders":  [
+                                               {
+                                                   "id":  "FND-MGV-0007",
+                                                   "name":  "Hessam Lavi",
+                                                   "role":  "CEO",
+                                                   "assessed":  false
+                                               },
+                                               {
+                                                   "id":  "FND-MGV-0011",
+                                                   "name":  "Philipp von Bieberstein",
+                                                   "role":  "CRO",
+                                                   "assessed":  false
+                                               },
+                                               {
+                                                   "id":  "FND-MGV-0012",
+                                                   "name":  "Isis T. Baulig",
+                                                   "role":  "CTO",
+                                                   "assessed":  false
+                                               }
+                                           ],
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public interview found"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-0006",
+                              "company":  "Pliant",
+                              "card":  "OPP-MGV-0006-pliant.md",
+                              "sector":  "corporate cards / spend management",
+                              "location":  "Berlin, DE",
+                              "realEvent":  {
+                                                "type":  "series_a",
+                                                "amountUsd":  28000000,
+                                                "lead":  [
+                                                             "SBI Investment"
+                                                         ],
+                                                "participants":  [
+                                                                     "ALSTIN Capital",
+                                                                     "Motive Ventures"
+                                                                 ],
+                                                "announced":  "2023-02-17",
+                                                "verified":  true,
+                                                "laterMilestones":  [
+                                                                        {
+                                                                            "type":  "series_a_extension",
+                                                                            "amountEurTotal":  33000000,
+                                                                            "announced":  "2024-01-16",
+                                                                            "verified":  true
+                                                                        },
+                                                                        {
+                                                                            "type":  "series_b",
+                                                                            "amountUsd":  40000000,
+                                                                            "lead":  [
+                                                                                         "Illuminate Financial",
+                                                                                         "Speedinvest"
+                                                                                     ],
+                                                                            "announced":  "2025-04-28",
+                                                                            "verified":  true
+                                                                        }
+                                                                    ]
+                                            },
+                              "founders":  [
+                                               {
+                                                   "id":  "FND-MGV-0008",
+                                                   "name":  "Malte Rau",
+                                                   "role":  "CEO",
+                                                   "assessed":  false
+                                               },
+                                               {
+                                                   "id":  "FND-MGV-0013",
+                                                   "name":  "Fabian Terner",
+                                                   "role":  "CPO",
+                                                   "assessed":  false
+                                               }
+                                           ],
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public interview found"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0101",
+                              "company":  "Observe.AI",
+                              "card":  "OPP-MGV-US-0101-observe-ai.md",
+                              "sector":  "sales and marketing",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2018,
+                              "companyStatus":  "active",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "$125M Series C; $213M total disclosed funding as of 2022-04-12",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+                                              "totalDisclosedUsd":  213000000,
+                                              "latestRoundType":  "series_c",
+                                              "latestRoundAmountUsd":  125000000,
+                                              "latestRoundAnnounced":  "2022-04-12"
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://observe.ai/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0102",
+                              "company":  "Modern Health",
+                              "card":  "OPP-MGV-US-0102-modern-health.md",
+                              "sector":  "healthcare",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2018,
+                              "companyStatus":  "active",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "$74M Series D; $172M total investment and $1.17B valuation reported in 2021",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+                                              "totalDisclosedUsd":  172000000,
+                                              "latestRoundType":  "series_d",
+                                              "latestRoundAmountUsd":  74000000,
+                                              "latestRoundAnnounced":  "2021-02-11"
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://www.modernhealth.com/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0103",
+                              "company":  "Origin",
+                              "card":  "OPP-MGV-US-0103-origin.md",
+                              "sector":  "finance and insurance",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2019,
+                              "companyStatus":  "active",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "$56M Series B at a $400M valuation; secondary database reports $68M total funding",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+                                              "totalDisclosedUsd":  68000000,
+                                              "latestRoundType":  "series_b",
+                                              "latestRoundAmountUsd":  56000000,
+                                              "latestRoundAnnounced":  "2021-08-30"
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://useorigin.com/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0104",
+                              "company":  "Prodigal",
+                              "card":  "OPP-MGV-US-0104-prodigal.md",
+                              "sector":  "finance and insurance",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2018,
+                              "companyStatus":  "active",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "$12M Series A announced 2021-07-22; MGV participated",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+                                              "latestRoundType":  "series_a",
+                                              "latestRoundAmountUsd":  12000000,
+                                              "latestRoundAnnounced":  "2021-07-22"
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://www.prodigaltech.com/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0105",
+                              "company":  "Ascend",
+                              "card":  "OPP-MGV-US-0105-ascend.md",
+                              "sector":  "finance and insurance",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2021,
+                              "companyStatus":  "active",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "$30M Series A; $39M total equity plus a separate $250M lending commitment",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+                                              "latestRoundType":  "series_a",
+                                              "latestRoundAmountUsd":  30000000,
+                                              "latestRoundAnnounced":  "2022-01-27"
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://www.useascend.com/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0106",
+                              "company":  "Authentic Insurance",
+                              "card":  "OPP-MGV-US-0106-authentic-insurance.md",
+                              "sector":  "finance and insurance",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2022,
+                              "companyStatus":  "active",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "$11M Series A in 2024; $16.5M total reported by a secondary database",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+                                              "totalDisclosedUsd":  16500000,
+                                              "latestRoundType":  "series_a",
+                                              "latestRoundAmountUsd":  11000000,
+                                              "latestRoundAnnounced":  "2024-03-26"
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://www.authenticinsurance.com/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0107",
+                              "company":  "Attention",
+                              "card":  "OPP-MGV-US-0107-attention.md",
+                              "sector":  "sales and marketing",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2022,
+                              "companyStatus":  "active",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "$30M Series B announced 2026-06-23",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+                                              "latestRoundType":  "series_b",
+                                              "latestRoundAmountUsd":  30000000,
+                                              "latestRoundAnnounced":  "2026-06-23"
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://www.attention.com/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0108",
+                              "company":  "District Cover",
+                              "card":  "OPP-MGV-US-0108-district-cover.md",
+                              "sector":  "finance and insurance",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2022,
+                              "companyStatus":  "active",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "More than $7M raised in a 2024 funding round",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+                                              "latestRoundType":  "venture",
+                                              "latestRoundAnnounced":  "2024-07-23"
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://districtcover.com/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0109",
+                              "company":  "Buildstock",
+                              "card":  "OPP-MGV-US-0109-buildstock.md",
+                              "sector":  "property and real estate",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2022,
+                              "companyStatus":  "active",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "$1.6M pre-seed announced 2024-02-22; MGV participated",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+                                              "latestRoundType":  "pre_seed",
+                                              "latestRoundAmountUsd":  1600000,
+                                              "latestRoundAnnounced":  "2024-02-22"
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://buildstock.com/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0110",
+                              "company":  "Salut",
+                              "card":  "OPP-MGV-US-0110-salut.md",
+                              "sector":  "healthcare",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2020,
+                              "companyStatus":  "unclear",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "$1.25M financing announced 2020-11-30",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+                                              "latestRoundType":  "seed",
+                                              "latestRoundAmountUsd":  1250000,
+                                              "latestRoundAnnounced":  "2020-11-30"
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://joinsalut.com/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0111",
+                              "company":  "OfficeTogether",
+                              "card":  "OPP-MGV-US-0111-officetogether.md",
+                              "sector":  "human resources",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2020,
+                              "companyStatus":  "acquired",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "$2.2M seed; acquired by Envoy on 2022-08-02",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+                                              "latestRoundType":  "seed",
+                                              "latestRoundAmountUsd":  2200000,
+                                              "latestRoundAnnounced":  "2020-12-08"
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://envoy.com/workplace-management/together-is-better-with-officetogether",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0112",
+                              "company":  "Downstream",
+                              "card":  "OPP-MGV-US-0112-downstream.md",
+                              "sector":  "sales and marketing",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2019,
+                              "companyStatus":  "acquired",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "Acquired by Jungle Scout in March 2021; terms undisclosed",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://www.junglescout.com/press/press-releases/walmart-connect-now-available-on-downstream-by-jungle-scout/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0113",
+                              "company":  "HeyDoctor",
+                              "card":  "OPP-MGV-US-0113-heydoctor.md",
+                              "sector":  "healthcare",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2018,
+                              "companyStatus":  "acquired",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "Acquired by GoodRx on 2019-04-18 for $14.3M cash; later rebranded GoodRx Care",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://www.goodrx.com/care",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0114",
+                              "company":  "Buzzle.ai",
+                              "card":  "OPP-MGV-US-0114-buzzle-ai.md",
+                              "sector":  "sales and marketing",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2021,
+                              "companyStatus":  "inactive",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "Y Combinator currently marks the company Inactive",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://www.ycombinator.com/companies/buzzle",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0115",
+                              "company":  "Aviary Health (formerly Recora care services)",
+                              "card":  "OPP-MGV-US-0115-aviary-health.md",
+                              "sector":  "healthcare",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2020,
+                              "companyStatus":  "active_rebrand",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "Recora launched the Aviary Health brand on 2026-04-07",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://www.aviaryhealth.com/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          },
+                          {
+                              "id":  "OPP-MGV-US-0116",
+                              "company":  "Globe (formerly Recharge)",
+                              "card":  "OPP-MGV-US-0116-globe.md",
+                              "sector":  "property and real estate",
+                              "location":  "US",
+                              "investmentVehicle":  "MGV.VC",
+                              "portfolioYear":  2019,
+                              "companyStatus":  "unclear",
+                              "realEvent":  {
+                                                "type":  "portfolio_history",
+                                                "description":  "Predecessor Recharge reportedly raised about $10M; Globe faced regulatory pressure in 2020",
+                                                "verified":  true
+                                            },
+                              "funding":  {
+
+                                          },
+                              "founders":  [
+
+                                           ],
+                              "website":  "https://globeliving.com/",
+                              "interview":  {
+                                                "public":  false,
+                                                "locked":  true,
+                                                "note":  "confidential — no public founder interview assessment performed for supplemental card"
+                                            }
+                          }
+                      ]
 }

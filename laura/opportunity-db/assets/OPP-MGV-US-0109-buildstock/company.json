@@ -1,0 +1,10 @@
+{
+  "company": "Buildstock",
+  "website": "https://buildstock.com/",
+  "channels": {
+    "website": "https://buildstock.com/",
+    "linkedinCompanySearch": "https://www.linkedin.com/search/results/companies/?keywords=Buildstock"
+  },
+  "assets": { "logo": "logo.png", "logoSource": "favicon via google s2 service, domain buildstock.com", "fetched": "2026-07-19" },
+  "policy": "company-level public assets only; no personal data of founders stored (consent-gated per system design)"
+}

@@ -1,0 +1,10 @@
+{
+  "company": "Pliant",
+  "website": "https://www.getpliant.com/",
+  "channels": {
+    "website": "https://www.getpliant.com/",
+    "linkedinCompanySearch": "https://www.linkedin.com/search/results/companies/?keywords=Pliant"
+  },
+  "assets": { "logo": "logo.png", "logoSource": "favicon via google s2 service, domain getpliant.com", "fetched": "2026-07-19" },
+  "policy": "company-level public assets only; no personal data of founders stored (consent-gated per system design)"
+}

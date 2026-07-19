@@ -1,0 +1,10 @@
+{
+  "company": "Secfix",
+  "website": "https://www.secfix.com/",
+  "channels": {
+    "website": "https://www.secfix.com/",
+    "linkedinCompanySearch": "https://www.linkedin.com/search/results/companies/?keywords=Secfix"
+  },
+  "assets": { "logo": "logo.png", "logoSource": "favicon via google s2 service, domain secfix.com", "fetched": "2026-07-19" },
+  "policy": "company-level public assets only; no personal data of founders stored (consent-gated per system design)"
+}

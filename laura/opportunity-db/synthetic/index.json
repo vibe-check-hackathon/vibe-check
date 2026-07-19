@@ -1,0 +1,415 @@
+{
+  "generated": "2026-07-19",
+  "generator": "generate-fixtures.js, @faker-js/faker seed 4242",
+  "basis": "fully synthetic people and companies; .example domains; safe to show and push",
+  "opportunities": [
+    {
+      "id": "OPP-SYN-0001",
+      "synthetic": true,
+      "company": "Grantly",
+      "sector": "developer tooling",
+      "location": "Berlin, DE",
+      "card": "OPP-SYN-0001-grantly.md",
+      "status": "research",
+      "oneLiner": "CI flake triage that finds the commit, not the symptom",
+      "stage": "Pre-seed",
+      "raiseUsd": 1800000,
+      "website": "https://grantly.example",
+      "permissions": {
+        "public research": "granted",
+        "interview recording": "granted",
+        "reference calls": "granted"
+      },
+      "founders": [
+        {
+          "id": "FND-SYN-011",
+          "name": "Justina Kunde",
+          "role": "CEO",
+          "email": "justina.kunde@grantly.example",
+          "linkedin": "https://linkedin.example/in/justina-kunde",
+          "phone": "+49 555 1096676",
+          "bio": "Product Response Architect previously at Aufderhar - Walker; 10 years in the field.",
+          "scores": {
+            "resilience": 46,
+            "autonomy": 94,
+            "curiosity": 79,
+            "perseverance": 60,
+            "teamComplementarity": 57
+          },
+          "scoreConfidence": 48,
+          "assessed": true
+        },
+        {
+          "id": "FND-SYN-012",
+          "name": "Macy Steuber",
+          "role": "CTO",
+          "email": "macy.steuber@grantly.example",
+          "linkedin": "https://linkedin.example/in/macy-steuber",
+          "github": "https://github.example/macy-steuber",
+          "phone": "+49 555 0879598",
+          "bio": "Chief Intranet Supervisor previously at Luettgen - Leuschke; 9 years in the field.",
+          "scores": {
+            "resilience": 71,
+            "autonomy": 48,
+            "curiosity": 68,
+            "perseverance": 47,
+            "teamComplementarity": 45
+          },
+          "scoreConfidence": 39,
+          "assessed": true
+        },
+        {
+          "id": "FND-SYN-013",
+          "name": "Elliott Kreiger",
+          "role": "COO",
+          "email": "elliott.kreiger@grantly.example",
+          "linkedin": "https://linkedin.example/in/elliott-kreiger",
+          "phone": "+49 555 7971585",
+          "bio": "Future Operations Agent previously at Ward - Emard; 8 years in the field.",
+          "scores": {
+            "resilience": 54,
+            "autonomy": 58,
+            "curiosity": 59,
+            "perseverance": 69,
+            "teamComplementarity": 88
+          },
+          "scoreConfidence": 49,
+          "assessed": true
+        }
+      ],
+      "interview": {
+        "public": false,
+        "locked": false,
+        "note": "AI interview available in demo — synthetic founders, full consent simulated"
+      }
+    },
+    {
+      "id": "OPP-SYN-0002",
+      "synthetic": true,
+      "company": "Rolfsongrid",
+      "sector": "logistics AI",
+      "location": "Munich, DE",
+      "card": "OPP-SYN-0002-rolfsongrid.md",
+      "status": "interview",
+      "oneLiner": "route recovery engine for delayed middle-mile freight",
+      "stage": "Pre-seed",
+      "raiseUsd": 1600000,
+      "website": "https://rolfsongrid.example",
+      "permissions": {
+        "public research": "granted",
+        "interview recording": "granted",
+        "reference calls": "granted"
+      },
+      "founders": [
+        {
+          "id": "FND-SYN-021",
+          "name": "Nicole Swaniawski",
+          "role": "CEO",
+          "email": "nicole.swaniawski@rolfsongrid.example",
+          "linkedin": "https://linkedin.example/in/nicole-swaniawski",
+          "phone": "+49 555 8608028",
+          "bio": "Central Configuration Orchestrator previously at O'Reilly - Paucek; 8 years in the field.",
+          "scores": {
+            "resilience": 92,
+            "autonomy": 89,
+            "curiosity": 78,
+            "perseverance": 66,
+            "teamComplementarity": 77
+          },
+          "scoreConfidence": 58,
+          "assessed": true
+        },
+        {
+          "id": "FND-SYN-022",
+          "name": "Salvatore Dickinson",
+          "role": "CTO",
+          "email": "salvatore.dickinson@rolfsongrid.example",
+          "linkedin": "https://linkedin.example/in/salvatore-dickinson",
+          "github": "https://github.example/salvatore-dickinson",
+          "phone": "+49 555 2994537",
+          "bio": "National Creative Orchestrator previously at Koss and Sons; 12 years in the field.",
+          "scores": {
+            "resilience": 36,
+            "autonomy": 50,
+            "curiosity": 62,
+            "perseverance": 43,
+            "teamComplementarity": 77
+          },
+          "scoreConfidence": 73,
+          "assessed": true
+        }
+      ],
+      "interview": {
+        "public": false,
+        "locked": false,
+        "note": "AI interview available in demo — synthetic founders, full consent simulated"
+      }
+    },
+    {
+      "id": "OPP-SYN-0003",
+      "synthetic": true,
+      "company": "Walshworks",
+      "sector": "climate software",
+      "location": "Amsterdam, NL",
+      "card": "OPP-SYN-0003-walshworks.md",
+      "status": "interview",
+      "oneLiner": "heat-pump fleet balancing for district utilities",
+      "stage": "Pre-seed",
+      "raiseUsd": 1100000,
+      "website": "https://walshworks.example",
+      "permissions": {
+        "public research": "granted",
+        "interview recording": "granted",
+        "reference calls": "granted"
+      },
+      "founders": [
+        {
+          "id": "FND-SYN-031",
+          "name": "Rey Bruen",
+          "role": "CEO",
+          "email": "rey.bruen@walshworks.example",
+          "linkedin": "https://linkedin.example/in/rey-bruen",
+          "phone": "+49 555 9516320",
+          "bio": "Internal Metrics Associate previously at Bauch - Graham; 14 years in the field.",
+          "scores": {
+            "resilience": 48,
+            "autonomy": 89,
+            "curiosity": 90,
+            "perseverance": 89,
+            "teamComplementarity": 40
+          },
+          "scoreConfidence": 63,
+          "assessed": true
+        },
+        {
+          "id": "FND-SYN-032",
+          "name": "Quincy Ryan",
+          "role": "CTO",
+          "email": "quincy.ryan@walshworks.example",
+          "linkedin": "https://linkedin.example/in/quincy-ryan",
+          "github": "https://github.example/quincy-ryan",
+          "phone": "+49 555 7269867",
+          "bio": "Human Configuration Representative previously at Sporer, Schuster and Fahey-Bergstrom; 4 years in the field.",
+          "scores": {
+            "resilience": 44,
+            "autonomy": 65,
+            "curiosity": 76,
+            "perseverance": 44,
+            "teamComplementarity": 65
+          },
+          "scoreConfidence": 44,
+          "assessed": true
+        }
+      ],
+      "interview": {
+        "public": false,
+        "locked": false,
+        "note": "AI interview available in demo — synthetic founders, full consent simulated"
+      }
+    },
+    {
+      "id": "OPP-SYN-0004",
+      "synthetic": true,
+      "company": "Hackettloop",
+      "sector": "fintech infrastructure",
+      "location": "Zurich, CH",
+      "card": "OPP-SYN-0004-hackettloop.md",
+      "status": "diligence",
+      "oneLiner": "instant SEPA reconciliation for marketplace payouts",
+      "stage": "Pre-seed",
+      "raiseUsd": 800000,
+      "website": "https://hackettloop.example",
+      "permissions": {
+        "public research": "granted",
+        "interview recording": "granted",
+        "reference calls": "granted"
+      },
+      "founders": [
+        {
+          "id": "FND-SYN-041",
+          "name": "Edyth Kuhlman",
+          "role": "CEO",
+          "email": "edyth.kuhlman@hackettloop.example",
+          "linkedin": "https://linkedin.example/in/edyth-kuhlman",
+          "phone": "+49 555 5423795",
+          "bio": "Lead Assurance Manager previously at Yundt-Corkery and Sons; 9 years in the field.",
+          "scores": {
+            "resilience": 50,
+            "autonomy": 81,
+            "curiosity": 68,
+            "perseverance": 90,
+            "teamComplementarity": 67
+          },
+          "scoreConfidence": 58,
+          "assessed": true
+        },
+        {
+          "id": "FND-SYN-042",
+          "name": "Claudine Rodriguez",
+          "role": "CTO",
+          "email": "claudine.rodriguez@hackettloop.example",
+          "linkedin": "https://linkedin.example/in/claudine-rodriguez",
+          "github": "https://github.example/claudine-rodriguez",
+          "phone": "+49 555 8268898",
+          "bio": "Chief Brand Developer previously at Dooley Inc; 4 years in the field.",
+          "scores": {
+            "resilience": 91,
+            "autonomy": 54,
+            "curiosity": 80,
+            "perseverance": 72,
+            "teamComplementarity": 51
+          },
+          "scoreConfidence": 73,
+          "assessed": true
+        },
+        {
+          "id": "FND-SYN-043",
+          "name": "Vivian Reynolds",
+          "role": "COO",
+          "email": "vivian.reynolds@hackettloop.example",
+          "linkedin": "https://linkedin.example/in/vivian-reynolds",
+          "phone": "+49 555 7574862",
+          "bio": "Direct Solutions Officer previously at Harvey - Ledner; 10 years in the field.",
+          "scores": {
+            "resilience": 83,
+            "autonomy": 78,
+            "curiosity": 56,
+            "perseverance": 85,
+            "teamComplementarity": 44
+          },
+          "scoreConfidence": 57,
+          "assessed": true
+        }
+      ],
+      "interview": {
+        "public": false,
+        "locked": false,
+        "note": "AI interview available in demo — synthetic founders, full consent simulated"
+      }
+    },
+    {
+      "id": "OPP-SYN-0005",
+      "synthetic": true,
+      "company": "Lebsacksense",
+      "sector": "health tech",
+      "location": "Copenhagen, DK",
+      "card": "OPP-SYN-0005-lebsacksense.md",
+      "status": "research",
+      "oneLiner": "prior-authorization drafting copilot for clinics",
+      "stage": "Pre-seed",
+      "raiseUsd": 900000,
+      "website": "https://lebsacksense.example",
+      "permissions": {
+        "public research": "granted",
+        "interview recording": "granted",
+        "reference calls": "granted"
+      },
+      "founders": [
+        {
+          "id": "FND-SYN-051",
+          "name": "Monserrate Ratke",
+          "role": "CEO",
+          "email": "monserrate.ratke@lebsacksense.example",
+          "linkedin": "https://linkedin.example/in/monserrate-ratke",
+          "phone": "+49 555 0487947",
+          "bio": "Customer Division Administrator previously at Cremin - Ledner; 7 years in the field.",
+          "scores": {
+            "resilience": 61,
+            "autonomy": 69,
+            "curiosity": 81,
+            "perseverance": 75,
+            "teamComplementarity": 48
+          },
+          "scoreConfidence": 72,
+          "assessed": true
+        },
+        {
+          "id": "FND-SYN-052",
+          "name": "Esta Kreiger",
+          "role": "CTO",
+          "email": "esta.kreiger@lebsacksense.example",
+          "linkedin": "https://linkedin.example/in/esta-kreiger",
+          "github": "https://github.example/esta-kreiger",
+          "phone": "+49 555 9699868",
+          "bio": "International Assurance Assistant previously at Smitham Group; 8 years in the field.",
+          "scores": {
+            "resilience": 77,
+            "autonomy": 88,
+            "curiosity": 72,
+            "perseverance": 39,
+            "teamComplementarity": 59
+          },
+          "scoreConfidence": 47,
+          "assessed": true
+        }
+      ],
+      "interview": {
+        "public": false,
+        "locked": false,
+        "note": "AI interview available in demo — synthetic founders, full consent simulated"
+      }
+    },
+    {
+      "id": "OPP-SYN-0006",
+      "synthetic": true,
+      "company": "Robertslayer",
+      "sector": "industrial AI",
+      "location": "Vienna, AT",
+      "card": "OPP-SYN-0006-robertslayer.md",
+      "status": "intake",
+      "oneLiner": "acoustic anomaly detection for packaging lines",
+      "stage": "Pre-seed",
+      "raiseUsd": 2400000,
+      "website": "https://robertslayer.example",
+      "permissions": {
+        "public research": "granted",
+        "interview recording": "granted",
+        "reference calls": "granted"
+      },
+      "founders": [
+        {
+          "id": "FND-SYN-061",
+          "name": "Agnes O'Kon",
+          "role": "CEO",
+          "email": "agnes.o-kon@robertslayer.example",
+          "linkedin": "https://linkedin.example/in/agnes-o-kon",
+          "phone": "+49 555 6936978",
+          "bio": "District Division Officer previously at Hilpert and Sons; 6 years in the field.",
+          "scores": {
+            "resilience": 77,
+            "autonomy": 48,
+            "curiosity": 92,
+            "perseverance": 62,
+            "teamComplementarity": 46
+          },
+          "scoreConfidence": 64,
+          "assessed": true
+        },
+        {
+          "id": "FND-SYN-062",
+          "name": "Guadalupe Tremblay",
+          "role": "CTO",
+          "email": "guadalupe.tremblay@robertslayer.example",
+          "linkedin": "https://linkedin.example/in/guadalupe-tremblay",
+          "github": "https://github.example/guadalupe-tremblay",
+          "phone": "+49 555 6966048",
+          "bio": "International Optimization Supervisor previously at Corwin - Moen; 13 years in the field.",
+          "scores": {
+            "resilience": 43,
+            "autonomy": 92,
+            "curiosity": 71,
+            "perseverance": 54,
+            "teamComplementarity": 73
+          },
+          "scoreConfidence": 41,
+          "assessed": true
+        }
+      ],
+      "interview": {
+        "public": false,
+        "locked": false,
+        "note": "AI interview available in demo — synthetic founders, full consent simulated"
+      }
+    }
+  ]
+}
