@@ -463,6 +463,8 @@ export type DemoFounder = {
   initials: string;
   /** Path under public/. Null falls back to initials. */
   photo: string | null;
+  /** Public profile, as supplied by the founder. */
+  linkedin: string;
   /**
    * 16-personalities read, held as an open hypothesis. Never a verdict: the
    * type is inferred from written material and must be confirmed or dropped by
@@ -498,6 +500,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     role: "CEO",
     initials: "MA",
     photo: null, // no photo file supplied yet — see STARTUP_USER
+    linkedin: "https://www.linkedin.com/in/martin-auer/",
     personality: {
       type: "ENTJ",
       label: "Commander",
@@ -511,7 +514,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     confidence: 60,
     trend: "improving",
     history:
-      "Former robotics research engineer; led a picking-system deployment at two distribution centres. Full-time since Jan 2026.",
+      "Owns the investor-facing product: the board, the four-stage pipeline navigation, the profile model and the inbound application flow. 23 commits across the vetting suite.",
     axes: [
       { key: "Resilience", full: AXIS_FULL.Resilience, v: 82, conf: 62 },
       { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 80, conf: 60 },
@@ -526,6 +529,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     role: "CTO",
     initials: "SC",
     photo: "/sun-chuanqi.jpg",
+    linkedin: "https://www.linkedin.com/in/chuanqi-sun/",
     personality: {
       type: "INTP",
       label: "Logician",
@@ -538,7 +542,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     confidence: 62,
     trend: "stable",
     history:
-      "Published relevant imitation-learning research and built the current product prototype. Model IP ownership not yet documented (GAP-002).",
+      "Owns the system architecture and the narrative layer — the conceptual pipeline the implementation follows, plus the deck and talk track. 43 commits, the second-largest contribution.",
     axes: [
       { key: "Resilience", full: AXIS_FULL.Resilience, v: 68, conf: 55 },
       { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 79, conf: 65 },
@@ -553,6 +557,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     role: "COO",
     initials: "LS",
     photo: "/laura-spies.png",
+    linkedin: "https://www.linkedin.com/in/laura-spies-75bb27109/",
     personality: {
       type: "INFJ",
       label: "Advocate",
@@ -565,7 +570,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     confidence: 58,
     trend: "improving",
     history:
-      "Built the sourcing and screening pipeline end to end; owns the opportunity database and the fund-thesis lens.",
+      "Built the sourcing and developing pipeline end to end: screening against the fund thesis, the opportunity database, the LLM adapter and the investor login gate. 48 commits, the largest contribution.",
     axes: [
       { key: "Resilience", full: AXIS_FULL.Resilience, v: 76, conf: 58 },
       { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 81, conf: 62 },
@@ -580,6 +585,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     role: "Head of Product",
     initials: "MG",
     photo: "/mehdi-gouasmi.png",
+    linkedin: "https://www.linkedin.com/in/mgou/",
     personality: {
       type: "ENFP",
       label: "Campaigner",
@@ -593,7 +599,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     confidence: 52,
     trend: "improving",
     history:
-      "Owns the product surface and the demo narrative; translates the pipeline's output into what an investor actually reads.",
+      "Owns the demo requirements and screenplay — how the product is shown and in what order. Defined what the walkthrough has to prove before it was built.",
     axes: [
       { key: "Resilience", full: AXIS_FULL.Resilience, v: 71, conf: 52 },
       { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 74, conf: 55 },

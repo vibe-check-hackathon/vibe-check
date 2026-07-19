@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge, ScoreBar } from "@/components/ui-kit";
+import { ACME_FOUNDERS } from "@/lib/data";
 import { FileText, ShieldCheck, ShieldAlert, Sparkles, ExternalLink } from "lucide-react";
 
 export const Route = createFileRoute("/memo")({
@@ -119,12 +120,21 @@ export function MemoPage() {
           {/* Team */}
           <section>
             <SectionTitle n="06" title="Team history" />
-            <ul className="space-y-2 text-[13px] text-foreground/90">
-              <li>· <b>Amina Osei</b> — CEO. ETH Zürich, ENZYME-CCS PI. 12 papers, h-index 14<Source id="5" hint="Google Scholar" />.</li>
-              <li>· <b>Lukas Berger</b> — CTO. Ginkgo Bioworks (2019–2023). Prior 2019 exit reclassified as partial acqui-hire<Source id="6" hint="Reference · J. Patel" />.</li>
-              <li>· <b>Dr. Marie Roche</b> — Chief Scientist (fractional). Led B4 discovery.</li>
-              <li>· <b>Nikhil Rao</b> — Founding engineer. Simulation and ML infrastructure.</li>
+            <ul className="space-y-2.5 text-[13px] text-foreground/90">
+              {ACME_FOUNDERS.map((f) => (
+                <li key={f.id}>
+                  · <b>{f.name}</b> — {f.role}.{" "}
+                  <a href={f.linkedin} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                    LinkedIn
+                  </a>
+                  <div className="pl-3 text-[12.5px] text-muted-foreground leading-relaxed">{f.history}</div>
+                </li>
+              ))}
             </ul>
+            <p className="mt-3 text-[11.5px] text-muted-foreground">
+              Contribution split sourced from the repository history. Prior career history is founder-supplied and not
+              yet corroborated — LinkedIn is not machine-readable without authentication.
+            </p>
           </section>
 
           {/* Diligence log */}

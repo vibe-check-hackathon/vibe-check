@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge } from "@/components/ui-kit";
-import { CheckCircle2, AlertTriangle, HelpCircle, Clock } from "lucide-react";
+import { CheckCircle2, AlertTriangle, HelpCircle, ChevronRight } from "lucide-react";
 import { INVESTOR } from "@/lib/data";
 
 export const Route = createFileRoute("/diligence")({
@@ -20,43 +20,41 @@ const LANES: Lane[] = [
     owner: `Kestrel + ${INVESTOR.name.split("-")[0]}`,
     progress: 82,
     items: [
-      { label: "Founder background verified (Osei, Berger)", status: "verified" },
-      { label: "3/4 references completed", status: "verified" },
-      { label: "CTO prior-exit terms", status: "contradiction", note: "Deck says exit, reference says acqui-hire" },
-      { label: "Advisory board conflicts check", status: "open" },
+      { label: "Four founders verified against public profiles", status: "verified" },
+      { label: "Contribution split confirmed from repository history", status: "verified" },
+      { label: "Prior career history", status: "open", note: "Founder-supplied; LinkedIn not machine-readable without auth" },
+      { label: "Full-time commitment post-raise", status: "open" },
     ],
   },
   {
     title: "Product",
     owner: "Kestrel",
-    progress: 68,
+    progress: 74,
     items: [
-      { label: "GitHub activity verified", status: "verified" },
-      { label: "B4 variant stability data reviewed", status: "verified" },
-      { label: "Live product demo (bench pilot video)", status: "verified" },
-      { label: "Third-party benchmark", status: "missing", note: "No independent lab replication yet" },
+      { label: "Pipeline runs end to end (sourcing → developing → memo)", status: "verified" },
+      { label: "Evidence provenance and trust scores implemented", status: "verified" },
+      { label: "Human approval gate enforced before term sheet", status: "verified" },
+      { label: "Screening still deterministic, not scored", status: "open", note: "CTO flagged this in-call as the next rebuild" },
     ],
   },
   {
     title: "Market",
     owner: "Kestrel",
-    progress: 74,
+    progress: 66,
     items: [
-      { label: "TAM sizing rebuilt bottom-up", status: "verified" },
-      { label: "Competitor landscape · 14 tracked", status: "verified" },
-      { label: "Buyer interviews · 5 completed", status: "verified" },
-      { label: "Regulatory pathway (EU CBAM)", status: "open" },
+      { label: "Buyer identified: partner running first-check screening", status: "verified" },
+      { label: "Competitor landscape · incumbent CRMs adding AI screening", status: "verified" },
+      { label: "Willingness to pay", status: "open", note: "Two pilots discussed, none contracted" },
     ],
   },
   {
     title: "Traction",
     owner: INVESTOR.name.split("-")[0],
-    progress: 55,
+    progress: 45,
     items: [
-      { label: "Holcim LoI verified", status: "verified" },
-      { label: "thyssenkrupp LoI", status: "open", note: "Requested, awaiting counter-signed copy" },
-      { label: "40 t/day pilot claim", status: "contradiction", note: "References confirm 12 t/day only" },
-      { label: "Paid customer count · 0 vs 3 (deck)", status: "contradiction" },
+      { label: "Working demo across the full four-stage flow", status: "verified" },
+      { label: "Time-to-memo claim · 24h vs 48h", status: "contradiction", note: "CEO corrected the deck in-call: 48h including the gate" },
+      { label: "Paying customers · 0", status: "missing" },
     ],
   },
   {
@@ -64,10 +62,9 @@ const LANES: Lane[] = [
     owner: "Ext. counsel",
     progress: 40,
     items: [
+      { label: "Interview recording consent captured at apply time", status: "verified" },
+      { label: "Data-processing terms for founder interviews", status: "open", note: "COO asked for these before signing, not after" },
       { label: "Cap table disclosure", status: "missing" },
-      { label: "EPFL IP license terms", status: "open" },
-      { label: "Employment agreements", status: "verified" },
-      { label: "Data-room NDA countersigned", status: "verified" },
     ],
   },
   {
@@ -75,37 +72,44 @@ const LANES: Lane[] = [
     owner: "Analyst",
     progress: 48,
     items: [
-      { label: "Historical burn (12mo)", status: "verified" },
-      { label: "18-month plan model", status: "verified" },
-      { label: "Capex scale-up model", status: "missing" },
-      { label: "Grant income audit", status: "open" },
+      { label: "Raise stated · $1.2M pre-seed", status: "verified" },
+      { label: "18-month plan model", status: "open" },
+      { label: "LLM inference cost per memo", status: "missing", note: "Unit economics depend on it" },
     ],
   },
 ];
 
 const LOG = [
-  { t: "09:41", who: "Kestrel", msg: "Reference call with Prof. Weber completed · consistency 98%" },
-  { t: "09:22", who: "System", msg: "GitHub commit velocity verified · 3.1× 30-day avg" },
-  { t: "08:58", who: INVESTOR.name.split("-")[0], msg: "Requested EPFL license terms from founder" },
-  { t: "08:41", who: "Kestrel", msg: "Contradiction flagged: pilot scale (40 vs 12 t/day)" },
-  { t: "08:12", who: "System", msg: "thyssenkrupp LoI · counter-signature outstanding" },
-  { t: "07:55", who: "Kestrel", msg: "Live reference call started with Ana Fischer" },
-  { t: "Yesterday", who: "Analyst", msg: "18-month plan model reviewed · assumptions logged" },
-  { t: "Yesterday", who: "System", msg: "Cap table upload not detected in data room" },
+  { t: "09:41", who: "Kestrel", msg: "Repository history verified · contribution split matches the four founders" },
+  { t: "09:22", who: "System", msg: "GitHub commit velocity verified · 119 commits across 4 authors" },
+  { t: "08:58", who: INVESTOR.name.split("-")[0], msg: "Requested data-processing terms for interview recordings" },
+  { t: "08:41", who: "Kestrel", msg: "Contradiction flagged: time-to-memo (24h deck vs 48h with approval gate)" },
+  { t: "08:29", who: "Kestrel", msg: "CEO corrected the deck in-call · contradiction resolved" },
+  { t: "08:12", who: "System", msg: "Cap table not detected in data room" },
+  { t: "07:55", who: "Kestrel", msg: "Four personality hypotheses entered the interview untested" },
+  { t: "Yesterday", who: "Analyst", msg: "LLM inference cost per memo requested · unit economics depend on it" },
+  { t: "Yesterday", who: "System", msg: "Interview recording consent captured at apply time" },
 ];
 
 export function DiligencePage() {
+  // Derived from LANES so the header can never drift from the checks below.
+  const all = LANES.flatMap((l) => l.items);
+  const contradictions = all.filter((i) => i.status === "contradiction").length;
+  const unresolved = all.filter((i) => i.status === "open" || i.status === "missing").length;
+
   return (
     <AppShell>
       <PageHeader
         crumbs={["Due Diligence", "FirstCheck"]}
         eyebrow="Live diligence workspace"
         title="Diligence · FirstCheck"
-        description="Six lanes, six owners. Every check is evidence-anchored. Contradictions surface here first, then propagate to scores."
+        description="Six topics, six owners. Open one to see its checks. Every item is evidence-anchored, and contradictions surface here first before they propagate to scores."
         actions={
           <>
-            <Badge tone="warning">2 contradictions</Badge>
-            <Badge tone="outline">3 open</Badge>
+            {contradictions > 0 && (
+              <Badge tone="warning">{contradictions} contradiction{contradictions === 1 ? "" : "s"}</Badge>
+            )}
+            <Badge tone="outline">{unresolved} to resolve</Badge>
             <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]">Export diligence pack</button>
             <button className="h-8 rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground">Advance to IC</button>
           </>
@@ -113,34 +117,44 @@ export function DiligencePage() {
       />
 
       <div className="px-8 py-6 grid lg:grid-cols-[1fr_320px] gap-5">
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
-          {LANES.map((lane) => (
-            <Card key={lane.title} className="p-0">
-              <div className="px-4 py-3 border-b border-border">
-                <div className="flex items-center justify-between">
-                  <div className="text-[13px] font-medium">{lane.title}</div>
-                  <div className="text-[11px] font-mono text-muted-foreground">{lane.progress}%</div>
-                </div>
-                <div className="text-[10.5px] uppercase tracking-wider text-muted-foreground mt-0.5">
-                  Owner · {lane.owner}
-                </div>
-                <div className="mt-2 h-1 rounded-full bg-muted overflow-hidden">
-                  <div className="h-full bg-primary" style={{ width: `${lane.progress}%` }} />
-                </div>
-              </div>
-              <ul className="divide-y divide-border">
-                {lane.items.map((it) => (
-                  <li key={it.label} className="p-3 flex items-start gap-2.5">
-                    <StatusIcon s={it.status} />
-                    <div className="min-w-0">
-                      <div className="text-[12.5px] text-foreground/90">{it.label}</div>
-                      {it.note && <div className="text-[11px] text-muted-foreground mt-0.5">{it.note}</div>}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          ))}
+        <div className="space-y-2">
+          {LANES.map((lane, i) => {
+            const open = lane.items.filter((it) => it.status !== "verified").length;
+            return (
+              <Card key={lane.title} className="p-0 overflow-hidden">
+                {/* Each topic collapses; the first is open so the page is not a wall of chevrons. */}
+                <details open={i === 0} className="group">
+                  <summary className="cursor-pointer list-none px-4 py-3 flex items-center gap-3 hover:bg-surface transition-colors">
+                    <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" />
+                    <span className="text-[13px] font-medium">{lane.title}</span>
+                    <span className="text-[10.5px] uppercase tracking-wider text-muted-foreground">
+                      {lane.owner}
+                    </span>
+                    <span className="ml-auto flex items-center gap-3">
+                      {open > 0 && (
+                        <span className="text-[11px] text-muted-foreground">{open} to resolve</span>
+                      )}
+                      <span className="hidden sm:block h-1 w-24 rounded-full bg-muted overflow-hidden">
+                        <span className="block h-full bg-primary" style={{ width: `${lane.progress}%` }} />
+                      </span>
+                      <span className="text-[11px] font-mono text-muted-foreground w-8 text-right">{lane.progress}%</span>
+                    </span>
+                  </summary>
+                  <ul className="divide-y divide-border border-t border-border">
+                    {lane.items.map((it) => (
+                      <li key={it.label} className="px-4 py-2.5 flex items-start gap-2.5">
+                        <StatusIcon s={it.status} />
+                        <div className="min-w-0">
+                          <div className="text-[12.5px] text-foreground/90">{it.label}</div>
+                          {it.note && <div className="text-[11px] text-muted-foreground mt-0.5">{it.note}</div>}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Diligence log */}

@@ -94,7 +94,12 @@ function FounderView({ founder }: { founder: DemoFounder }) {
               )}
               <div>
                 <div className="text-[15px] font-medium">{founder.name} — {founder.role}</div>
-                <div className="text-[11px] text-muted-foreground">{founder.id}</div>
+                <div className="text-[11px] text-muted-foreground">
+                  {founder.id} ·{" "}
+                  <a href={founder.linkedin} target="_blank" rel="noreferrer" className="hover:underline text-primary">
+                    LinkedIn
+                  </a>
+                </div>
               </div>
             </div>
             <div className="text-right">
