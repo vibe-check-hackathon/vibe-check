@@ -1,0 +1,13 @@
+"-check" suffix names:
+- RaiseCheck
+- VibeCheck
+
+
+Others which are not completely terrible
+- Groundtruth
+- Backtrail
+- Sourcemark
+- ChequeMate
+- GetCheck
+- Greenflag
+- Surgeflag

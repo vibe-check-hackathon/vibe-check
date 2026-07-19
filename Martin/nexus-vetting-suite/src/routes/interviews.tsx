@@ -215,9 +215,9 @@ function InterviewsPage() {
                 {[6, 8, 10, 12, 14].map((v) => (
                   <div key={v} className="absolute top-0 bottom-5 w-px bg-border" style={{ left: pct(v) + "%" }} />
                 ))}
-                <Band top={8} lo={model.inv[0]} hi={model.inv[1]} className="bg-primary" label="Investor" side="left" />
-                {model.zopa && <Band top={34} lo={model.zopa[0]} hi={model.zopa[1]} className="bg-[oklch(0.78_0.14_75)]" label="ZOPA" side="mid" />}
-                <Band top={60} lo={model.fnd[0]} hi={model.fnd[1]} className="bg-positive" label="Founders" side="left" />
+                <Band top={8} lo={model.inv[0]} hi={model.inv[1]} className="bg-[#4A3A63]" label="Investor" side="left" />
+                {model.zopa && <Band top={34} lo={model.zopa[0]} hi={model.zopa[1]} className="bg-[#C6A968]" label="ZOPA" side="mid" />}
+                <Band top={60} lo={model.fnd[0]} hi={model.fnd[1]} className="bg-[#8E7AA6]" label="Founders" side="left" />
                 <Marker v={model.invTarget} top={18} />
                 <Marker v={model.fndTarget} top={70} />
                 <div className="absolute left-0 right-0 bottom-0 h-4">

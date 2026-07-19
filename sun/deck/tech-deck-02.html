@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Opportunity OS — Technical Overview</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --ink: #1a1d1b;
+        --muted: #6b716d;
+        --faint: #a8ada9;
+        --line: #d4d7d4;
+        --hard: #1a1d1b;
+        --green: #0e7a3e;
+        --bg: #fafaf9;
+        --mono: "IBM Plex Mono", monospace;
+        --sans: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: var(--sans);
+        color: var(--ink);
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      .slide {
+        display: none;
+        width: min(1080px, 95vw);
+        height: min(680px, 92vh);
+        background: #fff;
+        border: 1px solid var(--hard);
+        position: relative;
+        padding: 54px 64px 44px;
+        overflow: hidden;
+      }
+      .slide.active {
+        display: block;
+      }
+
+      /* crosshair corner marks */
+      .slide::before,
+      .slide::after,
+      .marks::before,
+      .marks::after {
+        content: "";
+        position: absolute;
+        width: 17px;
+        height: 17px;
+        background:
+          linear-gradient(var(--hard), var(--hard)) center/100% 1px no-repeat,
+          linear-gradient(var(--hard), var(--hard)) center/1px 100% no-repeat;
+      }
+      .slide::before {
+        top: 10px;
+        left: 10px;
+      }
+      .slide::after {
+        top: 10px;
+        right: 10px;
+      }
+      .marks::before {
+        bottom: 10px;
+        left: 10px;
+      }
+      .marks::after {
+        bottom: 10px;
+        right: 10px;
+      }
+
+      .head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--hard);
+        padding-bottom: 10px;
+        margin-bottom: 26px;
+      }
+      .head .idx {
+        color: var(--ink);
+      }
+
+      h1 {
+        font-family: var(--mono);
+        font-weight: 600;
+        font-size: 30px;
+        letter-spacing: -0.01em;
+        margin-bottom: 8px;
+      }
+      h1 .num {
+        color: var(--green);
+      }
+      .agent {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 20px;
+      }
+      .agent b {
+        color: var(--green);
+        font-weight: 600;
+      }
+      .lede {
+        font-size: 16px;
+        color: var(--ink);
+        max-width: 620px;
+        margin-bottom: 8px;
+      }
+
+      .label {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 22px 0 10px;
+      }
+      .label::before {
+        content: "// ";
+        color: var(--faint);
+      }
+
+      .stack {
+        font-family: var(--mono);
+        font-size: 13px;
+        line-height: 1.9;
+        color: var(--ink);
+      }
+      .stack i {
+        font-style: normal;
+        color: var(--faint);
+        padding: 0 6px;
+      }
+
+      ul.theory {
+        list-style: none;
+        padding-left: 0px;
+      }
+      ul.theory li {
+        font-family: var(--mono);
+        font-size: 13px;
+        padding: 3px 0 3px 18px;
+        position: relative;
+      }
+      ul.theory li::before {
+        content: "*";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+      }
+
+      .body-grid {
+        display: grid;
+        grid-template-columns: 400px 1fr;
+        gap: 48px;
+        align-items: start;
+      }
+
+      figure {
+        margin: 0;
+      }
+      figcaption {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        margin-top: 8px;
+        text-align: center;
+      }
+      svg text {
+        font-family: var(--mono);
+      }
+
+      .footer {
+        position: absolute;
+        bottom: 26px;
+        left: 64px;
+        right: 64px;
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--faint);
+        letter-spacing: 0.08em;
+      }
+      .hint {
+        position: fixed;
+        bottom: 8px;
+        width: 100%;
+        text-align: center;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--faint);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============ SLIDE 1 : OVERVIEW ============ -->
+    <section class="slide active">
+      <span class="marks"></span>
+      <div class="head"><span>OPPORTUNITY OS · TECHNICAL OVERVIEW</span><span class="idx">FIG. 0 / PIPELINE</span></div>
+
+      <h1>Three agents carry one Opportunity Card<br />from raw signal to signed deal</h1>
+      <p class="lede" style="margin-top: 14px; color: var(--muted)">
+        Each stage is owned by a single agent. The Opportunity Card is the shared artifact — every fact, assessment, and term flows through it. Humans keep
+        final authority.
+      </p>
+
+      <figure style="margin-top: 36px">
+        <svg viewBox="0 0 940 300" width="100%">
+          <defs>
+            <marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0 0L8 4L0 8" fill="none" stroke="#1a1d1b" stroke-width="1" />
+            </marker>
+          </defs>
+
+          <!-- stage boxes -->
+          <g fill="none" stroke="#1a1d1b" stroke-width="1">
+            <rect x="30" y="40" width="240" height="120" />
+            <rect x="350" y="40" width="240" height="120" />
+            <rect x="670" y="40" width="240" height="120" />
+          </g>
+
+          <!-- arrows -->
+          <g stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#a)">
+            <path d="M270 100 H344" />
+            <path d="M590 100 H664" />
+          </g>
+
+          <!-- stage labels -->
+          <g text-anchor="middle" fill="#1a1d1b">
+            <text x="150" y="72" font-size="12" fill="#0e7a3e">01</text>
+            <text x="150" y="96" font-size="16" font-weight="600">SOURCING</text>
+            <text x="150" y="122" font-size="12" fill="#6b716d">agent: Sourcer</text>
+            <text x="150" y="142" font-size="11" fill="#a8ada9">facts into the Card</text>
+
+            <text x="470" y="72" font-size="12" fill="#0e7a3e">02</text>
+            <text x="470" y="96" font-size="16" font-weight="600">RESEARCHING</text>
+            <text x="470" y="122" font-size="12" fill="#6b716d">agent: Researcher</text>
+            <text x="470" y="142" font-size="11" fill="#a8ada9">evaluate vs. thesis</text>
+
+            <text x="790" y="72" font-size="12" fill="#0e7a3e">03</text>
+            <text x="790" y="96" font-size="16" font-weight="600">INTERVIEWING</text>
+            <text x="790" y="122" font-size="12" fill="#6b716d">agent: Interviewer</text>
+            <text x="790" y="142" font-size="11" fill="#a8ada9">negotiate optimal deal</text>
+          </g>
+
+          <!-- card rail beneath -->
+          <g stroke="#1a1d1b" stroke-width="1" fill="none">
+            <path d="M150 160 V206" stroke-dasharray="3 3" />
+            <path d="M470 160 V206" stroke-dasharray="3 3" />
+            <path d="M790 160 V206" stroke-dasharray="3 3" />
+            <rect x="30" y="206" width="880" height="52" />
+          </g>
+          <text x="470" y="230" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1d1b">OPPORTUNITY CARD</text>
+          <text x="470" y="248" text-anchor="middle" font-size="11" fill="#6b716d">
+            single canonical artifact · every claim cites its evidence · full revision history
+          </text>
+
+          <!-- dimension ticks -->
+          <g stroke="#a8ada9" stroke-width="1">
+            <path d="M30 285 H910" />
+            <path d="M30 280 V290" />
+            <path d="M910 280 V290" />
+          </g>
+          <text x="470" y="278" text-anchor="middle" font-size="10" fill="#a8ada9">signal → deal</text>
+        </svg>
+      </figure>
+
+      <div class="footer"><span>OPPORTUNITY OS</span><span>1 / 4</span></div>
+    </section>
+
+    <!-- ============ SLIDE 2 : SOURCING ============ -->
+    <section class="slide">
+      <span class="marks"></span>
+      <div class="head"><span>STAGE 01 · SOURCING</span><span class="idx">FIG. 1 / FUNNEL</span></div>
+
+      <h1><span class="num">01</span> Sourcing</h1>
+      <p class="agent">agent: <b>Sourcer</b> — gathers facts into the Opportunity Card</p>
+
+      <div class="body-grid">
+        <div>
+          <p class="lede">
+            Every inbound deck, form, and public signal is parsed into verifiable facts. Founders are recognized across opportunities, and each fact lands in
+            the Card with its source attached.
+          </p>
+
+          <p class="label">Tech stack</p>
+          <p class="stack">Next.js <i>/</i> Temporal <i>/</i> LlamaParse <i>/</i> Zod <i>/</i> Drizzle&nbsp;ORM <i>/</i> PostgreSQL&nbsp;(RLS) <i>/</i> S3</p>
+        </div>
+
+        <figure>
+          <svg viewBox="0 0 460 380" width="100%">
+            <defs>
+              <marker id="b" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0 0L8 4L0 8" fill="none" stroke="#1a1d1b" stroke-width="1" />
+              </marker>
+            </defs>
+
+            <!-- source boxes -->
+            <g fill="none" stroke="#1a1d1b" stroke-width="1">
+              <rect x="10" y="20" width="76" height="34" />
+              <rect x="101" y="20" width="76" height="34" />
+              <rect x="192" y="20" width="76" height="34" />
+              <rect x="283" y="20" width="76" height="34" />
+              <rect x="374" y="20" width="76" height="34" />
+            </g>
+            <g text-anchor="middle" font-size="11" fill="#1a1d1b">
+              <text x="48" y="41">DECK</text>
+              <text x="139" y="41">FORM</text>
+              <text x="230" y="41">WEB</text>
+              <text x="321" y="41">SOCIAL</text>
+              <text x="412" y="41">GITHUB</text>
+            </g>
+
+            <!-- converging lines -->
+            <g stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#b)">
+              <path d="M48 54 L200 128" />
+              <path d="M139 54 L215 128" />
+              <path d="M230 54 V128" />
+              <path d="M321 54 L245 128" />
+              <path d="M412 54 L260 128" />
+            </g>
+
+            <!-- sourcer node -->
+            <rect x="140" y="134" width="180" height="52" fill="none" stroke="#0e7a3e" stroke-width="1.25" />
+            <text x="230" y="156" text-anchor="middle" font-size="13" font-weight="600" fill="#0e7a3e">SOURCER</text>
+            <text x="230" y="174" text-anchor="middle" font-size="10" fill="#6b716d">parse · dedupe · cite</text>
+
+            <path d="M230 186 V232" stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#b)" />
+
+            <!-- card -->
+            <g fill="none" stroke="#1a1d1b" stroke-width="1">
+              <rect x="110" y="238" width="240" height="110" />
+              <path d="M110 268 H350" />
+            </g>
+            <text x="230" y="258" text-anchor="middle" font-size="12" font-weight="600" fill="#1a1d1b">OPPORTUNITY CARD</text>
+            <g font-size="11" fill="#6b716d">
+              <text x="128" y="292">founder_id</text>
+              <text x="128" y="314">fact_01</text>
+              <text x="128" y="336">fact_02</text>
+            </g>
+          </svg>
+          <figcaption>fig 1 — many sources, one card</figcaption>
+        </figure>
+      </div>
+
+      <div class="footer"><span>OPPORTUNITY OS</span><span>2 / 4</span></div>
+    </section>
+
+    <!-- ============ SLIDE 3 : RESEARCHING ============ -->
+    <section class="slide">
+      <span class="marks"></span>
+      <div class="head"><span>STAGE 02 · RESEARCHING</span><span class="idx">FIG. 2 / LENSES</span></div>
+
+      <h1><span class="num">02</span> Researching</h1>
+      <p class="agent">agent: <b>Researcher</b> — evaluates the Opportunity against the investment thesis</p>
+
+      <div class="body-grid">
+        <div>
+          <p class="lede">
+            The Card is judged along three independent axes. Evidence is gathered per axis; contradictions stay visible. The result is a draft term sheet where
+            every number traces back to evidence.
+          </p>
+
+          <p class="label">Tech stack</p>
+          <p class="stack">Temporal <i>/</i> OpenAI&nbsp;Agents&nbsp;SDK <i>/</i> pgvector <i>/</i> TypeScript&nbsp;calculation&nbsp;engine</p>
+
+          <p class="label">Theory</p>
+          <ul class="theory">
+            <li>Investment thesis modeling</li>
+            <li>Zero-knowledge proofs for due-diligence sourcing</li>
+          </ul>
+        </div>
+
+        <figure>
+          <svg viewBox="0 0 460 380" width="100%">
+            <defs>
+              <marker id="c" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0 0L8 4L0 8" fill="none" stroke="#1a1d1b" stroke-width="1" />
+              </marker>
+            </defs>
+
+            <!-- thesis -->
+            <rect x="140" y="14" width="180" height="36" fill="none" stroke="#1a1d1b" stroke-width="1" />
+            <text x="230" y="37" text-anchor="middle" font-size="12" font-weight="600" fill="#1a1d1b">INVESTMENT THESIS</text>
+
+            <!-- card input -->
+            <rect x="10" y="152" width="70" height="60" fill="none" stroke="#1a1d1b" stroke-width="1" />
+            <text x="45" y="178" text-anchor="middle" font-size="11" fill="#1a1d1b">CARD</text>
+            <text x="45" y="194" text-anchor="middle" font-size="10" fill="#a8ada9">rev n</text>
+
+            <!-- three lenses -->
+            <g fill="none" stroke="#1a1d1b" stroke-width="1">
+              <rect x="120" y="86" width="220" height="52" />
+              <rect x="120" y="156" width="220" height="52" />
+              <rect x="120" y="226" width="220" height="52" />
+            </g>
+            <g text-anchor="middle" font-size="12" fill="#1a1d1b">
+              <text x="230" y="108" font-weight="600">FOUNDER</text>
+              <text x="230" y="178" font-weight="600">MARKET</text>
+              <text x="230" y="248" font-weight="600">IDEA × MARKET</text>
+            </g>
+            <g text-anchor="middle" font-size="10" fill="#6b716d">
+              <text x="230" y="126">independent evidence + verdict</text>
+              <text x="230" y="196">independent evidence + verdict</text>
+              <text x="230" y="266">independent evidence + verdict</text>
+            </g>
+
+            <!-- thesis into lenses via side rail -->
+            <g stroke="#1a1d1b" stroke-width="1" fill="none" stroke-dasharray="3 3">
+              <path d="M360 32 H400 V252 H346" marker-end="url(#c)" />
+              <path d="M400 112 H346" marker-end="url(#c)" />
+              <path d="M400 182 H346" marker-end="url(#c)" />
+            </g>
+
+            <!-- card feeds -->
+            <g stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#c)">
+              <path d="M80 182 H114" />
+              <path d="M80 170 L100 170 L100 112 L114 112" />
+              <path d="M80 194 L100 194 L100 252 L114 252" />
+            </g>
+
+            <!-- verdicts converge -->
+            <g stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#c)">
+              <path d="M230 278 V314" />
+            </g>
+
+            <!-- term sheet -->
+            <rect x="110" y="320" width="240" height="46" fill="none" stroke="#0e7a3e" stroke-width="1.25" />
+            <text x="230" y="340" text-anchor="middle" font-size="12" font-weight="600" fill="#0e7a3e">DRAFT TERM SHEET</text>
+            <text x="230" y="356" text-anchor="middle" font-size="10" fill="#6b716d">weighted composite evidence</text>
+          </svg>
+          <figcaption>fig 2 — three independent lenses</figcaption>
+        </figure>
+      </div>
+
+      <div class="footer"><span>OPPORTUNITY OS</span><span>3 / 4</span></div>
+    </section>
+
+    <!-- ============ SLIDE 4 : INTERVIEWING ============ -->
+    <section class="slide">
+      <span class="marks"></span>
+      <div class="head"><span>STAGE 03 · INTERVIEWING</span><span class="idx">FIG. 3 / CONVERGENCE</span></div>
+
+      <h1><span class="num">03</span> Interviewing</h1>
+      <p class="agent">agent: <b>Interviewer</b> — negotiates towards the optimal deal</p>
+
+      <div class="body-grid">
+        <div>
+          <p class="lede">
+            A live voice interview resolves the Card's open questions, then negotiation converges founder and investor positions within human-approved bounds.
+            Anything out of bounds escalates to the investor, who keeps final authority.
+          </p>
+
+          <p class="label">Tech stack</p>
+          <p class="stack">ElevenLabs&nbsp;Agents <i>/</i> WebRTC <i>/</i> Server-Sent&nbsp;Events <i>/</i> Clerk <i>/</i> Temporal</p>
+
+          <p class="label">Theory</p>
+          <ul class="theory">
+            <li>Multi-user social / personality modeling</li>
+            <li>Negotiation theory (BATNA, Nash bargaining)</li>
+          </ul>
+        </div>
+
+        <figure>
+          <svg viewBox="0 0 460 380" width="100%">
+            <defs>
+              <marker id="d" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0 0L8 4L0 8" fill="none" stroke="#1a1d1b" stroke-width="1" />
+              </marker>
+            </defs>
+
+            <!-- bounds box -->
+            <rect x="30" y="60" width="400" height="220" fill="none" stroke="#1a1d1b" stroke-width="1" stroke-dasharray="5 4" />
+            <text x="40" y="50" font-size="10" fill="#6b716d">HUMAN-APPROVED BOUNDS</text>
+
+            <!-- axis labels -->
+            <text x="60" y="92" font-size="12" font-weight="600" fill="#1a1d1b">FOUNDER</text>
+            <text x="400" y="92" text-anchor="end" font-size="12" font-weight="600" fill="#1a1d1b">INVESTOR</text>
+
+            <!-- converging offers: three rounds, narrowing toward center -->
+            <g stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#d)">
+              <path d="M70 110 H140" />
+              <path d="M390 110 H320" />
+              <path d="M150 150 H196" />
+              <path d="M310 150 H264" />
+              <path d="M188 190 H222" />
+              <path d="M272 190 H238" />
+            </g>
+            <g font-size="10" fill="#a8ada9">
+              <text x="70" y="126">offer_1</text>
+              <text x="390" y="126" text-anchor="end">counter_1</text>
+              <text x="150" y="166">offer_2</text>
+              <text x="310" y="166" text-anchor="end">counter_2</text>
+              <text x="220" y="204" text-anchor="end">offer_3</text>
+              <text x="240" y="204">counter_3</text>
+            </g>
+
+            <!-- convergence point into deal -->
+            <text x="230" y="182" text-anchor="middle" font-size="10" font-weight="600" fill="#0e7a3e">deal</text>
+            <circle cx="230" cy="190" r="2.5" fill="#0e7a3e" />
+            <path d="M230 196 V220" stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#d)" />
+
+            <!-- deal zone -->
+            <rect x="196" y="226" width="68" height="34" fill="none" stroke="#0e7a3e" stroke-width="1.25" />
+            <text x="230" y="248" text-anchor="middle" font-size="12" font-weight="600" fill="#0e7a3e">DEAL</text>
+
+            <!-- escalation -->
+            <path d="M230 280 V316" stroke="#1a1d1b" stroke-width="1" fill="none" marker-end="url(#d)" />
+            <text x="240" y="302" font-size="10" fill="#6b716d">Out of bound</text>
+            <rect x="130" y="322" width="200" height="42" fill="none" stroke="#1a1d1b" stroke-width="1" />
+            <text x="230" y="340" text-anchor="middle" font-size="12" font-weight="600" fill="#1a1d1b">HUMAN INVESTOR</text>
+            <text x="230" y="356" text-anchor="middle" font-size="10" fill="#6b716d">escalate · final authority</text>
+          </svg>
+          <figcaption>fig 3 — convergence within bounds</figcaption>
+        </figure>
+      </div>
+
+      <div class="footer"><span>OPPORTUNITY OS</span><span>4 / 4</span></div>
+    </section>
+
+    <p class="hint">↑ / ↓</p>
+
+    <script>
+      const slides = [...document.querySelectorAll(".slide")];
+      let i = 0;
+      function show(n) {
+        i = Math.max(0, Math.min(slides.length - 1, n));
+        slides.forEach((s, k) => s.classList.toggle("active", k === i));
+      }
+      addEventListener("keydown", (e) => {
+        if (["ArrowDown", "ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          show(i + 1);
+        } else if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          show(i - 1);
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agent Code Hike — Opportunity Card</title>
+    <style>
+      :root {
+        --bg: #0d1117;
+        --panel: #161b22;
+        --border: #30363d;
+        --txt: #e6edf3;
+        --dim: #8b949e;
+        --green: #3fb950;
+        --blue: #58a6ff;
+        --purple: #bc8cff;
+        --mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--txt);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      header {
+        padding: 70px 24px 40px;
+        text-align: center;
+        max-width: 820px;
+        margin: auto;
+      }
+      header h1 {
+        font-size: 2rem;
+        margin-bottom: 12px;
+      }
+      header h1 span {
+        background: linear-gradient(90deg, var(--blue), var(--purple));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      header p {
+        color: var(--dim);
+        line-height: 1.6;
+      }
+      .scroll-hint {
+        margin-top: 28px;
+        color: var(--dim);
+        font-size: 0.85rem;
+        animation: bob 1.6s ease-in-out infinite;
+      }
+      @keyframes bob {
+        50% {
+          transform: translateY(6px);
+        }
+      }
+      .hike {
+        display: grid;
+        grid-template-columns: minmax(340px, 1fr) minmax(380px, 520px);
+        gap: 48px;
+        max-width: 1200px;
+        margin: auto;
+        padding: 0 24px 120px;
+      }
+      @media (max-width: 900px) {
+        .hike {
+          grid-template-columns: 1fr;
+        }
+        .sticky-wrap {
+          position: static !important;
+        }
+      }
+      .step {
+        min-height: 92vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        opacity: 0.25;
+        transition: opacity 0.4s;
+      }
+      .step.active {
+        opacity: 1;
+      }
+      .step-tag {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .step h2 {
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+      }
+      .step > p {
+        color: var(--dim);
+        line-height: 1.65;
+        margin-bottom: 20px;
+        max-width: 46ch;
+      }
+      .agent-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: var(--panel);
+        margin-bottom: 18px;
+        width: fit-content;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      .pulse {
+        animation: pulse 1.4s infinite;
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.3;
+        }
+      }
+      .code {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+      }
+      .code-head {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 14px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dim);
+        font-size: 0.72rem;
+      }
+      .code-head i {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .code pre {
+        padding: 14px 16px;
+        line-height: 1.7;
+        overflow-x: auto;
+        white-space: pre;
+      }
+      .c-k {
+        color: #ff7b72;
+      }
+      .c-s {
+        color: #a5d6ff;
+      }
+      .c-f {
+        color: #d2a8ff;
+      }
+      .c-c {
+        color: #8b949e;
+      }
+      .c-n {
+        color: #79c0ff;
+      }
+      .sticky-wrap {
+        position: sticky;
+        top: 6vh;
+        height: fit-content;
+        padding-top: 6vh;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      }
+      .card-head {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .card-head h3 {
+        font-size: 1.05rem;
+      }
+      .card-head small {
+        display: block;
+        color: var(--dim);
+        font-size: 0.72rem;
+        margin-top: 3px;
+        font-family: var(--mono);
+      }
+      .status {
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid;
+        transition: all 0.3s;
+      }
+      .card-body {
+        padding: 16px 20px 20px;
+        max-height: 62vh;
+        overflow-y: auto;
+      }
+      #empty {
+        color: var(--dim);
+        font-size: 0.85rem;
+      }
+      .section {
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+          max-height 0.6s ease,
+          opacity 0.45s ease,
+          transform 0.45s ease;
+        margin-bottom: 0;
+      }
+      .section.show {
+        max-height: 600px;
+        opacity: 1;
+        transform: none;
+        margin-bottom: 14px;
+      }
+      .section h4 {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--dim);
+        margin-bottom: 8px;
+      }
+      .fact {
+        display: flex;
+        gap: 10px;
+        padding: 7px 10px;
+        background: #0d1117;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 6px;
+        font-size: 0.82rem;
+        opacity: 0;
+        transform: translateX(-8px);
+        transition: all 0.4s;
+      }
+      .fact.in {
+        opacity: 1;
+        transform: none;
+      }
+      .fact time,
+      .file time {
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        color: var(--dim);
+        white-space: nowrap;
+        padding-top: 2px;
+      }
+      .file {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: #0d1117;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 6px;
+        font-size: 0.82rem;
+        opacity: 0;
+        transform: translateX(-8px);
+        transition: all 0.4s;
+      }
+      .file.in {
+        opacity: 1;
+        transform: none;
+      }
+      .file .icon {
+        width: 30px;
+        height: 36px;
+        border-radius: 4px;
+        background: linear-gradient(160deg, #e5534b, #b62324);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.55rem;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .file .fname {
+        font-family: var(--mono);
+        font-size: 0.78rem;
+      }
+      .file .fmeta {
+        color: var(--dim);
+        font-size: 0.68rem;
+        font-family: var(--mono);
+      }
+      .file time {
+        margin-left: auto;
+        align-self: flex-start;
+      }
+      .file.final {
+        border-color: var(--green);
+      }
+      .file.final .icon {
+        background: linear-gradient(160deg, #3fb950, #238636);
+      }
+      .signoff {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border: 1px dashed var(--green);
+        border-radius: 8px;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--green);
+        opacity: 0;
+        transition: opacity 0.5s;
+      }
+      .signoff.in {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Three Agents, One <span>Opportunity Card</span></h1>
+      <p>A code hike through an agentic VC deal pipeline. Scroll down to build the opportunity card; scroll up to rewind it.</p>
+      <div class="scroll-hint">▼ scroll to start · ▲ scroll up to rewind</div>
+    </header>
+
+    <div class="hike">
+      <div class="steps">
+        <section class="step" data-step="1">
+          <div class="step-tag" style="color: var(--blue)">Step 1 / 3</div>
+          <div class="agent-chip"><span class="dot pulse" style="background: var(--blue)"></span>scout-agent · running</div>
+          <h2>🔍 Sourcing</h2>
+          <p>The scout agent finds founders, verifies the company story, and progressively adds sourced facts to the opportunity card.</p>
+          <div class="code">
+            <div class="code-head">
+              <i style="background: #ff5f56"></i><i style="background: #ffbd2e"></i><i style="background: #27c93f"></i>&nbsp;sourcing.ts
+            </div>
+            <pre><span class="c-k">const</span> card = <span class="c-k">new</span> <span class="c-f">OpportunityCard</span>(<span class="c-s">"Nimbus AI"</span>);
+
+<span class="c-k">for</span> (<span class="c-k">const</span> fact <span class="c-k">of</span> <span class="c-k">await</span> scout.<span class="c-f">discover</span>()) {
+  card.<span class="c-f">addFact</span>({
+    text: fact.summary,
+    source: fact.origin,
+  });
+}</pre>
+          </div>
+        </section>
+
+        <section class="step" data-step="2">
+          <div class="step-tag" style="color: var(--purple)">Step 2 / 3</div>
+          <div class="agent-chip"><span class="dot pulse" style="background: var(--purple)"></span>research-agent · running</div>
+          <h2>📊 Researching</h2>
+          <p>The research agent runs diligence, maps the market, and attaches its evaluation sources alongside a draft term sheet.</p>
+          <div class="code">
+            <div class="code-head">
+              <i style="background: #ff5f56"></i><i style="background: #ffbd2e"></i><i style="background: #27c93f"></i>&nbsp;research.ts
+            </div>
+            <pre><span class="c-k">const</span> dossier = <span class="c-k">await</span> researcher.<span class="c-f">evaluate</span>(card);
+
+card.<span class="c-f">attach</span>(<span class="c-s">"market_analysis.pdf"</span>);
+card.<span class="c-f">attach</span>(<span class="c-s">"competitor_scan.pdf"</span>);
+
+card.<span class="c-f">attach</span>(<span class="c-s">"term_sheet_draft_v1.pdf"</span>, {
+  valuation: <span class="c-n">18_000_000</span>,
+  check: <span class="c-n">3_000_000</span>,
+  status: <span class="c-s">"DRAFT"</span>,
+});</pre>
+          </div>
+        </section>
+
+        <section class="step" data-step="3">
+          <div class="step-tag" style="color: var(--green)">Step 3 / 3</div>
+          <div class="agent-chip"><span class="dot pulse" style="background: var(--green)"></span>negotiator-agent · running</div>
+          <h2>🤝 Negotiating</h2>
+          <p>The negotiator interviews the founders, resolves the terms, and attaches the final term sheet for investment committee review.</p>
+          <div class="code">
+            <div class="code-head">
+              <i style="background: #ff5f56"></i><i style="background: #ffbd2e"></i><i style="background: #27c93f"></i>&nbsp;negotiate.ts
+            </div>
+            <pre><span class="c-k">const</span> deal = <span class="c-k">await</span> negotiator.<span class="c-f">interview</span>(founders, {
+  rounds: <span class="c-n">3</span>,
+  draft: card.<span class="c-f">get</span>(<span class="c-s">"term_sheet_draft_v1.pdf"</span>),
+});
+
+card.<span class="c-f">attach</span>(<span class="c-s">"term_sheet_FINAL.pdf"</span>, deal.terms);
+card.<span class="c-f">setStatus</span>(<span class="c-s">"READY FOR IC ✅"</span>);</pre>
+          </div>
+        </section>
+      </div>
+
+      <div class="sticky-wrap">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>☁️ Nimbus AI — Opportunity Card</h3>
+              <small>Seed · Infra / AI Tooling</small>
+            </div>
+            <span class="status" id="status" style="color: var(--dim); border-color: var(--border)">EMPTY</span>
+          </div>
+          <div class="card-body">
+            <div id="empty">Awaiting agents… scroll to begin.</div>
+
+            <div class="section" id="sec1">
+              <h4 style="color: var(--blue)">🔍 Sourced Facts</h4>
+              <div class="fact">
+                <time>09:02:11</time><span>Founders: <b>Ada Chen</b> (ex-Stripe infra) &amp; <b>Raj Mehta</b> (PhD, distributed systems)</span>
+              </div>
+              <div class="fact"><time>09:02:47</time><span>Idea: serverless GPU orchestration — “Vercel for model inference”</span></div>
+              <div class="fact"><time>09:03:15</time><span>Traction: 1.2k GitHub ⭐ in 6 weeks, 14 design partners</span></div>
+              <div class="fact"><time>09:03:58</time><span>Signal: warm intro via portfolio founder; raising $3M seed</span></div>
+            </div>
+
+            <div class="section" id="sec2">
+              <h4 style="color: var(--purple)">📊 Research &amp; Draft Terms</h4>
+              <div class="file">
+                <div class="icon">PDF</div>
+                <div>
+                  <div class="fname">market_analysis.pdf</div>
+                  <div class="fmeta">research-agent · TAM $41B</div>
+                </div>
+                <time>09:41:20</time>
+              </div>
+              <div class="file">
+                <div class="icon">PDF</div>
+                <div>
+                  <div class="fname">competitor_scan.pdf</div>
+                  <div class="fmeta">research-agent · 6 rivals mapped</div>
+                </div>
+                <time>09:52:03</time>
+              </div>
+              <div class="file">
+                <div class="icon">PDF</div>
+                <div>
+                  <div class="fname">term_sheet_draft_v1.pdf</div>
+                  <div class="fmeta">DRAFT · $18M pre · $3M check</div>
+                </div>
+                <time>10:05:44</time>
+              </div>
+            </div>
+
+            <div class="section" id="sec3">
+              <h4 style="color: var(--green)">🤝 Final Terms</h4>
+              <div class="file final">
+                <div class="icon">PDF</div>
+                <div>
+                  <div class="fname">term_sheet_FINAL.pdf</div>
+                  <div class="fmeta">SIGNED · $20M pre · $3.5M check · 20% pool</div>
+                </div>
+                <time>14:32:09</time>
+              </div>
+              <div class="signoff">✔ negotiator-agent: 3 interview rounds complete — card locked &amp; routed to Investment Committee</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const statusEl = document.getElementById("status");
+      const emptyEl = document.getElementById("empty");
+      const steps = [...document.querySelectorAll(".step")];
+      const visible = new Set();
+      const timers = new Map();
+      let currentLevel = 0;
+
+      const statuses = {
+        0: { text: "EMPTY", color: "var(--dim)" },
+        1: { text: "SOURCING…", color: "var(--blue)" },
+        2: { text: "RESEARCHING…", color: "var(--purple)" },
+        3: { text: "READY FOR IC ✓", color: "var(--green)" },
+      };
+
+      function clearTimers(id) {
+        (timers.get(id) || []).forEach(clearTimeout);
+        timers.set(id, []);
+      }
+
+      function showSection(level) {
+        const section = document.getElementById(`sec${level}`);
+        if (section.classList.contains("show")) return;
+        section.classList.add("show");
+        clearTimers(section.id);
+
+        const delays = [...section.querySelectorAll(".fact,.file,.signoff")].map((item, index) =>
+          setTimeout(() => item.classList.add("in"), 200 + index * 240),
+        );
+        timers.set(section.id, delays);
+      }
+
+      function hideSection(level) {
+        const section = document.getElementById(`sec${level}`);
+        clearTimers(section.id);
+        section.querySelectorAll(".fact,.file,.signoff").forEach((item) => item.classList.remove("in"));
+        section.classList.remove("show");
+      }
+
+      function setLevel(level) {
+        if (level === currentLevel) return;
+        currentLevel = level;
+
+        for (let i = 1; i <= 3; i++) {
+          i <= level ? showSection(i) : hideSection(i);
+        }
+
+        emptyEl.style.display = level ? "none" : "block";
+        const state = statuses[level];
+        statusEl.textContent = state.text;
+        statusEl.style.color = state.color;
+        statusEl.style.borderColor = state.color;
+      }
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const level = Number(entry.target.dataset.step);
+            entry.target.classList.toggle("active", entry.isIntersecting);
+            entry.isIntersecting ? visible.add(level) : visible.delete(level);
+          });
+
+          const level = visible.size ? Math.max(...visible) : steps.filter((step) => step.getBoundingClientRect().bottom < 0).length;
+
+          setLevel(level);
+        },
+        { threshold: 0.5 },
+      );
+
+      steps.forEach((step) => observer.observe(step));
+    </script>
+  </body>
+</html>
