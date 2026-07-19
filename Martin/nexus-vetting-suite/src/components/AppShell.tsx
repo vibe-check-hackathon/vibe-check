@@ -21,6 +21,7 @@ const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: bo
   { to: "/", label: "Pipeline", icon: LayoutDashboard, exact: true },
   { to: "/board", label: "Board", icon: Kanban },
   { to: "/applications", label: "Opportunity", icon: FileText },
+  { to: "/apply", label: "Apply", icon: FileText },
   { to: "/interviews", label: "Live Interview", icon: Mic },
   { to: "/memo", label: "Decision Memo", icon: ScrollText },
   { to: "/settings", label: "Settings", icon: Settings },

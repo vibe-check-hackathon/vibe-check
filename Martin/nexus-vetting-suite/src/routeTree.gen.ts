@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApplicationsRouteImport } from './routes/applications'
+import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as BoardRouteImport } from './routes/board'
 import { Route as DiligenceRouteImport } from './routes/diligence'
 import { Route as FounderRouteImport } from './routes/founder'
@@ -27,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 const ApplicationsRoute = ApplicationsRouteImport.update({
   id: '/applications',
   path: '/applications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApplyRoute = ApplyRouteImport.update({
+  id: '/apply',
+  path: '/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BoardRoute = BoardRouteImport.update({
@@ -68,6 +74,7 @@ const SettingsRoute = SettingsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/applications': typeof ApplicationsRoute
+  '/apply': typeof ApplyRoute
   '/board': typeof BoardRoute
   '/diligence': typeof DiligenceRoute
   '/founder': typeof FounderRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/applications': typeof ApplicationsRoute
+  '/apply': typeof ApplyRoute
   '/board': typeof BoardRoute
   '/diligence': typeof DiligenceRoute
   '/founder': typeof FounderRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/applications': typeof ApplicationsRoute
+  '/apply': typeof ApplyRoute
   '/board': typeof BoardRoute
   '/diligence': typeof DiligenceRoute
   '/founder': typeof FounderRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/applications'
+    | '/apply'
     | '/board'
     | '/diligence'
     | '/founder'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/applications'
+    | '/apply'
     | '/board'
     | '/diligence'
     | '/founder'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/applications'
+    | '/apply'
     | '/board'
     | '/diligence'
     | '/founder'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApplicationsRoute: typeof ApplicationsRoute
+  ApplyRoute: typeof ApplyRoute
   BoardRoute: typeof BoardRoute
   DiligenceRoute: typeof DiligenceRoute
   FounderRoute: typeof FounderRoute
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/applications'
       fullPath: '/applications'
       preLoaderRoute: typeof ApplicationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/apply': {
+      id: '/apply'
+      path: '/apply'
+      fullPath: '/apply'
+      preLoaderRoute: typeof ApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/board': {
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApplicationsRoute: ApplicationsRoute,
+  ApplyRoute: ApplyRoute,
   BoardRoute: BoardRoute,
   DiligenceRoute: DiligenceRoute,
   FounderRoute: FounderRoute,

@@ -13,10 +13,14 @@ Sun's spec), `stitch-ai-prompt.md` §3 (event contract).
 - [x] **Every recommendation filtered through it** — `pipeline/developing.js`
       `assessThesisFit()` + the negotiation model derive targets/reservation
       from thesis values; `run-demo.js` and `serve.js` both consume it.
-- [ ] **Investor-editable thesis UI** — build: a nexus `/thesis` route with a
-      form bound to the thesis fields; POST to a `/thesis` endpoint added in
-      `serve.js` (or vite middleware) that rewrites `thesis.json`; pipeline
-      rerun picks it up. ~1–2h.
+- [x] **Thesis backend endpoints** — `GET/POST /thesis` on both servers
+      (nexus vite middleware + `serve.js`) reading/writing `thesis.json`;
+      pipeline picks changes up on next run.
+- [x] **Investor-editable thesis UI** — Martin's existing Settings page now
+      loads the live thesis from `GET /thesis` (hardcoded fantasy values
+      removed) and its Edit button works: sectors, stages, geography, check
+      size, ownership, risk appetite, max gaps → `POST /thesis` → screening
+      and scoring pick it up immediately.
 
 ## 2. Smart Data Collection & Management ✅
 
@@ -48,25 +52,40 @@ Sun's spec), `stitch-ai-prompt.md` §3 (event contract).
 
 - [x] **Apply (deck + name minimum)** — `sample/intake-acme.json` models the
       minimal application; Sourcing (`sourcing.js`) builds the card from it.
-- [x] **Screen (fast first-pass)** — Developing (`developing.js`) corroborates
-      claims, flags contradictions, checks thesis fit, and gates at the human
-      approval step; full run visible via `node serve.js` event stream.
-- [ ] **Public apply form** — build: nexus `/apply` route (company, deck
-      upload, founder emails) writing an intake JSON; pipeline picks it up.
-      The intake JSON shape is the contract — no new design needed. ~2h.
+- [x] **Screen (fast first-pass)** — canonical screen in
+      `pipeline/lib/screening.js` (thesis-parameterized: late-stage rounds and
+      billion-scale valuations hard-fail with reasons; sector/stage-unclear
+      ride along as soft flags), exposed as `POST /screen` on serve.js and
+      mirrored in the nexus loader so off-thesis records never reach the
+      board. Developing then corroborates, flags contradictions, and gates at
+      human approval.
+- [x] **Public apply form** — nexus `/apply` route (in the sidebar nav):
+      company + deck are required (the brief's minimum bar), optional
+      founder/round fields; `POST /apply` runs the canonical screen live and
+      answers with pass (+ soft flags for research) or hard-fail reasons;
+      applications land as JSON in `laura/pipeline/inbox/` (gitignored) for
+      the pipeline to pick up. Verified: Series C app screened out with
+      reasons, pre-seed AI-infra app passed.
 
 ## 5. Outbound: Identification & Activation ✅ identify / 🔲 activate
 
-- [x] **Identify** — `opportunity-db/synthetic/outbound/`: 10 real
-      public-source records (Lovable, Cursor, ElevenLabs, Granola, Clay,
-      Synthesia, Helsing, Decagon, Mistral, Mercor) with activity signals,
-      rationale, and sources; rendered on the board as "outbound selected",
-      founders unassessed.
+- [x] **Identify (mechanism)** — outbound record shape, loader, and board
+      rendering exist end to end. The first batch (Lovable, Cursor,
+      ElevenLabs, Mistral, Helsing…) was **removed 2026-07-19**: every record
+      was Series B+/unicorn scale, i.e. clearly off-thesis for a
+      pre-seed/seed fund — and the screening backend now blocks such records
+      structurally.
+- [ ] **Identify (re-run on-thesis)** — rescan for genuinely early-stage
+      targets (pre-seed/seed, EU-leaning, B2B software: fresh YC/accelerator
+      cohorts, new GitHub projects, stealth-exit signals) and add records
+      that pass `screenOpportunity`. Research task, ~1–2h.
 - [x] **Converge** — outbound records flow through the same `Startup` shape,
       stages, and screening UI as inbound (one funnel).
-- [ ] **Activate (outreach draft)** — build: "Draft outreach" button on
-      outbound detail → template email citing the activity signal + rationale
-      (mailto: or copy-to-clipboard; no real sending at a hackathon). ~1h.
+- [x] **Activate (outreach draft)** — outbound detail dialogs carry a
+      copy-to-clipboard outreach draft citing the record's activity signal
+      and rationale, framed per the brief ("cold outreach, not cold
+      investment — trigger a real application"); shows as soon as on-thesis
+      outbound records exist.
 
 ## 6. Multi-Axis Screening ✅
 

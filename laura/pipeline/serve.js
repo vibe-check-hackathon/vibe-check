@@ -8,11 +8,12 @@
 // POST /approve     human gate: broadcasts approval + outcome to all clients
 
 import { createServer } from "node:http";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join, extname, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createBus } from "./lib/events.js";
 import { loadThesis } from "./lib/thesis.js";
+import { screenOpportunity } from "./lib/screening.js";
 import { runSourcing } from "./sourcing.js";
 import { runDeveloping } from "./developing.js";
 
@@ -65,6 +66,46 @@ const server = createServer((req, res) => {
     clients.add(res);
     const cancel = streamPipeline(res);
     req.on("close", () => { clients.delete(res); cancel(); });
+    return;
+  }
+
+  // Thesis Engine endpoints (MVP #1): read + update the fund lens.
+  if (url.pathname === "/thesis") {
+    const thesisPath = join(here, "thesis.json");
+    if (req.method === "GET") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(readFileSync(thesisPath));
+      return;
+    }
+    if (req.method === "POST") {
+      let body = "";
+      req.on("data", (c) => (body += c));
+      req.on("end", () => {
+        try {
+          JSON.parse(body);
+          writeFileSync(thesisPath, body, "utf8");
+          res.writeHead(204).end();
+        } catch {
+          res.writeHead(400).end("invalid json");
+        }
+      });
+      return;
+    }
+  }
+
+  // First-pass screening endpoint (MVP #4/#5): POST a record, get the verdict.
+  if (url.pathname === "/screen" && req.method === "POST") {
+    let body = "";
+    req.on("data", (c) => (body += c));
+    req.on("end", () => {
+      try {
+        const verdict = screenOpportunity(JSON.parse(body), loadThesis());
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(verdict));
+      } catch {
+        res.writeHead(400).end("invalid json");
+      }
+    });
     return;
   }
 
