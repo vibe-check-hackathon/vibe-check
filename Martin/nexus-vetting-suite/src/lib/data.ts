@@ -35,6 +35,8 @@ export type FounderRef = {
   email?: string;
   linkedin?: string;
   scores?: Record<string, number>;
+  /** Why each sub-score is high or low — synthetic tier only, matches `scores`. */
+  scoreRationale?: Record<string, string>;
   scoreConfidence?: number;
 };
 

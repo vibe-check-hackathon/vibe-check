@@ -40,7 +40,14 @@
             "teamComplementarity": 57
           },
           "scoreConfidence": 48,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-011 (synthetic)",
+            "autonomy": "shipped the first version of Grantly end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-011 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-011 (synthetic)",
+            "perseverance": "consistent shipping cadence; longest documented push is one quarter · basis: screening call INT-SYN-011 (synthetic)",
+            "teamComplementarity": "roles overlap on product; founders self-report a working conflict routine · basis: screening call INT-SYN-011 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-012",
@@ -61,7 +68,14 @@
             "teamComplementarity": 45
           },
           "scoreConfidence": 39,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "steady under routine setbacks; no hard reversal on record yet to test Macy properly · basis: screening call INT-SYN-012 (synthetic)",
+            "autonomy": "roadmap follows the loudest customer; few decisions carry a clear owner · basis: screening call INT-SYN-012 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-012 (synthetic)",
+            "perseverance": "two pivots in six months without closing the loop on either · basis: screening call INT-SYN-012 (synthetic)",
+            "teamComplementarity": "both founders answer the same questions; whole territories go uncovered · basis: screening call INT-SYN-012 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-013",
@@ -81,7 +95,14 @@
             "teamComplementarity": 88
           },
           "scoreConfidence": 49,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-013 (synthetic)",
+            "autonomy": "owns the core product decisions; leans on advisors for pricing and go-to-market calls · basis: screening call INT-SYN-013 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-013 (synthetic)",
+            "perseverance": "consistent shipping cadence; longest documented push is one quarter · basis: screening call INT-SYN-013 (synthetic)",
+            "teamComplementarity": "clean split with the co-founder (COO owns technical territory); no contested ground in interviews · basis: screening call INT-SYN-013 (synthetic)"
+          }
         }
       ],
       "interview": {
@@ -129,7 +150,14 @@
             "teamComplementarity": 77
           },
           "scoreConfidence": 58,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "kept Rolfsongrid's pilot alive through design-partner churn; met the hardest screening question with data, not defensiveness · basis: screening call INT-SYN-021 (synthetic)",
+            "autonomy": "shipped the first version of Rolfsongrid end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-021 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-021 (synthetic)",
+            "perseverance": "consistent shipping cadence; longest documented push is one quarter · basis: screening call INT-SYN-021 (synthetic)",
+            "teamComplementarity": "clean split with the co-founder (CEO owns commercial territory); no contested ground in interviews · basis: screening call INT-SYN-021 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-022",
@@ -150,7 +178,14 @@
             "teamComplementarity": 77
           },
           "scoreConfidence": 73,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-022 (synthetic)",
+            "autonomy": "roadmap follows the loudest customer; few decisions carry a clear owner · basis: screening call INT-SYN-022 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-022 (synthetic)",
+            "perseverance": "two pivots in six months without closing the loop on either · basis: screening call INT-SYN-022 (synthetic)",
+            "teamComplementarity": "clean split with the co-founder (CTO owns technical territory); no contested ground in interviews · basis: screening call INT-SYN-022 (synthetic)"
+          }
         }
       ],
       "interview": {
@@ -198,7 +233,14 @@
             "teamComplementarity": 40
           },
           "scoreConfidence": 63,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-031 (synthetic)",
+            "autonomy": "shipped the first version of Walshworks end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-031 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-031 (synthetic)",
+            "perseverance": "14 years in the field and still takes weekly support shifts; effort is dated, not claimed · basis: screening call INT-SYN-031 (synthetic)",
+            "teamComplementarity": "both founders answer the same questions; whole territories go uncovered · basis: screening call INT-SYN-031 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-032",
@@ -219,7 +261,14 @@
             "teamComplementarity": 65
           },
           "scoreConfidence": 44,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-032 (synthetic)",
+            "autonomy": "owns the core product decisions; leans on advisors for pricing and go-to-market calls · basis: screening call INT-SYN-032 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-032 (synthetic)",
+            "perseverance": "two pivots in six months without closing the loop on either · basis: screening call INT-SYN-032 (synthetic)",
+            "teamComplementarity": "roles overlap on product; founders self-report a working conflict routine · basis: screening call INT-SYN-032 (synthetic)"
+          }
         }
       ],
       "interview": {
@@ -267,7 +316,14 @@
             "teamComplementarity": 67
           },
           "scoreConfidence": 58,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-041 (synthetic)",
+            "autonomy": "shipped the first version of Hackettloop end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-041 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-041 (synthetic)",
+            "perseverance": "9 years in the field and still takes weekly support shifts; effort is dated, not claimed · basis: screening call INT-SYN-041 (synthetic)",
+            "teamComplementarity": "roles overlap on product; founders self-report a working conflict routine · basis: screening call INT-SYN-041 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-042",
@@ -288,7 +344,14 @@
             "teamComplementarity": 51
           },
           "scoreConfidence": 73,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "kept Hackettloop's pilot alive through design-partner churn; met the hardest screening question with data, not defensiveness · basis: screening call INT-SYN-042 (synthetic)",
+            "autonomy": "roadmap follows the loudest customer; few decisions carry a clear owner · basis: screening call INT-SYN-042 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-042 (synthetic)",
+            "perseverance": "consistent shipping cadence; longest documented push is one quarter · basis: screening call INT-SYN-042 (synthetic)",
+            "teamComplementarity": "both founders answer the same questions; whole territories go uncovered · basis: screening call INT-SYN-042 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-043",
@@ -308,7 +371,14 @@
             "teamComplementarity": 44
           },
           "scoreConfidence": 57,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "kept Hackettloop's pilot alive through design-partner churn; met the hardest screening question with data, not defensiveness · basis: screening call INT-SYN-043 (synthetic)",
+            "autonomy": "shipped the first version of Hackettloop end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-043 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-043 (synthetic)",
+            "perseverance": "10 years in the field and still takes weekly support shifts; effort is dated, not claimed · basis: screening call INT-SYN-043 (synthetic)",
+            "teamComplementarity": "both founders answer the same questions; whole territories go uncovered · basis: screening call INT-SYN-043 (synthetic)"
+          }
         }
       ],
       "interview": {
@@ -356,7 +426,14 @@
             "teamComplementarity": 48
           },
           "scoreConfidence": 72,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "steady under routine setbacks; no hard reversal on record yet to test Monserrate properly · basis: screening call INT-SYN-051 (synthetic)",
+            "autonomy": "owns the core product decisions; leans on advisors for pricing and go-to-market calls · basis: screening call INT-SYN-051 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-051 (synthetic)",
+            "perseverance": "7 years in the field and still takes weekly support shifts; effort is dated, not claimed · basis: screening call INT-SYN-051 (synthetic)",
+            "teamComplementarity": "both founders answer the same questions; whole territories go uncovered · basis: screening call INT-SYN-051 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-052",
@@ -377,7 +454,14 @@
             "teamComplementarity": 59
           },
           "scoreConfidence": 47,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "kept Lebsacksense's pilot alive through design-partner churn; met the hardest screening question with data, not defensiveness · basis: screening call INT-SYN-052 (synthetic)",
+            "autonomy": "shipped the first version of Lebsacksense end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-052 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-052 (synthetic)",
+            "perseverance": "two pivots in six months without closing the loop on either · basis: screening call INT-SYN-052 (synthetic)",
+            "teamComplementarity": "roles overlap on product; founders self-report a working conflict routine · basis: screening call INT-SYN-052 (synthetic)"
+          }
         }
       ],
       "interview": {
@@ -425,7 +509,14 @@
             "teamComplementarity": 46
           },
           "scoreConfidence": 64,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "kept Robertslayer's pilot alive through design-partner churn; met the hardest screening question with data, not defensiveness · basis: screening call INT-SYN-061 (synthetic)",
+            "autonomy": "roadmap follows the loudest customer; few decisions carry a clear owner · basis: screening call INT-SYN-061 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-061 (synthetic)",
+            "perseverance": "consistent shipping cadence; longest documented push is one quarter · basis: screening call INT-SYN-061 (synthetic)",
+            "teamComplementarity": "both founders answer the same questions; whole territories go uncovered · basis: screening call INT-SYN-061 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-062",
@@ -446,7 +537,14 @@
             "teamComplementarity": 73
           },
           "scoreConfidence": 41,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-062 (synthetic)",
+            "autonomy": "shipped the first version of Robertslayer end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-062 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-062 (synthetic)",
+            "perseverance": "two pivots in six months without closing the loop on either · basis: screening call INT-SYN-062 (synthetic)",
+            "teamComplementarity": "roles overlap on product; founders self-report a working conflict routine · basis: screening call INT-SYN-062 (synthetic)"
+          }
         }
       ],
       "interview": {
@@ -497,7 +595,14 @@
             "teamComplementarity": 57
           },
           "scoreConfidence": 48,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-011 (synthetic)",
+            "autonomy": "shipped the first version of Grantly end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-011 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-011 (synthetic)",
+            "perseverance": "consistent shipping cadence; longest documented push is one quarter · basis: screening call INT-SYN-011 (synthetic)",
+            "teamComplementarity": "roles overlap on product; founders self-report a working conflict routine · basis: screening call INT-SYN-011 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-012",
@@ -518,7 +623,14 @@
             "teamComplementarity": 45
           },
           "scoreConfidence": 39,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "steady under routine setbacks; no hard reversal on record yet to test Macy properly · basis: screening call INT-SYN-012 (synthetic)",
+            "autonomy": "roadmap follows the loudest customer; few decisions carry a clear owner · basis: screening call INT-SYN-012 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-012 (synthetic)",
+            "perseverance": "two pivots in six months without closing the loop on either · basis: screening call INT-SYN-012 (synthetic)",
+            "teamComplementarity": "both founders answer the same questions; whole territories go uncovered · basis: screening call INT-SYN-012 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-013",
@@ -538,7 +650,14 @@
             "teamComplementarity": 88
           },
           "scoreConfidence": 49,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-013 (synthetic)",
+            "autonomy": "owns the core product decisions; leans on advisors for pricing and go-to-market calls · basis: screening call INT-SYN-013 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-013 (synthetic)",
+            "perseverance": "consistent shipping cadence; longest documented push is one quarter · basis: screening call INT-SYN-013 (synthetic)",
+            "teamComplementarity": "clean split with the co-founder (COO owns technical territory); no contested ground in interviews · basis: screening call INT-SYN-013 (synthetic)"
+          }
         }
       ],
       "interview": {
@@ -586,7 +705,14 @@
             "teamComplementarity": 77
           },
           "scoreConfidence": 58,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "kept Rolfsongrid's pilot alive through design-partner churn; met the hardest screening question with data, not defensiveness · basis: screening call INT-SYN-021 (synthetic)",
+            "autonomy": "shipped the first version of Rolfsongrid end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-021 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-021 (synthetic)",
+            "perseverance": "consistent shipping cadence; longest documented push is one quarter · basis: screening call INT-SYN-021 (synthetic)",
+            "teamComplementarity": "clean split with the co-founder (CEO owns commercial territory); no contested ground in interviews · basis: screening call INT-SYN-021 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-022",
@@ -607,7 +733,14 @@
             "teamComplementarity": 77
           },
           "scoreConfidence": 73,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-022 (synthetic)",
+            "autonomy": "roadmap follows the loudest customer; few decisions carry a clear owner · basis: screening call INT-SYN-022 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-022 (synthetic)",
+            "perseverance": "two pivots in six months without closing the loop on either · basis: screening call INT-SYN-022 (synthetic)",
+            "teamComplementarity": "clean split with the co-founder (CTO owns technical territory); no contested ground in interviews · basis: screening call INT-SYN-022 (synthetic)"
+          }
         }
       ],
       "interview": {
@@ -655,7 +788,14 @@
             "teamComplementarity": 40
           },
           "scoreConfidence": 63,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-031 (synthetic)",
+            "autonomy": "shipped the first version of Walshworks end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-031 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-031 (synthetic)",
+            "perseverance": "14 years in the field and still takes weekly support shifts; effort is dated, not claimed · basis: screening call INT-SYN-031 (synthetic)",
+            "teamComplementarity": "both founders answer the same questions; whole territories go uncovered · basis: screening call INT-SYN-031 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-032",
@@ -676,7 +816,14 @@
             "teamComplementarity": 65
           },
           "scoreConfidence": 44,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-032 (synthetic)",
+            "autonomy": "owns the core product decisions; leans on advisors for pricing and go-to-market calls · basis: screening call INT-SYN-032 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-032 (synthetic)",
+            "perseverance": "two pivots in six months without closing the loop on either · basis: screening call INT-SYN-032 (synthetic)",
+            "teamComplementarity": "roles overlap on product; founders self-report a working conflict routine · basis: screening call INT-SYN-032 (synthetic)"
+          }
         }
       ],
       "interview": {
@@ -724,7 +871,14 @@
             "teamComplementarity": 67
           },
           "scoreConfidence": 58,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-041 (synthetic)",
+            "autonomy": "shipped the first version of Hackettloop end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-041 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-041 (synthetic)",
+            "perseverance": "9 years in the field and still takes weekly support shifts; effort is dated, not claimed · basis: screening call INT-SYN-041 (synthetic)",
+            "teamComplementarity": "roles overlap on product; founders self-report a working conflict routine · basis: screening call INT-SYN-041 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-042",
@@ -745,7 +899,14 @@
             "teamComplementarity": 51
           },
           "scoreConfidence": 73,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "kept Hackettloop's pilot alive through design-partner churn; met the hardest screening question with data, not defensiveness · basis: screening call INT-SYN-042 (synthetic)",
+            "autonomy": "roadmap follows the loudest customer; few decisions carry a clear owner · basis: screening call INT-SYN-042 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-042 (synthetic)",
+            "perseverance": "consistent shipping cadence; longest documented push is one quarter · basis: screening call INT-SYN-042 (synthetic)",
+            "teamComplementarity": "both founders answer the same questions; whole territories go uncovered · basis: screening call INT-SYN-042 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-043",
@@ -765,7 +926,14 @@
             "teamComplementarity": 44
           },
           "scoreConfidence": 57,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "kept Hackettloop's pilot alive through design-partner churn; met the hardest screening question with data, not defensiveness · basis: screening call INT-SYN-043 (synthetic)",
+            "autonomy": "shipped the first version of Hackettloop end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-043 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-043 (synthetic)",
+            "perseverance": "10 years in the field and still takes weekly support shifts; effort is dated, not claimed · basis: screening call INT-SYN-043 (synthetic)",
+            "teamComplementarity": "both founders answer the same questions; whole territories go uncovered · basis: screening call INT-SYN-043 (synthetic)"
+          }
         }
       ],
       "interview": {
@@ -813,7 +981,14 @@
             "teamComplementarity": 48
           },
           "scoreConfidence": 72,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "steady under routine setbacks; no hard reversal on record yet to test Monserrate properly · basis: screening call INT-SYN-051 (synthetic)",
+            "autonomy": "owns the core product decisions; leans on advisors for pricing and go-to-market calls · basis: screening call INT-SYN-051 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-051 (synthetic)",
+            "perseverance": "7 years in the field and still takes weekly support shifts; effort is dated, not claimed · basis: screening call INT-SYN-051 (synthetic)",
+            "teamComplementarity": "both founders answer the same questions; whole territories go uncovered · basis: screening call INT-SYN-051 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-052",
@@ -834,7 +1009,14 @@
             "teamComplementarity": 59
           },
           "scoreConfidence": 47,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "kept Lebsacksense's pilot alive through design-partner churn; met the hardest screening question with data, not defensiveness · basis: screening call INT-SYN-052 (synthetic)",
+            "autonomy": "shipped the first version of Lebsacksense end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-052 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-052 (synthetic)",
+            "perseverance": "two pivots in six months without closing the loop on either · basis: screening call INT-SYN-052 (synthetic)",
+            "teamComplementarity": "roles overlap on product; founders self-report a working conflict routine · basis: screening call INT-SYN-052 (synthetic)"
+          }
         }
       ],
       "interview": {
@@ -882,7 +1064,14 @@
             "teamComplementarity": 46
           },
           "scoreConfidence": 64,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "kept Robertslayer's pilot alive through design-partner churn; met the hardest screening question with data, not defensiveness · basis: screening call INT-SYN-061 (synthetic)",
+            "autonomy": "roadmap follows the loudest customer; few decisions carry a clear owner · basis: screening call INT-SYN-061 (synthetic)",
+            "curiosity": "rebuilt onboarding twice from session evidence; asks for disconfirming data unprompted · basis: screening call INT-SYN-061 (synthetic)",
+            "perseverance": "consistent shipping cadence; longest documented push is one quarter · basis: screening call INT-SYN-061 (synthetic)",
+            "teamComplementarity": "both founders answer the same questions; whole territories go uncovered · basis: screening call INT-SYN-061 (synthetic)"
+          }
         },
         {
           "id": "FND-SYN-062",
@@ -903,7 +1092,14 @@
             "teamComplementarity": 73
           },
           "scoreConfidence": 41,
-          "assessed": true
+          "assessed": true,
+          "scoreRationale": {
+            "resilience": "deflected follow-ups on the stalled first launch; recovery stories stay vague when pressed · basis: screening call INT-SYN-062 (synthetic)",
+            "autonomy": "shipped the first version of Robertslayer end-to-end before hiring; decisions arrive with owner and rationale attached · basis: screening call INT-SYN-062 (synthetic)",
+            "curiosity": "iterates when the metrics force it; little exploration beyond the current playbook · basis: screening call INT-SYN-062 (synthetic)",
+            "perseverance": "two pivots in six months without closing the loop on either · basis: screening call INT-SYN-062 (synthetic)",
+            "teamComplementarity": "roles overlap on product; founders self-report a working conflict routine · basis: screening call INT-SYN-062 (synthetic)"
+          }
         }
       ],
       "interview": {
@@ -915,5 +1111,6 @@
       "sourceChannel": "current_application"
     }
   ],
-  "outboundSelected": []
+  "outboundSelected": [],
+  "rationaleBasis": "scoreRationale strings are part of the synthetic full-consent demo tier — invented to match the generated sub-scores; real people remain not assessed"
 }

@@ -1,0 +1,1375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VibeCheck Studio — Live Interview</title>
+<style>
+  :root {
+    /* light theme (default) — validated light palette */
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --surface-2: #f1f0ec;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --hairline: rgba(11, 11, 11, 0.10);
+    --header-bg: rgba(249, 249, 247, 0.82);
+    --btn-hover: #e9e8e3;
+    --investor: #2a78d6;    /* slot 1 blue  — investor settlement range */
+    --founder: #008300;     /* slot 2 green — founder settlement range */
+    --zopa: #eda100;        /* slot 4 yellow — ZOPA band (direct-labeled) */
+    --accent-warm-text: #9a6a00;  /* amber as *text* needs its own darker step */
+    --accent-warm-border: rgba(154, 106, 0, 0.5);
+    --meter-track: #cde2fb; /* blue ramp step 100 */
+    --good: #006300;
+    --shadow: 0 8px 30px rgba(11, 11, 11, 0.14);
+    --elev: 0 1px 2px rgba(11, 11, 11, 0.04), 0 8px 24px rgba(11, 11, 11, 0.05);
+    --radius: 18px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --surface-2: #222221;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --hairline: rgba(255, 255, 255, 0.10);
+      --header-bg: rgba(13, 13, 13, 0.82);
+      --btn-hover: #2a2a28;
+      --investor: #3987e5;
+      --founder: #008300;
+      --zopa: #c98500;
+      --accent-warm-text: #c98500;
+      --accent-warm-border: rgba(201, 133, 0, 0.6);
+      --meter-track: #0d366b; /* blue ramp step 700 */
+      --good: #0ca30c;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      --elev: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-2: #222221;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --hairline: rgba(255, 255, 255, 0.10);
+    --header-bg: rgba(13, 13, 13, 0.82);
+    --btn-hover: #2a2a28;
+    --investor: #3987e5;
+    --founder: #008300;
+    --zopa: #c98500;
+    --accent-warm-text: #c98500;
+    --accent-warm-border: rgba(201, 133, 0, 0.6);
+    --meter-track: #0d366b;
+    --good: #0ca30c;
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    --elev: none;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--ink); font-size: 15px; line-height: 1.5; transition: background-color 0.3s ease, color 0.3s ease; }
+  a { color: var(--investor); text-decoration: none; }
+
+  /* ---------- header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 28px;
+    background: var(--header-bg);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--hairline);
+    transition: background-color 0.3s ease;
+  }
+  .theme-toggle {
+    font: inherit; font-size: 15px; line-height: 1;
+    width: 32px; height: 32px; display: grid; place-items: center;
+    color: var(--ink-2); background: var(--surface);
+    border: 1px solid var(--hairline); border-radius: 999px; cursor: pointer;
+  }
+  .theme-toggle:hover { background: var(--btn-hover); }
+  .brand { font-weight: 700; letter-spacing: -0.02em; font-size: 17px; }
+  .brand span { color: var(--muted); font-weight: 500; }
+  .opp-ref { color: var(--ink-2); font-size: 13px; }
+  .pill {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px; border: 1px solid var(--hairline);
+    color: var(--ink-2); background: var(--surface);
+  }
+  .pill.live { color: var(--good); border-color: rgba(12, 163, 12, 0.4); }
+  .pill.live::before { content: "●"; margin-right: 6px; animation: blink 1.6s infinite; }
+  @keyframes blink { 50% { opacity: 0.25; } }
+  .spacer { flex: 1; }
+  .deadline { font-size: 13px; color: var(--muted); }
+  .deadline strong { color: var(--ink-2); font-weight: 600; }
+
+  /* ---------- pipeline breadcrumb (top-left) ---------- */
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .crumb { color: var(--muted); font-weight: 500; }
+  .crumb.done { color: var(--ink-2); }
+  .crumb.done::before { content: "✓"; margin-right: 5px; color: var(--good); font-weight: 700; font-size: 11px; }
+  .crumb.active {
+    color: var(--investor); font-weight: 600;
+    padding: 3px 10px; border: 1px solid rgba(57, 135, 229, 0.45);
+    border-radius: 999px; background: var(--surface);
+  }
+  .crumb-sep { color: var(--muted); }
+  @media (max-width: 720px) { .breadcrumb { display: none; } }
+
+  /* ---------- layout ---------- */
+  .app { max-width: 1240px; margin: 28px auto 80px; padding: 0 28px; display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr); gap: 20px; }
+  @media (max-width: 980px) { .app { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--surface); border: 1px solid var(--hairline);
+    border-radius: var(--radius); padding: 20px; overflow: hidden;
+    box-shadow: var(--elev); transition: background-color 0.3s ease;
+  }
+  .panel h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .panel-head h2 { margin-bottom: 0; }
+  .see-details { font-size: 12px; font-weight: 600; color: var(--investor); white-space: nowrap; }
+  .see-details:hover { text-decoration: underline; }
+
+  /* ---------- pipeline stepper (Sun's conceptual pipeline) ---------- */
+  .steps { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .step {
+    display: inline-flex; align-items: center; gap: 7px;
+    font: inherit; font-size: 11.5px; padding: 5px 12px 5px 6px; border-radius: 999px;
+    background: none; cursor: pointer;
+    border: 1px solid var(--hairline); color: var(--muted); transition: color 0.3s, border-color 0.3s;
+  }
+  .step:hover { background: var(--surface-2); }
+  .step .n {
+    width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 10px; font-weight: 700; background: var(--surface-2); color: var(--muted);
+  }
+  .step.done { color: var(--ink-2); }
+  .step.done .n { background: var(--good); color: #fff; font-size: 9px; }
+  .step.active { color: var(--investor); border-color: rgba(57, 135, 229, 0.55); font-weight: 600; }
+  .step.active .n { background: var(--investor); color: #fff; }
+  .step.open { border-color: var(--investor); }
+  .stage-detail {
+    display: none; background: var(--surface-2); border: 1px solid var(--hairline);
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
+    font-size: 12.5px; color: var(--ink-2); line-height: 1.55;
+  }
+  .stage-detail.open { display: block; }
+  .stage-detail b { color: var(--ink); }
+  .sd-row { margin: 4px 0; }
+  .sd-row .k {
+    display: inline-block; min-width: 58px; margin-right: 8px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---------- video call stage ---------- */
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tile {
+    position: relative; aspect-ratio: 16 / 10.5; border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--hairline); background: var(--surface-2);
+  }
+  .tile.agent { grid-column: 1 / -1; aspect-ratio: 32 / 7; }
+  .tile .feed { position: absolute; inset: 0; }
+  .tile video {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; transform: scaleX(-1); display: none; background: #000;
+  }
+  .tile.cam-on video { display: block; }
+  .tile.cam-on .avatar { display: none; }
+  .cam-btn {
+    position: absolute; bottom: 10px; right: 10px; z-index: 3;
+    font: inherit; font-size: 11px; font-weight: 600;
+    color: rgba(255, 255, 255, 0.85); background: rgba(13, 13, 13, 0.66);
+    backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 7px; padding: 4px 10px; cursor: pointer;
+  }
+  .cam-btn:hover { background: rgba(13, 13, 13, 0.85); }
+  .tile[data-p="ada"]  .feed { background: radial-gradient(120% 120% at 30% 20%, #24384f 0%, #16202c 55%, #101418 100%); }
+  .tile[data-p="minh"] .feed { background: radial-gradient(120% 120% at 70% 20%, #24402a 0%, #182518 55%, #101410 100%); }
+  .tile[data-p="agent"] .feed { background: radial-gradient(140% 200% at 50% 0%, #1f2937 0%, #12151c 60%, #0e0f13 100%); }
+  .avatar {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -54%);
+    width: 74px; height: 74px; border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 24px; font-weight: 700; letter-spacing: -0.02em;
+    color: #fff; background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+  }
+  .tile.agent .avatar { width: 56px; height: 56px; font-size: 18px; transform: translate(-50%, -50%); }
+  .tile.speaking { outline: 2px solid var(--investor); outline-offset: -2px; }
+  /* nameplates & readouts sit on video feeds — dark glass in BOTH themes */
+  .nameplate {
+    position: absolute; left: 10px; bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; color: #fff;
+    background: rgba(13, 13, 13, 0.66); backdrop-filter: blur(8px);
+    padding: 5px 10px; border-radius: 8px;
+  }
+  .nameplate span { color: rgba(255, 255, 255, 0.60); font-weight: 500; }
+  .wave { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
+  .wave i { width: 3px; height: 3px; border-radius: 2px; background: #d8d7cf; }
+  .speaking .wave i { animation: wv 0.9s ease-in-out infinite; }
+  .speaking .wave i:nth-child(2) { animation-delay: 0.15s; }
+  .speaking .wave i:nth-child(3) { animation-delay: 0.3s; }
+  .speaking .wave i:nth-child(4) { animation-delay: 0.45s; }
+  @keyframes wv { 0%, 100% { height: 3px; } 50% { height: 12px; } }
+  .readout {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85); background: rgba(13, 13, 13, 0.66); backdrop-filter: blur(8px);
+    padding: 4px 9px; border-radius: 7px; transition: color 0.4s;
+  }
+  .scanline {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.35;
+    background: repeating-linear-gradient(0deg, transparent 0 5px, rgba(255, 255, 255, 0.025) 5px 6px);
+  }
+
+  /* ---------- transcript ---------- */
+  .transcript { display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; scroll-behavior: smooth; }
+  .line { display: grid; grid-template-columns: 46px 86px 1fr; gap: 10px; font-size: 13.5px; opacity: 0; transform: translateY(6px); transition: opacity 0.5s, transform 0.5s; }
+  .line.shown { opacity: 1; transform: none; }
+  .line .t { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .line .who { font-weight: 600; color: var(--ink-2); }
+  .line .txt { color: var(--ink); }
+  .line.evt .txt { color: var(--accent-warm-text); }
+  .line.evt .who { color: var(--accent-warm-text); }
+  .controls { display: flex; gap: 10px; align-items: center; margin-top: 14px; }
+  button.ctl {
+    font: inherit; font-size: 13px; font-weight: 600; color: var(--ink);
+    background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 999px;
+    padding: 7px 18px; cursor: pointer;
+  }
+  button.ctl:hover { background: var(--btn-hover); }
+  button:focus-visible { outline: 2px solid var(--investor); outline-offset: 2px; }
+  button.ctl.primary { background: var(--investor); border-color: transparent; color: #fff; }
+  .ctl-note { font-size: 12px; color: var(--muted); }
+
+  /* ---------- vibe meters ---------- */
+  .founder-block { padding: 12px 0; border-top: 1px solid var(--grid); }
+  .founder-block:first-of-type { border-top: 0; padding-top: 0; }
+  .fhead { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+  .fhead .dotkey { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .fhead b { font-size: 14px; }
+  .fhead span { font-size: 12px; color: var(--muted); }
+  .meter-row { display: grid; grid-template-columns: 92px 1fr 40px; align-items: center; gap: 10px; margin: 7px 0; font-size: 12.5px; }
+  .meter-row .lbl { color: var(--ink-2); }
+  .meter-row .val { color: var(--ink-2); text-align: right; font-variant-numeric: tabular-nums; }
+  .meter { height: 6px; border-radius: 4px; background: var(--meter-track); overflow: hidden; }
+  .meter i { display: block; height: 100%; border-radius: 4px; background: var(--investor); width: 0%; transition: width 0.9s cubic-bezier(0.3, 0.8, 0.3, 1); }
+  .fit-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .stat { background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 12px; padding: 12px 14px; }
+  .stat .lbl { font-size: 12px; color: var(--ink-2); }
+  .stat .num { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; margin-top: 2px; }
+  .stat .delta { font-size: 12px; color: var(--good); font-weight: 600; }
+
+  /* ---------- ZOPA chart ---------- */
+  .zopa-wrap { position: relative; margin-top: 6px; }
+  .zopa-chart { position: relative; height: 132px; }
+  .gridlines { position: absolute; inset: 0 0 22px 0; }
+  .gridlines i { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--grid); }
+  .axis-labels { position: absolute; left: 0; right: 0; bottom: 0; height: 18px; }
+  .axis-labels span { position: absolute; transform: translateX(-50%); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .band {
+    position: absolute; height: 20px; border-radius: 4px;
+    transition: left 0.9s cubic-bezier(0.3, 0.8, 0.3, 1), width 0.9s cubic-bezier(0.3, 0.8, 0.3, 1);
+  }
+  .band .band-lbl {
+    position: absolute; top: 50%; transform: translateY(-50%); white-space: nowrap;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em;
+  }
+  /* investor row (top), zopa row (middle), founder row (bottom) — 2px surface gaps between rows */
+  #bandInvestor { top: 14px; background: var(--investor); }
+  #bandZopa { top: 36px; background: var(--zopa); }
+  #bandFounder { top: 58px; background: var(--founder); }
+  #bandInvestor .band-lbl { right: calc(100% + 8px); color: var(--ink-2); }
+  #bandFounder .band-lbl { left: calc(100% + 8px); color: var(--ink-2); }
+  #bandZopa .band-lbl { left: 50%; transform: translate(-50%, -50%); color: #10100e; }
+  .marker {
+    position: absolute; width: 10px; height: 10px; border-radius: 50%;
+    background: var(--ink); border: 2px solid var(--surface);
+    transform: translate(-50%, -50%); cursor: default;
+    transition: left 0.9s cubic-bezier(0.3, 0.8, 0.3, 1);
+  }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 12px; color: var(--ink-2); }
+  .legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .zopa-note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .zopa-note strong { color: var(--ink-2); font-weight: 600; }
+
+  /* model table + levers */
+  .model-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 4px; }
+  .model-table th { text-align: left; color: var(--muted); font-weight: 500; padding: 5px 8px 5px 0; border-bottom: 1px solid var(--grid); }
+  .model-table td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--grid); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .model-table td:first-child { color: var(--ink); }
+  .levers { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+  .lever {
+    font-size: 11.5px; padding: 4px 11px; border-radius: 999px;
+    border: 1px solid var(--hairline); color: var(--muted); transition: all 0.4s;
+  }
+  .lever.hot { border-color: var(--accent-warm-border); color: var(--accent-warm-text); font-weight: 600; }
+  .updates { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .updates li { font-size: 12.5px; color: var(--ink-2); padding-left: 18px; position: relative; opacity: 0; transform: translateY(5px); transition: opacity 0.5s, transform 0.5s; }
+  .updates li.shown { opacity: 1; transform: none; }
+  .updates li::before { content: "▸"; position: absolute; left: 0; color: var(--accent-warm-text); }
+  .updates li .t { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 6px; }
+
+  /* ---------- inbox (portfolio view) ---------- */
+  .view-hidden { display: none !important; }
+  .inbox { max-width: 1240px; margin: 36px auto 80px; padding: 0 28px; }
+  .inbox > h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .opp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .opp-card {
+    background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius);
+    padding: 18px; cursor: pointer; box-shadow: var(--elev);
+    transition: transform 0.2s ease, border-color 0.2s ease; text-align: left; font: inherit; color: inherit;
+  }
+  .opp-card:hover { transform: translateY(-2px); border-color: rgba(57, 135, 229, 0.5); }
+  .opp-card.disabled { opacity: 0.55; cursor: default; }
+  .opp-card.disabled:hover { transform: none; border-color: var(--hairline); }
+  .oc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .oc-id { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .opp-card h3 { font-size: 16px; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .opp-card p { font-size: 12.5px; color: var(--ink-2); margin-bottom: 12px; min-height: 38px; }
+  .axis-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { font-size: 10.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--hairline); color: var(--ink-2); }
+  .founder-strip { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 2px; }
+  .founder-mini {
+    display: flex; align-items: center; gap: 7px; min-width: 0; max-width: 100%;
+    padding: 5px 8px 5px 5px; border: 1px solid var(--hairline); border-radius: 999px;
+    background: var(--surface-2); color: var(--ink-2); font-size: 11px; font-weight: 600;
+  }
+  .founder-mini img {
+    width: 26px; height: 26px; border-radius: 50%; object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.55); flex: 0 0 auto;
+  }
+  .founder-mini.founder-initials { text-decoration: none; }
+  .founder-avatar-text {
+    display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--ink); color: var(--surface); font-size: 10px; font-weight: 800;
+    letter-spacing: 0; flex: 0 0 auto;
+  }
+  .founder-mini span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .oc-meta { display: flex; justify-content: space-between; margin-top: 12px; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* ---------- approval sheet (human gate) ---------- */
+  .sheet-backdrop {
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 40;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+  }
+  .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+  .sheet {
+    position: fixed; left: 50%; bottom: 0; transform: translate(-50%, 110%);
+    width: min(680px, 94vw); background: var(--surface); border: 1px solid var(--hairline);
+    border-bottom: none; border-radius: 18px 18px 0 0; padding: 22px 24px; z-index: 41;
+    transition: transform 0.45s cubic-bezier(0.3, 0.8, 0.3, 1);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  }
+  .sheet.open { transform: translate(-50%, 0); }
+  .sheet h3 { font-size: 17px; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .sheet .rec { font-size: 14px; color: var(--ink-2); margin-bottom: 12px; }
+  .sheet .rec strong { color: var(--ink); }
+  .sheet .axis-chips { margin-bottom: 6px; }
+  .sheet .blockers { font-size: 12.5px; color: var(--accent-warm-text); margin-top: 8px; }
+  .sheet-actions { display: flex; gap: 10px; margin-top: 18px; }
+
+  /* ---------- opportunity detail modal ---------- */
+  .detail {
+    position: fixed; left: 50%; top: 50%; transform: translate(-50%, -47%) scale(0.97);
+    width: min(620px, 94vw); max-height: 82vh; overflow-y: auto;
+    background: var(--surface); border: 1px solid var(--hairline); border-radius: 18px;
+    padding: 22px 24px; z-index: 41; opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  }
+  .detail.open { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+  .detail h3 { font-size: 19px; letter-spacing: -0.015em; }
+  .detail .d-meta { font-size: 12.5px; color: var(--muted); margin: 2px 0 12px; }
+  .detail h4 { font-size: 11.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin: 16px 0 8px; }
+  .detail .d-event { font-size: 13.5px; color: var(--ink-2); }
+  .d-verified { font-size: 10.5px; font-weight: 700; color: var(--good); margin-left: 6px; }
+  .fdr-row {
+    display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+    padding: 7px 0; border-top: 1px solid var(--grid); font-size: 13px;
+  }
+  .fdr-row b { font-weight: 600; }
+  .fdr-row .role { color: var(--muted); font-size: 12px; }
+  .fdr-row .na { font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--hairline); border-radius: 999px; padding: 2px 8px; }
+  .fdr-row a { font-size: 12px; }
+  .fdr-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--hairline); align-self: center; }
+  .doc-list { list-style: none; }
+  .doc-list li { padding: 5px 0; border-top: 1px solid var(--grid); font-size: 13px; }
+  .lock-note { font-size: 13px; color: var(--ink-2); background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 10px; padding: 10px 12px; }
+  .d-close { position: absolute; top: 14px; right: 14px; }
+  .d-disclaimer { margin-top: 16px; font-size: 11.5px; color: var(--muted); }
+  .db-note { margin-top: 18px; font-size: 12px; color: var(--muted); }
+  .oc-logo { width: 20px; height: 20px; border-radius: 5px; vertical-align: -4px; margin-right: 8px; }
+  .d-logo { width: 28px; height: 28px; border-radius: 7px; vertical-align: -6px; margin-right: 10px; }
+  .oc-status { font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--hairline); color: var(--ink-2); }
+  .oc-status.acquired { color: var(--good); border-color: rgba(12, 163, 12, 0.4); }
+  .oc-status.inactive, .oc-status.unclear { color: var(--muted); }
+
+  /* ---------- draggable reservation handle ---------- */
+  .drag-handle {
+    position: absolute; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--ink); border: 2px solid var(--surface);
+    cursor: ew-resize; transform: translate(-50%, -50%); z-index: 2; touch-action: none;
+    transition: left 0.9s cubic-bezier(0.3, 0.8, 0.3, 1);
+  }
+  .drag-handle.dragging { transition: none; }
+
+  /* tooltip */
+  #tip {
+    position: fixed; z-index: 50; pointer-events: none; display: none;
+    background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 10px;
+    padding: 8px 12px; font-size: 12px; color: var(--ink-2); max-width: 260px;
+    box-shadow: var(--shadow);
+  }
+  #tip b { color: var(--ink); display: block; margin-bottom: 2px; }
+
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding-bottom: 40px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">VibeCheck <span>Studio</span></div>
+  <nav class="breadcrumb" aria-label="Pipeline stage">
+    <span class="crumb done">Source</span>
+    <span class="crumb-sep">›</span>
+    <span class="crumb done">Develop</span>
+    <span class="crumb-sep">›</span>
+    <span class="crumb active" aria-current="step">Match</span>
+  </nav>
+  <button class="ctl" id="btnBack" style="display:none">‹ Opportunities</button>
+  <div class="opp-ref" id="oppRef">OPP-2026-0001 · Acme Robotics · Pre-seed</div>
+  <span class="pill live" id="statusPill">Interviewing</span>
+  <div class="spacer"></div>
+  <div class="deadline">Decision deadline in <strong>14h 22m</strong></div>
+  <button class="theme-toggle" id="themeToggle" title="Toggle light/dark appearance" aria-label="Toggle light/dark appearance">◐</button>
+</header>
+
+<main class="inbox" id="inboxView">
+  <h2>Live demo</h2>
+  <div class="opp-grid">
+    <button class="opp-card" id="cardAcme">
+      <div class="oc-top"><span class="oc-id">OPP-2026-0001</span><span class="pill live">Interviewing</span></div>
+      <h3>Acme Robotics</h3>
+      <p>Vision-guided picking software — warehouse robots learn new objects from a short operator demonstration. (Fictional — drives the live interview demo.)</p>
+      <div class="axis-chips">
+        <span class="chip">Founder: Strong · 60</span>
+        <span class="chip">Market: Bullish · 55</span>
+        <span class="chip">Idea: Promising · 50</span>
+      </div>
+      <div class="oc-meta"><span>Pre-seed · Berlin</span><span>decides in 14h 22m</span></div>
+    </button>
+  </div>
+
+  <h2 style="margin-top: 28px">Synthetic cohort — full-data demo (faker.js, nobody real)</h2>
+  <div class="opp-grid" id="synGrid"></div>
+
+  <h2 style="margin-top: 28px">ALSTIN Capital — real portfolio, public data</h2>
+  <div class="opp-grid" id="euGrid"></div>
+
+  <h2 style="margin-top: 28px">MGV.VC — US portfolio, historical</h2>
+  <div class="opp-grid" id="usGrid"></div>
+
+  <p class="db-note">Compiled from public sources (2026-07-19). Facts carry sourced trust scores in each
+  card; founder evaluations are intentionally <strong>not assessed</strong> — this system does not
+  fabricate judgments about real people. Locked entries: 🔒 no public interview exists.</p>
+</main>
+
+<div class="sheet-backdrop" id="detailBackdrop"></div>
+<div class="detail" id="detailModal" role="dialog" aria-label="Opportunity detail"></div>
+
+<main class="app view-hidden" id="studioView">
+  <!-- left: the call -->
+  <div class="col">
+    <div class="panel">
+      <h2>Live interview — joint founder call (INT-001)</h2>
+      <div class="steps" id="steps">
+        <button class="step" data-s="0"><span class="n">1</span>Sourcing</button>
+        <button class="step" data-s="1"><span class="n">2</span>Developing</button>
+        <button class="step" data-s="2"><span class="n">3</span>Matching</button>
+      </div>
+      <div class="stage-detail" id="stageDetail"></div>
+      <div class="tiles">
+        <div class="tile" data-p="ada">
+          <div class="feed"></div><div class="scanline"></div>
+          <video id="camAda" autoplay muted playsinline></video>
+          <div class="avatar">AK</div>
+          <div class="readout" id="readAda">Neutral</div>
+          <button class="cam-btn" data-cam="ada">Cam</button>
+          <div class="nameplate">Ada Keller <span>CEO</span>
+            <span class="wave"><i></i><i></i><i></i><i></i></span></div>
+        </div>
+        <div class="tile" data-p="minh">
+          <div class="feed"></div><div class="scanline"></div>
+          <video id="camMinh" autoplay muted playsinline></video>
+          <div class="avatar">MT</div>
+          <div class="readout" id="readMinh">Neutral</div>
+          <button class="cam-btn" data-cam="minh">Cam</button>
+          <div class="nameplate">Minh Tran <span>CTO</span>
+            <span class="wave"><i></i><i></i><i></i><i></i></span></div>
+        </div>
+        <div class="tile agent" data-p="agent">
+          <div class="feed"></div>
+          <div class="avatar">VC</div>
+          <div class="nameplate">Interview Agent <span>vibe-check@1.0</span>
+            <span class="wave"><i></i><i></i><i></i><i></i></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Transcript &amp; agent events</h2>
+      <div class="transcript" id="transcript"></div>
+      <div class="controls">
+        <button class="ctl primary" id="btnPlay">Play demo</button>
+        <button class="ctl" id="btnReset">Restart</button>
+        <span class="ctl-note" id="ctlNote">Scripted demo against the Acme Robotics example card. Click "Cam" on a founder tile to sit in that seat with your real webcam + mic. Click a pipeline stage for its input/output.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- right: vibe check + negotiation model -->
+  <div class="col">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Vibe check — live signals</h2>
+        <a class="see-details" href="founder.html?id=FND-0007" title="Open the full personality overview">See details →</a>
+      </div>
+
+      <div class="founder-block">
+        <div class="fhead"><span class="dotkey" style="background:var(--investor)"></span><b>Ada Keller</b><span>CEO · FND-0007</span></div>
+        <div class="meter-row"><span class="lbl">Sentiment</span><span class="meter"><i id="mAdaSent"></i></span><span class="val" id="vAdaSent">–</span></div>
+        <div class="meter-row"><span class="lbl">Energy / tone</span><span class="meter"><i id="mAdaTone"></i></span><span class="val" id="vAdaTone">–</span></div>
+        <div class="meter-row"><span class="lbl">Confidence</span><span class="meter"><i id="mAdaConf"></i></span><span class="val" id="vAdaConf">–</span></div>
+      </div>
+
+      <div class="founder-block">
+        <div class="fhead"><span class="dotkey" style="background:var(--founder)"></span><b>Minh Tran</b><span>CTO · FND-0008</span></div>
+        <div class="meter-row"><span class="lbl">Sentiment</span><span class="meter"><i id="mMinhSent"></i></span><span class="val" id="vMinhSent">–</span></div>
+        <div class="meter-row"><span class="lbl">Energy / tone</span><span class="meter"><i id="mMinhTone"></i></span><span class="val" id="vMinhTone">–</span></div>
+        <div class="meter-row"><span class="lbl">Confidence</span><span class="meter"><i id="mMinhConf"></i></span><span class="val" id="vMinhConf">–</span></div>
+      </div>
+
+      <div class="fit-tiles">
+        <div class="stat">
+          <div class="lbl">Founder–founder fit</div>
+          <div class="num" id="ffFit">–</div>
+          <div class="delta" id="ffDelta"></div>
+        </div>
+        <div class="stat">
+          <div class="lbl">Founder–investor fit</div>
+          <div class="num" id="fiFit">–</div>
+          <div class="delta" id="fiDelta"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Negotiation model — pre-money valuation</h2>
+
+      <div class="zopa-wrap">
+        <div class="zopa-chart" id="zopaChart">
+          <div class="gridlines" id="gridlines"></div>
+          <div class="axis-labels" id="axisLabels"></div>
+          <div class="band" id="bandInvestor"><span class="band-lbl">Investor</span></div>
+          <div class="band" id="bandZopa"><span class="band-lbl">ZOPA</span></div>
+          <div class="band" id="bandFounder"><span class="band-lbl">Founders</span></div>
+          <div class="marker" id="mkInvTarget" style="top:24px"></div>
+          <div class="marker" id="mkFndTarget" style="top:68px"></div>
+          <div class="drag-handle" id="dragRes" style="top:24px" title="Drag to set the investor reservation point"></div>
+        </div>
+        <div class="legend">
+          <span class="key"><span class="sw" style="background:var(--investor)"></span>Investor settlement range</span>
+          <span class="key"><span class="sw" style="background:var(--founder)"></span>Founder settlement range (est.)</span>
+          <span class="key"><span class="sw" style="background:var(--zopa)"></span>ZOPA</span>
+        </div>
+        <div class="zopa-note" id="zopaNote">
+          Estimated ZOPA: <strong>$10M–$12M</strong> · confidence <strong>low</strong> — founder range inferred from deck ask, not yet tested.
+        </div>
+      </div>
+
+      <table class="model-table">
+        <tr><th></th><th>BATNA</th><th>Reservation</th><th>Target</th></tr>
+        <tr><td>Investor</td><td>OPP-2026-0008</td><td id="invResCell">$12M</td><td id="invTargetCell">$9M</td></tr>
+        <tr><td>Founders</td><td>Soft circle + bootstrap</td><td id="fndResCell">unknown</td><td id="fndTargetCell">~$12M</td></tr>
+      </table>
+
+      <div class="levers" id="levers">
+        <span class="lever">valuation</span>
+        <span class="lever">check size</span>
+        <span class="lever">pro-rata</span>
+        <span class="lever" data-l="speed">closing speed</span>
+        <span class="lever">board rights</span>
+        <span class="lever">milestones</span>
+      </div>
+
+      <ul class="updates" id="updates"></ul>
+    </div>
+  </div>
+</main>
+
+<footer>laura/frontend — VibeCheck hackathon demo · data from sun/opportunity-card-example.md (Acme Robotics, fictional)</footer>
+
+<div id="tip"></div>
+
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+<div class="sheet" id="approvalSheet" role="dialog" aria-label="Decision ready">
+  <h3>Decision ready — Acme Robotics</h3>
+  <div class="rec">Recommend: <strong id="sheetRec">$100K SAFE at $9M cap, full pro-rata</strong></div>
+  <div class="axis-chips">
+    <span class="chip">Founder: Strong · 60</span>
+    <span class="chip">Market: Bullish · 55</span>
+    <span class="chip">Idea: Promising · 50</span>
+    <span class="chip">Model confidence · 62</span>
+  </div>
+  <div class="blockers">Open blocker: GAP-002 model IP assignment — terms are conditional until resolved.</div>
+  <div class="sheet-actions">
+    <button class="ctl primary" id="btnApprove">Approve &amp; draft term sheet</button>
+    <button class="ctl" id="btnSendBack">Send back to diligence</button>
+  </div>
+</div>
+
+<script>
+  /* ---------- theme: follow OS until the user chooses, then persist ---------- */
+  (function () {
+    const root = document.documentElement;
+    const saved = localStorage.getItem("vibecheck-theme");
+    if (saved === "light" || saved === "dark") root.dataset.theme = saved;
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      const osDark = matchMedia("(prefers-color-scheme: dark)").matches;
+      const current = root.dataset.theme || (osDark ? "dark" : "light");
+      const next = current === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      localStorage.setItem("vibecheck-theme", next);
+    });
+  })();
+
+  /* ---------- ZOPA chart scale: $6M .. $14M ---------- */
+  const AXIS = { min: 6, max: 14 };
+  const pct = v => ((v - AXIS.min) / (AXIS.max - AXIS.min)) * 100;
+
+  const gridEl = document.getElementById("gridlines");
+  const axEl = document.getElementById("axisLabels");
+  for (let v = AXIS.min; v <= AXIS.max; v += 2) {
+    const g = document.createElement("i");
+    g.style.left = pct(v) + "%";
+    gridEl.appendChild(g);
+    const s = document.createElement("span");
+    s.style.left = pct(v) + "%";
+    s.textContent = "$" + v + "M";
+    axEl.appendChild(s);
+  }
+
+  const bands = {
+    investor: document.getElementById("bandInvestor"),
+    zopa: document.getElementById("bandZopa"),
+    founder: document.getElementById("bandFounder"),
+  };
+  const markers = {
+    inv: document.getElementById("mkInvTarget"),
+    fnd: document.getElementById("mkFndTarget"),
+  };
+
+  function setBand(el, lo, hi) {
+    el.style.left = pct(lo) + "%";
+    el.style.width = Math.max(pct(hi) - pct(lo), 0) + "%";
+    el.style.display = hi > lo ? "block" : "none";
+    el.dataset.lo = lo; el.dataset.hi = hi;
+  }
+  function setModel(m) {
+    setBand(bands.investor, m.inv[0], m.inv[1]);
+    setBand(bands.founder, m.fnd[0], m.fnd[1]);
+    const lo = Math.max(m.inv[0], m.fnd[0]), hi = Math.min(m.inv[1], m.fnd[1]);
+    setBand(bands.zopa, lo, hi);
+    markers.inv.style.left = pct(m.invTarget) + "%";
+    markers.fnd.style.left = pct(m.fndTarget) + "%";
+    markers.inv.dataset.v = m.invTarget; markers.fnd.dataset.v = m.fndTarget;
+    document.getElementById("dragRes").style.left = pct(m.inv[1]) + "%";
+  }
+
+  /* initial model — investor $8–12M (target $9M); founders inferred $10–14M (target $12M) */
+  const M0 = { inv: [8, 12], fnd: [10, 14], invTarget: 9, fndTarget: 12 };
+  let M = structuredClone(M0);
+  function applyModel(m) { M = structuredClone(m); setModel(M); }
+  setModel(M);
+
+  /* ---------- tooltip ---------- */
+  const tip = document.getElementById("tip");
+  const tipText = {
+    bandInvestor: () => `<b>Investor settlement range</b>$${bands.investor.dataset.lo}M opening → $${bands.investor.dataset.hi}M reservation point. Beyond it, the BATNA (OPP-2026-0008) wins.`,
+    bandFounder: () => `<b>Founder settlement range (estimated)</b>$${bands.founder.dataset.lo}M–$${bands.founder.dataset.hi}M. Inferred, updated live from interview signals.`,
+    bandZopa: () => `<b>Zone of possible agreement</b>$${bands.zopa.dataset.lo}M–$${bands.zopa.dataset.hi}M — where both settlement ranges overlap.`,
+    mkInvTarget: () => `<b>Investor target</b>$${markers.inv.dataset.v}M pre-money (~8% ownership per THESIS-001).`,
+    mkFndTarget: () => `<b>Founder likely target</b>$${markers.fnd.dataset.v}M pre-money, from deck ask and interview signals.`,
+  };
+  for (const id of Object.keys(tipText)) {
+    const el = document.getElementById(id);
+    el.addEventListener("mousemove", e => {
+      tip.innerHTML = tipText[id]();
+      tip.style.display = "block";
+      tip.style.left = Math.min(e.clientX + 14, innerWidth - 280) + "px";
+      tip.style.top = (e.clientY + 14) + "px";
+    });
+    el.addEventListener("mouseleave", () => { tip.style.display = "none"; });
+  }
+
+  /* ---------- meters & readouts (values tick, never jump) ---------- */
+  const meterAnims = new Map();
+  function meter(id, v) {
+    document.getElementById("m" + id).style.width = v + "%";
+    const el = document.getElementById("v" + id);
+    const from = Number(el.textContent) || 0;
+    if (Math.abs(v - from) <= 2) { el.textContent = v; return; }
+    cancelAnimationFrame(meterAnims.get(id));
+    const t0 = performance.now(), dur = 450;
+    (function tick(now) {
+      const k = Math.min(1, (now - t0) / dur);
+      el.textContent = Math.round(from + (v - from) * (1 - Math.pow(1 - k, 3)));
+      if (k < 1) meterAnims.set(id, requestAnimationFrame(tick));
+    })(t0);
+  }
+  function readout(who, txt) { document.getElementById("read" + who).textContent = txt; }
+  function fits(ff, fi, d1, d2) {
+    document.getElementById("ffFit").textContent = ff;
+    document.getElementById("fiFit").textContent = fi;
+    document.getElementById("ffDelta").textContent = d1 || "";
+    document.getElementById("fiDelta").textContent = d2 || "";
+  }
+
+  /* ---------- pipeline stepper (sun/system-architecture.md "Conceptual pipeline") ---------- */
+  const stageData = [
+    { name: "1. Sourcing — gather information about each funding opportunity",
+      input: "Pitch deck, emails, intake forms, CVs, LinkedIn profiles, social media, GitHub repos",
+      output: "1000s of Opportunity Cards with basic info about founders and their ideas",
+      how: "AI agents handle input, do web browsing, and collect facts" },
+    { name: "2. Developing — assess opportunities with agentic research",
+      input: "Investment thesis, historic data set, reference/background checks",
+      output: "Opportunity Cards augmented with negotiation notes, with a draft term sheet for the human VC to sign off",
+      how: "AI research agents running in a loop, applying the investment thesis to assess each opportunity and prioritize which to pursue" },
+    { name: "3. Matching — finalizing the term sheet with live interviews",
+      input: "Founder responses, negotiation notes",
+      output: "Decision to issue the final term sheet, or decline",
+      how: "AI interview agents conduct a live interview with founders, updating the term sheet on the fly" },
+  ];
+  const stepEls = Array.from(document.querySelectorAll("#steps .step"));
+  const stageDetail = document.getElementById("stageDetail");
+  let openStage = -1;
+  function setPipeline(doneCount, activeIdx) {
+    stepEls.forEach((el, i) => {
+      el.classList.toggle("done", i < doneCount);
+      el.classList.toggle("active", i === activeIdx);
+      const n = el.querySelector(".n");
+      n.textContent = i < doneCount ? "✓" : String(i + 1);
+    });
+  }
+  function toggleStage(i) {
+    openStage = openStage === i ? -1 : i;
+    stepEls.forEach((el, j) => el.classList.toggle("open", j === openStage));
+    if (openStage < 0) { stageDetail.classList.remove("open"); return; }
+    const s = stageData[openStage];
+    stageDetail.innerHTML =
+      `<b>${s.name}</b>` +
+      `<div class="sd-row"><span class="k">Input</span>${s.input}</div>` +
+      `<div class="sd-row"><span class="k">Output</span>${s.output}</div>` +
+      `<div class="sd-row"><span class="k">How</span>${s.how}</div>`;
+    stageDetail.classList.add("open");
+  }
+  stepEls.forEach((el, i) => el.addEventListener("click", () => toggleStage(i)));
+  setPipeline(2, 2); /* default: sourcing + developing done, matching (interview) running */
+
+  /* ---------- real camera + mic on either founder tile ---------- */
+  const camSeats = {
+    ada:  { video: document.getElementById("camAda"),
+            tile: document.querySelector('.tile[data-p="ada"]'),  meterId: "AdaTone" },
+    minh: { video: document.getElementById("camMinh"),
+            tile: document.querySelector('.tile[data-p="minh"]'), meterId: "MinhTone" },
+  };
+  for (const seat of Object.values(camSeats)) seat.bars = seat.tile.querySelectorAll(".wave i");
+  let camStream = null, audioCtx = null, camRaf = 0, camSeat = null;
+
+  async function enableCamera(name) {
+    try {
+      camStream = await navigator.mediaDevices.getUserMedia({ video: { width: 960 }, audio: true });
+    } catch (err) {
+      document.getElementById("ctlNote").textContent = "Camera unavailable (" + err.name + ") — running simulated feed instead.";
+      return;
+    }
+    camSeat = name;
+    const seat = camSeats[name];
+    seat.video.srcObject = camStream;
+    seat.tile.classList.add("cam-on");
+    seat.tile.querySelector(".cam-btn").textContent = "Stop";
+
+    /* live audio level → waveform + Energy/tone meter + speaking outline */
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = audioCtx.createMediaStreamSource(camStream);
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    src.connect(analyser);
+    const bins = new Uint8Array(analyser.frequencyBinCount);
+    let smooth = 0;
+    (function loop() {
+      analyser.getByteFrequencyData(bins);
+      let sum = 0;
+      for (let i = 0; i < bins.length; i++) sum += bins[i];
+      const level = Math.min(100, Math.round((sum / bins.length) / 1.4));
+      smooth = smooth * 0.9 + level * 0.1;
+      seat.bars.forEach((b, i) => {
+        const bin = bins[4 + i * 8] || 0;
+        b.style.height = Math.max(3, Math.round(bin / 255 * 12)) + "px";
+      });
+      meter(seat.meterId, Math.round(smooth));
+      seat.tile.classList.toggle("speaking", level > 22);
+      camRaf = requestAnimationFrame(loop);
+    })();
+  }
+  function disableCamera() {
+    if (!camSeat) return;
+    const seat = camSeats[camSeat];
+    if (camStream) camStream.getTracks().forEach(t => t.stop());
+    if (audioCtx) audioCtx.close();
+    cancelAnimationFrame(camRaf);
+    camStream = null; audioCtx = null; camSeat = null;
+    seat.video.srcObject = null;
+    seat.tile.classList.remove("cam-on", "speaking");
+    seat.bars.forEach(b => { b.style.height = ""; });
+    seat.tile.querySelector(".cam-btn").textContent = "Cam";
+  }
+  document.querySelectorAll(".cam-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const target = btn.dataset.cam;
+      if (camSeat === target) { disableCamera(); return; }
+      disableCamera();          /* move the camera between seats */
+      enableCamera(target);
+    });
+  });
+
+  /* ---------- scripted demo timeline (full pipeline, then the call) ---------- */
+  const script = [
+    /* pre-roll: Sun's workflow steps 1-6 before the interview */
+    { t: 0.5, who: "System", tile: null, evt: true, txt: "Intake: application, deck, and CVs imported as SRC-001…SRC-005. Opportunity card OPP-2026-0001 created.",
+      fx: () => { setPipeline(1, 1); const p = document.getElementById("statusPill"); p.textContent = "Research"; } },
+    { t: 4, who: "System", tile: null, evt: true, txt: "Research agent enriched the card: 14 claims, contradiction CON-001 ($120K vs $80K ARR), gaps GAP-002/003/004, hypotheses HYP-001/002 for the interview.",
+      fx: () => setPipeline(1, 1) },
+    { t: 7.5, who: "System", tile: null, evt: true, txt: "Human investor approved the interview plan and negotiation bounds (reservation $12M, target $9M). Call starting.",
+      fx: () => { setPipeline(2, 2); const p = document.getElementById("statusPill"); p.textContent = "Interviewing"; } },
+    /* the live call */
+    { t: 10.5, who: "Agent", tile: "agent", txt: "Ada, Minh — thanks for joining. Let's start with the two pilot deployments. What changed between the first and the second?" },
+    { t: 14.5, who: "Ada", tile: "ada", txt: "The first took nine days on site. We rebuilt the demonstration capture flow, and the second was live in under two days.",
+      fx: () => { meter("AdaSent", 78); meter("AdaTone", 72); meter("AdaConf", 80); readout("Ada", "Engaged"); fits("–", "–"); } },
+    { t: 19, who: "Agent", tile: "agent", evt: true, txt: "HYP-001 (learning velocity) → supported. Card updated [INT-001 00:41].",
+      fx: () => upd("00:41", "HYP-001 supported — deployment time cut 9d → 2d, evidence logged.") },
+    { t: 22.5, who: "Agent", tile: "agent", txt: "Your deck states $120K ARR, but the application says $80K. Help me reconcile those." },
+    { t: 26.5, who: "Minh", tile: "minh", txt: "The $120K includes the second pilot that's signed but starts billing next quarter. Contracted today is $80K.",
+      fx: () => { meter("MinhSent", 62); meter("MinhTone", 55); meter("MinhConf", 68); readout("Minh", "Composed"); } },
+    { t: 31, who: "Agent", tile: "agent", evt: true, txt: "CON-001 → resolving. Verified ARR $80K; $120K is contracted-forward. Valuation target held at $9M.",
+      fx: () => upd("01:22", "CON-001 resolving — ARR clarified; request revenue export to verify.") },
+    { t: 35, who: "Agent", tile: "agent", txt: "What matters more to you in this round — valuation, or speed to close?" },
+    { t: 39, who: "Ada", tile: "ada", txt: "Honestly? Speed. We have two warehouses waiting and want to be deploying by September.",
+      fx: () => {
+        meter("AdaSent", 84); meter("AdaTone", 86); meter("AdaConf", 85); readout("Ada", "Animated");
+        document.querySelector('[data-l="speed"]').classList.add("hot");
+        applyModel({ inv: [8, 12], fnd: [9, 13], invTarget: 9, fndTarget: 12 });
+        document.getElementById("fndResCell").textContent = "≈$9M (est.)";
+        document.getElementById("zopaNote").innerHTML = "Estimated ZOPA: <strong>$9M–$12M</strong> · confidence <strong>medium</strong> — closing speed is a high-value founder lever.";
+        upd("02:04", "Speed > price signal — founder range re-estimated $9M–$13M; ZOPA widens to $9M–$12M.");
+        fits("82", "74", "▲ 4 this session", "▲ 6 this session");
+      } },
+    { t: 44.5, who: "Agent", tile: "agent", txt: "If we closed in ten days at a $9M cap with full pro-rata, is that a conversation you'd want to have?" },
+    { t: 49, who: "Minh", tile: "minh", txt: "Ten days is… fast. We'd need our counsel to confirm the IP assignment timeline first.",
+      fx: () => { meter("MinhSent", 48); meter("MinhTone", 42); meter("MinhConf", 55); readout("Minh", "Hesitant");
+        upd("02:47", "Hesitation on speed from CTO — IP assignment (GAP-002) confirmed as a real blocker, not a bluff."); } },
+    { t: 54, who: "Ada", tile: "ada", txt: "At nine million with full pro-rata — yes, that's a conversation we want to have.",
+      fx: () => { meter("AdaSent", 88); meter("AdaTone", 82); meter("AdaConf", 88); readout("Ada", "Engaged"); } },
+    { t: 58.5, who: "Agent", tile: "agent", evt: true, txt: "Recommendation → proceed to term sheet at $9M cap, conditional on GAP-002. Escalating to human investor for approval.",
+      fx: () => {
+        upd("03:15", "Recommendation: $100K SAFE at $9M cap, full pro-rata — pending human approval and IP diligence.");
+        setPipeline(3, -1);
+        const p = document.getElementById("statusPill");
+        p.textContent = "Decision ready"; p.classList.remove("live"); p.style.color = "var(--accent-warm-text)";
+        showSheet();
+      } },
+  ];
+
+  const trEl = document.getElementById("transcript");
+  const upEl = document.getElementById("updates");
+  let timers = [];
+
+  function upd(t, txt) {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="t">${t}</span>${txt}`;
+    upEl.appendChild(li);
+    requestAnimationFrame(() => requestAnimationFrame(() => li.classList.add("shown")));
+  }
+  function speak(tileName) {
+    document.querySelectorAll(".tile").forEach(t => t.classList.remove("speaking"));
+    if (tileName) document.querySelector(`.tile[data-p="${tileName}"]`)?.classList.add("speaking");
+  }
+  function fmt(t) {
+    const m = String(Math.floor(t / 60)).padStart(2, "0");
+    const s = String(Math.floor(t % 60)).padStart(2, "0");
+    return m + ":" + s;
+  }
+
+  function play() {
+    reset();
+    script.forEach(step => {
+      timers.push(setTimeout(() => {
+        const line = document.createElement("div");
+        line.className = "line" + (step.evt ? " evt" : "");
+        line.innerHTML = `<span class="t">${fmt(step.t * 4)}</span><span class="who">${step.who}</span><span class="txt">${step.txt}</span>`;
+        trEl.appendChild(line);
+        requestAnimationFrame(() => requestAnimationFrame(() => line.classList.add("shown")));
+        trEl.scrollTop = trEl.scrollHeight;
+        speak(step.tile);
+        if (step.fx) step.fx();
+      }, step.t * 1000));
+    });
+    timers.push(setTimeout(() => speak(null), (script[script.length - 1].t + 4) * 1000));
+  }
+
+  function reset() {
+    timers.forEach(clearTimeout); timers = [];
+    trEl.innerHTML = ""; upEl.innerHTML = "";
+    speak(null);
+    ["AdaSent", "AdaTone", "AdaConf", "MinhSent", "MinhTone", "MinhConf"].forEach(id => {
+      document.getElementById("m" + id).style.width = "0%";
+      document.getElementById("v" + id).textContent = "–";
+    });
+    readout("Ada", "Neutral"); readout("Minh", "Neutral");
+    fits("–", "–");
+    applyModel(M0);
+    hideSheet();
+    document.getElementById("invResCell").textContent = "$12M";
+    document.getElementById("fndResCell").textContent = "unknown";
+    document.getElementById("zopaNote").innerHTML = "Estimated ZOPA: <strong>$10M–$12M</strong> · confidence <strong>low</strong> — founder range inferred from deck ask, not yet tested.";
+    document.querySelector('[data-l="speed"]').classList.remove("hot");
+    setPipeline(2, 2);
+    const p = document.getElementById("statusPill");
+    p.textContent = "Interviewing"; p.classList.add("live"); p.style.color = "";
+  }
+
+  document.getElementById("btnPlay").addEventListener("click", play);
+  document.getElementById("btnReset").addEventListener("click", reset);
+
+  /* ---------- inbox ↔ studio views ---------- */
+  const inboxView = document.getElementById("inboxView");
+  const studioView = document.getElementById("studioView");
+  const btnBack = document.getElementById("btnBack");
+  function openStudio() {
+    inboxView.classList.add("view-hidden");
+    studioView.classList.remove("view-hidden");
+    btnBack.style.display = "";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  function openInbox() {
+    studioView.classList.add("view-hidden");
+    inboxView.classList.remove("view-hidden");
+    btnBack.style.display = "none";
+  }
+  document.getElementById("cardAcme").addEventListener("click", openStudio);
+  btnBack.addEventListener("click", openInbox);
+
+  /* ---------- real portfolio (laura/opportunity-db) ---------- */
+  /* Fallback snapshot for file:// use; live mode re-fetches index.json. */
+  const DB_FALLBACK = { opportunities: [
+    { id: "OPP-MGV-0001", company: "Secfix", sector: "security compliance automation", location: "Berlin/Munich, DE",
+      event: "$12M Series A · led by ALSTIN Capital · 2026-02-25", verified: true, card: "OPP-MGV-0001-secfix.md",
+      founders: [["Fabiola Munguia", "CEO"], ["Grigory Emelianov", "co-founder"]],
+      interview: { url: "https://www.youtube.com/watch?v=k_Rkq40O3kU", note: "Founders Talk, Founders Foundation (2021)" } },
+    { id: "OPP-MGV-0002", company: "deskbird", sector: "hybrid workplace management", location: "St. Gallen, CH",
+      event: "$13M Series A · ALSTIN + AXA VP · 2023-09-06 (Series B $23M, 2025)", verified: true, card: "OPP-MGV-0002-deskbird.md",
+      founders: [["Ivan Cossu", "CEO"], ["Jonas Hess", "co-founder"]],
+      interview: { url: "https://www.youtube.com/watch?v=Flx_ZmOau68", note: "#164 Flexibles Desk Booking mit Ivan Cossu (2024)" } },
+    { id: "OPP-MGV-0003", company: "VoiceLine", sector: "voice AI for enterprise frontline", location: "Munich, DE",
+      event: "€10M Series A · led by ALSTIN + Peak · 2026-02-24", verified: true, card: "OPP-MGV-0003-voiceline.md",
+      founders: [["Dr. Nicolas Höflinger", "CEO"], ["Sebastian Pinkas", "CTO"]], interview: { locked: true } },
+    { id: "OPP-MGV-0004", company: "Timefold", sector: "scheduling optimization", location: "Ghent, BE",
+      event: "$13M Series A · led by Alstin Capital · 2026-06-23", verified: true, card: "OPP-MGV-0004-timefold.md",
+      founders: [["Maarten Vandenbroucke", "CEO"], ["Geoffrey De Smet", "co-founder"]], interview: { locked: true } },
+    { id: "OPP-MGV-0005", company: "Climatiq", sector: "carbon intelligence API", location: "Berlin, DE",
+      event: "€10M Series A · led by ALSTIN Capital · 2025-06-25", verified: true, card: "OPP-MGV-0005-climatiq.md",
+      founders: [["Hessam Lavi", "CEO"], ["Philipp von Bieberstein", "CRO"], ["Isis T. Baulig", "CTO"]], interview: { locked: true } },
+    { id: "OPP-MGV-0006", company: "Pliant", sector: "corporate cards / spend management", location: "Berlin, DE",
+      event: "$28M Series A · ALSTIN participating · 2023-02-17 (ext. €33M 2024; Series B $40M 2025)", verified: true, card: "OPP-MGV-0006-pliant.md",
+      founders: [["Malte Rau", "CEO"], ["Fabian Terner", "CPO"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0101", company: "Observe.AI", vehicle: "MGV.VC", sector: "sales and marketing", year: 2018, status: "active",
+      event: "$125M Series C; $213M total disclosed (2022)", verified: true, card: "OPP-MGV-US-0101-observe-ai.md", website: "https://observe.ai/", founders: [["Swapnil Jain", "CEO & Co-Founder"], ["Jithendra Vepa", "CTO & Co-Founder"], ["Akash Singh", "co-founder"], ["Sharath Keshava Narayana", "co-founder"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0102", company: "Modern Health", vehicle: "MGV.VC", sector: "healthcare", year: 2018, status: "active",
+      event: "$74M Series D; $1.17B valuation (2021)", verified: true, card: "OPP-MGV-US-0102-modern-health.md", website: "https://www.modernhealth.com/", founders: [["Alyson Watson", "Founder and Executive Chair"], ["Erica Johnson", "co-founder"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0103", company: "Origin", vehicle: "MGV.VC", sector: "finance and insurance", year: 2019, status: "active",
+      event: "$56M Series B at $400M valuation (2021)", verified: true, card: "OPP-MGV-US-0103-origin.md", website: "https://useorigin.com/", founders: [["Matt Watson", "Founder & CEO"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0104", company: "Prodigal", vehicle: "MGV.VC", sector: "finance and insurance", year: 2018, status: "active",
+      event: "$12M Series A (2021); MGV participated", verified: true, card: "OPP-MGV-US-0104-prodigal.md", website: "https://www.prodigaltech.com/", founders: [["Shantanu Gangal", "CEO & Co-Founder"], ["Sangram Raje", "CTO & Co-Founder"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0105", company: "Ascend", vehicle: "MGV.VC", sector: "finance and insurance", year: 2021, status: "active",
+      event: "$30M Series A + $250M lending commitment (2022)", verified: true, card: "OPP-MGV-US-0105-ascend.md", website: "https://www.useascend.com/", founders: [["Andrew Wynn", "Co-Founder & Co-CEO"], ["Praveen Chekuri", "Co-Founder & Co-CEO"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0106", company: "Authentic Insurance", vehicle: "MGV.VC", sector: "finance and insurance", year: 2022, status: "active",
+      event: "$11M Series A (2024)", verified: true, card: "OPP-MGV-US-0106-authentic-insurance.md", website: "https://www.authenticinsurance.com/", founders: [["Cole Riccardi", "CEO & Cofounder"], ["Kyle Babirad", "COO & Cofounder"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0107", company: "Attention", vehicle: "MGV.VC", sector: "sales and marketing", year: 2022, status: "active",
+      event: "$30M Series B · 2026-06-23", verified: true, card: "OPP-MGV-US-0107-attention.md", website: "https://www.attention.com/", founders: [["Anis Bennaceur", "Co-Founder & CEO"], ["Matthias Wickenburg", "Co-Founder & CTO"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0108", company: "District Cover", vehicle: "MGV.VC", sector: "finance and insurance", year: 2022, status: "active",
+      event: ">$7M raised in 2024", verified: true, card: "OPP-MGV-US-0108-district-cover.md", website: "https://districtcover.com/", founders: [["Patrick Girouard", "Founder and Chief Executive Officer"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0109", company: "Buildstock", vehicle: "MGV.VC", sector: "property and real estate", year: 2022, status: "active",
+      event: "$1.6M pre-seed (2024); MGV participated", verified: true, card: "OPP-MGV-US-0109-buildstock.md", website: "https://buildstock.com/", founders: [["Kathryn Thiele", "Founder & CEO"], ["Wilson Kriegel", "co-founder"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0110", company: "Salut", vehicle: "MGV.VC", sector: "healthcare", year: 2020, status: "unclear",
+      event: "$1.25M financing (2020)", verified: true, card: "OPP-MGV-US-0110-salut.md", website: "https://joinsalut.com/", founders: [["Matthew DiPietro", "Founder"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0111", company: "OfficeTogether", vehicle: "MGV.VC", sector: "human resources", year: 2020, status: "acquired",
+      event: "$2.2M seed; acquired by Envoy 2022", verified: true, card: "OPP-MGV-US-0111-officetogether.md", founders: [["Amy Yin", "CEO and Founder"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0112", company: "Downstream", vehicle: "MGV.VC", sector: "sales and marketing", year: 2019, status: "acquired",
+      event: "Acquired by Jungle Scout, March 2021", verified: true, card: "OPP-MGV-US-0112-downstream.md", founders: [["Connor Folley", "Co-Founder & CEO"], ["Salim Hamed", "Co-Founder & CTO"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0113", company: "HeyDoctor", vehicle: "MGV.VC", sector: "healthcare", year: 2018, status: "acquired",
+      event: "Acquired by GoodRx 2019 for $14.3M cash", verified: true, card: "OPP-MGV-US-0113-heydoctor.md", website: "https://www.goodrx.com/care", founders: [["Brendan Levy", "Founder/CEO"], ["Kyle Alwyn", "Founder/Chief Technical Officer"], ["Rohit Malhotra", "Founder"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0114", company: "Buzzle.ai", vehicle: "MGV.VC", sector: "sales and marketing", year: 2021, status: "inactive",
+      event: "YC marks the company inactive", verified: true, card: "OPP-MGV-US-0114-buzzle-ai.md", founders: [["Bhairav Mehta", "Founder"], ["Adithya Ramanathan", "Founder"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0115", company: "Aviary Health", vehicle: "MGV.VC", sector: "healthcare", year: 2020, status: "active",
+      event: "Recora rebranded to Aviary Health, 2026-04", verified: true, card: "OPP-MGV-US-0115-aviary-health.md", website: "https://www.aviaryhealth.com/", founders: [["Abhi Chandra", "Co-Founder & CEO"], ["Ed Wu, MD", "Co-Founder & COO"], ["Vivek Vishwanath", "Co-Founder & CGO"]], interview: { locked: true } },
+    { id: "OPP-MGV-US-0116", company: "Globe", vehicle: "MGV.VC", sector: "property and real estate", year: 2019, status: "unclear",
+      event: "Predecessor Recharge raised ~$10M; regulatory pressure 2020", verified: true, card: "OPP-MGV-US-0116-globe.md", website: "https://globeliving.com/", founders: [["Manny (Emmanuel) Bamfo", "co-founder"], ["Erix Xu", "co-founder"], ["Will Johnson", "Recharge co-founder"], ["Christopher Lo", "Recharge co-founder"]], interview: { locked: true } },
+  ] };
+
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const dbBase = () => (location.protocol.startsWith("http") ? "/opportunity-db/" : "../opportunity-db/");
+  const linkedinUrl = (name, company) =>
+    "https://www.linkedin.com/search/results/all/?keywords=" + encodeURIComponent(name + " " + company);
+  const founderInitials = (name) => name
+    .replace(/\([^)]*\)/g, "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+  const founderPills = (founders, company) => founders.length ? `
+    <div class="founder-strip">
+      ${founders.map(([name, role]) => `
+        <span class="founder-mini founder-initials" title="${esc(name + " - " + role)}">
+          <span class="founder-avatar-text">${esc(founderInitials(name))}</span>
+          <span>${esc(name.split(" ")[0])}</span>
+        </span>`).join("")}
+    </div>` : "";
+
+  /* Normalize a full index.json entry to the render shape used above. */
+  function normalizeOpp(o) {
+    const ev = o.realEvent ?? {};
+    const amount = ev.amountUsd ? "$" + Math.round(ev.amountUsd / 1e6) + "M"
+      : ev.amountEur ? "€" + Math.round(ev.amountEur / 1e6) + "M" : "";
+    const lead = (ev.lead ?? []).join(" + ");
+    const event = ev.description ?? [amount, ev.type?.replace(/_/g, " "), lead && "led by " + lead, ev.announced]
+      .filter(Boolean).join(" · ");
+    return {
+      id: o.id, company: o.company, sector: o.sector, location: o.location,
+      vehicle: o.investmentVehicle, year: o.portfolioYear, status: o.companyStatus,
+      event, verified: !!ev.verified, card: o.card, website: o.website,
+      founders: (o.founders ?? []).map((f) => [f.name, f.role ?? ""]),
+      interview: o.interview?.public ? { url: o.interview.url, note: o.interview.note } : { locked: true },
+    };
+  }
+
+  function renderPortfolio(opps) {
+    const eu = opps.filter((o) => !o.vehicle);
+    const us = opps.filter((o) => o.vehicle === "MGV.VC");
+    const grid = (list) => list.map((o, i) => `
+      <button class="opp-card" data-opp="${esc(o.id)}">
+        <div class="oc-top"><span class="oc-id">${esc(o.id)}</span>
+          <span class="oc-status ${esc(o.status ?? "")}">${esc(o.status ?? "invested")}</span></div>
+        <h3><img class="oc-logo" src="${dbBase()}assets/${esc(o.card.replace(/\.md$/, ""))}/logo.png"
+          alt="" onerror="this.style.display='none'">${esc(o.company)}</h3>
+        <p>${esc(o.sector)}${o.location ? " · " + esc(o.location) : ""}</p>
+        <div class="axis-chips">
+          <span class="chip">${o.interview.locked ? "🔒 interview confidential" : "▶ public interview"}</span>
+          ${o.founders.length ? `<span class="chip">${o.founders.length} founder${o.founders.length > 1 ? "s" : ""}</span>` : ""}
+        </div>
+        ${founderPills(o.founders, o.company)}
+        <div class="oc-meta"><span>${esc(o.event)}</span></div>
+      </button>`).join("");
+    document.getElementById("euGrid").innerHTML = grid(eu);
+    document.getElementById("usGrid").innerHTML = grid(us);
+    const byId = Object.fromEntries(opps.map((o) => [o.id, o]));
+    document.querySelectorAll("[data-opp]").forEach((el) =>
+      el.addEventListener("click", () => openDetail(byId[el.dataset.opp])));
+  }
+
+  const detailModal = document.getElementById("detailModal");
+  const detailBackdrop = document.getElementById("detailBackdrop");
+  /* Synthetic cohort: fictional people, so full data and scores are shown. */
+  function renderSynthetic(opps) {
+    const grid = document.getElementById("synGrid");
+    grid.innerHTML = opps.map((o) => `
+      <button class="opp-card" data-syn="${esc(o.id)}">
+        <div class="oc-top"><span class="oc-id">${esc(o.id)}</span>
+          <span class="oc-status">${esc(o.status)}</span></div>
+        <h3><img class="oc-logo" src="${dbBase()}synthetic/${esc(o.logo ?? "")}"
+          alt="" onerror="this.style.display='none'">${esc(o.company)}</h3>
+        <p>${esc(o.oneLiner)}</p>
+        <div class="axis-chips">
+          <span class="chip">SYNTHETIC</span>
+          <span class="chip">full data · scored</span>
+          <span class="chip">${o.founders.length} founders</span>
+        </div>
+        <div class="founder-strip">
+          ${o.founders.map((f) => `
+            <span class="founder-mini" title="${esc(f.name + " - " + f.role)}">
+              <img src="${dbBase()}synthetic/${esc(f.avatar ?? "")}" alt=""
+                onerror="this.style.display='none'">
+              <span>${esc(f.name.split(" ")[0])}</span>
+            </span>`).join("")}
+        </div>
+        <div class="oc-meta"><span>${esc(o.stage)} · ${esc(o.location)} · asking $${(o.raiseUsd / 1e6).toFixed(1)}M</span></div>
+      </button>`).join("");
+    const byId = Object.fromEntries(opps.map((o) => [o.id, o]));
+    grid.querySelectorAll("[data-syn]").forEach((el) =>
+      el.addEventListener("click", () => openDetail({
+        ...byId[el.dataset.syn],
+        card: "synthetic/" + byId[el.dataset.syn].card,
+        event: `${byId[el.dataset.syn].stage} · asking $${(byId[el.dataset.syn].raiseUsd / 1e6).toFixed(1)}M · status ${byId[el.dataset.syn].status}`,
+      })));
+  }
+  if (location.protocol.startsWith("http")) {
+    fetch("/opportunity-db/synthetic/index.json")
+      .then((r) => r.json())
+      .then((db) => renderSynthetic(db.opportunities))
+      .catch(() => {});
+  } else {
+    document.getElementById("synGrid").innerHTML =
+      `<div class="opp-card disabled" style="cursor:default"><p>Run <b>node serve.js</b> and open
+       localhost:4173 to load the synthetic cohort (generated by pipeline/generate-fixtures.js).</p></div>`;
+  }
+
+  function openDetail(o) {
+    if (!o) return;
+    if (o.synthetic) { openSyntheticDetail(o); return; }
+    const founders = o.founders.length
+      ? o.founders.map(([name, role]) => `
+          <div class="fdr-row"><b>${esc(name)}</b><span class="role">${esc(role)}</span>
+            <span class="na">not assessed</span>
+            <a href="${linkedinUrl(name, o.company)}" target="_blank" rel="noopener">LinkedIn ↗ (search)</a>
+          </div>`).join("")
+      : `<div class="fdr-row"><span class="role">Founder records not yet compiled for this supplemental card.</span></div>`;
+    const interview = o.interview.locked
+      ? `<div class="lock-note">🔒 Confidential — no public founder interview found. In the live system,
+         interview evidence exists only inside consented, recorded sessions.</div>`
+      : `<div class="lock-note">▶ <a href="${esc(o.interview.url)}" target="_blank" rel="noopener">
+         ${esc(o.interview.note ?? "Public founder interview")}</a> — public material the Matching stage
+         studies before the AI interview; the investor interview itself stays 🔒 confidential.</div>`;
+    detailModal.innerHTML = `
+      <button class="ctl d-close" id="dClose">Close</button>
+      <h3><img class="d-logo" src="${dbBase()}assets/${esc(o.card.replace(/\.md$/, ""))}/logo.png"
+        alt="" onerror="this.style.display='none'">${esc(o.company)}</h3>
+      <div class="d-meta">${esc(o.id)} · ${esc(o.sector)}${o.location ? " · " + esc(o.location) : ""}${o.vehicle ? " · " + esc(o.vehicle) + " " + esc(o.year ?? "") : ""}</div>
+      <h4>Real event</h4>
+      <div class="d-event">${esc(o.event)}${o.verified ? '<span class="d-verified">✓ verified</span>' : ""}</div>
+      <h4>Founders</h4>
+      ${founders}
+      <h4>Interview</h4>
+      ${interview}
+      <h4>Official documents</h4>
+      <ul class="doc-list">
+        <li><a href="${dbBase() + esc(o.card)}" target="_blank" rel="noopener">Opportunity card (evidence ledger + full source list)</a></li>
+        ${o.website ? `<li><a href="${esc(o.website)}" target="_blank" rel="noopener">Company website</a></li>` : ""}
+      </ul>
+      <div class="d-disclaimer">Public sources only, compiled 2026-07-19. Founder evaluations are
+      intentionally not assessed — no fabricated judgments of real people. LinkedIn links are search
+      queries, not confirmed profiles.</div>`;
+    detailModal.classList.add("open");
+    detailBackdrop.classList.add("open");
+    document.getElementById("dClose").addEventListener("click", closeDetail);
+  }
+  function openSyntheticDetail(o) {
+    const founders = o.founders.map((f) => `
+      <div class="fdr-row">
+        <img class="fdr-avatar" src="${dbBase()}synthetic/${esc(f.avatar ?? "")}" alt=""
+          onerror="this.style.display='none'">
+        <b>${esc(f.name)}</b><span class="role">${esc(f.role)}</span>
+        <span class="na" style="color: var(--good); border-color: rgba(12,163,12,0.4)">scored</span></div>
+      <div class="fdr-row" style="border-top: none; padding-top: 0; font-size: 12px; color: var(--ink-2)">
+        ${esc(f.email)} · ${esc(f.phone)} · <a href="${esc(f.linkedin)}">${esc(f.linkedin.replace("https://", ""))}</a>
+      </div>
+      <div class="fdr-row" style="border-top: none; padding-top: 0">
+        <span class="chip">R ${f.scores.resilience}</span><span class="chip">A ${f.scores.autonomy}</span>
+        <span class="chip">Cu ${f.scores.curiosity}</span><span class="chip">P ${f.scores.perseverance}</span>
+        <span class="chip">Team ${f.scores.teamComplementarity}</span>
+        <span class="chip">conf ${f.scoreConfidence}/100</span>
+      </div>`).join("");
+    detailModal.innerHTML = `
+      <button class="ctl d-close" id="dClose">Close</button>
+      <h3><img class="d-logo" src="${dbBase()}synthetic/${esc(o.logo ?? "")}"
+        alt="" onerror="this.style.display='none'">${esc(o.company)}</h3>
+      <div class="d-meta">${esc(o.id)} · ${esc(o.sector)} · ${esc(o.location)} · <b style="color: var(--accent-warm-text)">SYNTHETIC</b></div>
+      <h4>Deal</h4>
+      <div class="d-event">${esc(o.event)}</div>
+      <h4>Founders — full data & sub-scores (fictional people)</h4>
+      ${founders}
+      <h4>Documents</h4>
+      <ul class="doc-list">
+        <li><a href="${dbBase() + esc(o.card)}" target="_blank" rel="noopener">Synthetic opportunity card</a></li>
+        <li><a href="${esc(o.website)}">${esc(o.website)}</a> (.example — reserved fake domain)</li>
+      </ul>
+      <div class="d-disclaimer">Generated with faker.js (seed 4242). Every person, score, email, and
+      domain here is fictional — this tier shows what the system displays when founders grant full
+      consent, which we cannot show for real people.</div>`;
+    detailModal.classList.add("open");
+    detailBackdrop.classList.add("open");
+    document.getElementById("dClose").addEventListener("click", closeDetail);
+  }
+  function closeDetail() {
+    detailModal.classList.remove("open");
+    detailBackdrop.classList.remove("open");
+  }
+  detailBackdrop.addEventListener("click", closeDetail);
+  addEventListener("keydown", (e) => { if (e.key === "Escape") closeDetail(); });
+
+  renderPortfolio(DB_FALLBACK.opportunities);
+  if (location.protocol.startsWith("http")) {
+    fetch("/opportunity-db/index.json")
+      .then((r) => r.json())
+      .then((db) => renderPortfolio(db.opportunities.map(normalizeOpp)))
+      .catch(() => {});
+  }
+
+  /* ---------- draggable investor reservation point (the human sets the bounds) ---------- */
+  const dragRes = document.getElementById("dragRes");
+  const chartEl = document.getElementById("zopaChart");
+  let dragging = false;
+  dragRes.addEventListener("pointerdown", (e) => {
+    dragging = true;
+    dragRes.classList.add("dragging");
+    dragRes.setPointerCapture(e.pointerId);
+  });
+  dragRes.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    const rect = chartEl.getBoundingClientRect();
+    let v = AXIS.min + ((e.clientX - rect.left) / rect.width) * (AXIS.max - AXIS.min);
+    v = Math.min(AXIS.max, Math.max(M.inv[0] + 0.5, Math.round(v * 2) / 2));
+    if (v !== M.inv[1]) {
+      M.inv[1] = v;
+      setModel(M);
+      document.getElementById("invResCell").textContent = "$" + v + "M";
+    }
+  });
+  dragRes.addEventListener("pointerup", () => {
+    dragging = false;
+    dragRes.classList.remove("dragging");
+    upd("live", `Human adjusted the reservation point to $${M.inv[1]}M — ZOPA recomputed; agent may not cross it.`);
+  });
+
+  /* ---------- approval sheet (the human gate) ---------- */
+  const sheet = document.getElementById("approvalSheet");
+  const sheetBackdrop = document.getElementById("sheetBackdrop");
+  function showSheet() { sheet.classList.add("open"); sheetBackdrop.classList.add("open"); }
+  function hideSheet() { sheet.classList.remove("open"); sheetBackdrop.classList.remove("open"); }
+  sheetBackdrop.addEventListener("click", hideSheet);
+  document.getElementById("btnApprove").addEventListener("click", () => {
+    hideSheet();
+    const p = document.getElementById("statusPill");
+    p.textContent = "Terms drafting"; p.style.color = "var(--good)";
+    upd("live", "Human approved — drafting TS-001, conditional on GAP-002.");
+    if (LIVE) fetch("/approve", { method: "POST" });
+  });
+  document.getElementById("btnSendBack").addEventListener("click", () => {
+    hideSheet();
+    const p = document.getElementById("statusPill");
+    p.textContent = "Diligence"; p.style.color = "";
+    upd("live", "Human sent the card back to diligence — resolve blockers first.");
+  });
+
+  /* ---------- live mode: consume the pipeline server's SSE stream ---------- */
+  const LIVE = location.protocol.startsWith("http");
+  const WHO_TILE = { Agent: "agent", Ada: "ada", Minh: "minh" };
+
+  function addLine(who, text, isEvt, tile) {
+    const line = document.createElement("div");
+    line.className = "line" + (isEvt ? " evt" : "");
+    const t = new Date().toLocaleTimeString([], { minute: "2-digit", second: "2-digit" });
+    line.innerHTML = `<span class="t">${t}</span><span class="who">${who}</span><span class="txt">${text}</span>`;
+    trEl.appendChild(line);
+    requestAnimationFrame(() => requestAnimationFrame(() => line.classList.add("shown")));
+    trEl.scrollTop = trEl.scrollHeight;
+    if (tile !== undefined) speak(tile);
+  }
+
+  function applyEvent(e) {
+    switch (e.type) {
+      case "transcript.line":
+        addLine(e.who, e.text, false, e.tile ?? WHO_TILE[e.who] ?? null);
+        break;
+      case "signal.update": {
+        const cap = e.who === "ada" ? "Ada" : "Minh";
+        meter(cap + "Sent", e.sentiment); meter(cap + "Tone", e.tone); meter(cap + "Conf", e.confidence);
+        readout(cap, e.expression[0].toUpperCase() + e.expression.slice(1));
+        break;
+      }
+      case "card.update":
+        addLine("System", `${e.ref} → ${e.state}${typeof e.trust === "number" ? ` (trust ${e.trust}/100)` : ""} — ${e.evidence ?? ""}`, true);
+        break;
+      case "evaluation.update": {
+        // Live scoring with reasons: WHY the number moved, as it happens.
+        const arrow = e.delta > 0 ? "▲" : e.delta < 0 ? "▼" : "⚑";
+        const scoreBit = e.axis === "flag" ? "FLAG" : `${e.axis} ${e.score} (${e.delta > 0 ? "+" : ""}${e.delta})`;
+        addLine("Eval", `${arrow} ${e.who} · ${scoreBit} — ${e.reason} · founder axis ${e.founderAxis}/100, signal conf ${e.signalConfidence}`, true);
+        upd("live", `${e.who}: ${scoreBit} — ${e.reason}`);
+        break;
+      }
+      case "model.update":
+        if (e.party === "founder" && e.range) M.fnd = e.range.slice();
+        setModel(M);
+        if (e.zopa) {
+          document.getElementById("zopaNote").innerHTML =
+            `Estimated ZOPA: <strong>$${e.zopa[0]}M–$${e.zopa[1]}M</strong> · confidence <strong>${e.confidence}/100</strong> — ${e.note ?? ""}`;
+        }
+        if (e.lever) {
+          const l = [...document.querySelectorAll(".lever")].find(x => x.textContent.trim() === e.lever);
+          if (l) l.classList.add("hot");
+        }
+        upd("live", e.note ?? "negotiation model updated");
+        break;
+      case "approval.update":
+        upd("live", `Approval ${e.action} (${e.gate}) by ${e.by} — reservation $${e.bounds?.reservation}M, target $${e.bounds?.target}M`);
+        break;
+      case "status.change": {
+        const p = document.getElementById("statusPill");
+        p.textContent = e.status[0].toUpperCase() + e.status.slice(1);
+        if (e.status === "research") setPipeline(1, 1);
+        if (e.status === "interview") setPipeline(2, 2);
+        if (e.status === "decision") {
+          setPipeline(3, -1);
+          p.classList.remove("live"); p.style.color = "var(--accent-warm-text)";
+          if (e.requiresHuman) {
+            if (e.recommendation) document.getElementById("sheetRec").textContent = e.recommendation;
+            showSheet();
+          }
+        }
+        if (e.status === "closed") { p.textContent = "Closed — terms drafted"; p.style.color = "var(--good)"; }
+        break;
+      }
+      case "outcome.recorded":
+        upd("live", `Outcome recorded: ${e.result}${e.termSheetRef ? ` (${e.termSheetRef})` : ""}`);
+        break;
+    }
+  }
+
+  if (LIVE) {
+    document.getElementById("btnPlay").style.display = "none";
+    document.getElementById("ctlNote").textContent =
+      "Live mode — events streamed from the pipeline server (node serve.js). Click Cam for the webcam seat.";
+    new EventSource("/events").onmessage = (msg) => applyEvent(JSON.parse(msg.data));
+  }
+</script>
+</body>
+</html>

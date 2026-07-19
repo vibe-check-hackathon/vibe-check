@@ -33,8 +33,14 @@ export function screenOpportunity(record, thesis) {
   if (roundText && !EARLY_STAGE.test(roundText) && !hardFails.length) {
     softFlags.push("stage unclear from public record — confirm during research");
   }
+  const stages = thesis.raw?.fund.stages ?? [];
+  if (/(?<!pre-)series\s+a\b/i.test(roundText) && !hardFails.length && stages.length && !stages.some((s) => /series\s*a/i.test(s))) {
+    softFlags.push(`already at Series A — beyond preferred ${stages.join("/")} entry; follow-on or fast-track only`);
+  }
   const sectorText = `${record.sector ?? ""} ${record.oneLiner ?? ""}`.toLowerCase();
-  if (thesis.sectors?.length && !thesis.sectors.some((s) => sectorText.includes(s.toLowerCase().split(" ")[0]))) {
+  // Word-boundary match: bare "ai" must not match inside "chain"/"maintenance".
+  const sectorHit = (s) => new RegExp(`\\b${s.toLowerCase().split(" ")[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(sectorText);
+  if (thesis.sectors?.length && !thesis.sectors.some(sectorHit)) {
     softFlags.push(`sector outside stated thesis (${thesis.sectors.join(", ")}) — flag for investor judgment`);
   }
 

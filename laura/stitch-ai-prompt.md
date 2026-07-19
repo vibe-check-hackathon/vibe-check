@@ -197,6 +197,9 @@ exists), and `status` values are exactly the card template's lifecycle:
 { "type": "model.update",     "party": "founder", "range": [9, 13],
   "zopa": [9, 12], "confidence": 55, "lever": "closing_speed",
   "note": "speed > price signal" }
+{ "type": "evaluation.update", "who": "Ada", "axis": "resilience", "score": 56,
+  "delta": 6, "reason": "answered the ARR challenge with specifics",
+  "founderAxis": 54, "signalConfidence": 42 }
 { "type": "approval.update",  "gate": "interview_plan", "by": "USR-001",
   "action": "approved", "bounds": { "reservation": 12, "target": 9 } }
 { "type": "status.change",    "status": "decision",
@@ -221,7 +224,7 @@ the WebSocket with a role (`investor` | `founder`). The server filters the
 stream per role — founder clients receive only `transcript.line` (their own
 session), `topic.change`, `request.item`, and founder-safe `status.change`
 payloads (status word only, no recommendation). `signal.update`, `card.update`,
-`model.update`, `approval.update`, and internal recommendation fields are
+`model.update`, `evaluation.update`, `approval.update`, and internal recommendation fields are
 **never sent to founder connections** — filtered server-side, so nothing sensitive ever reaches the
 founder's browser to be "hidden" by CSS. This also keeps the demo honest: the
 two views can run side by side on stage from the same live stream.
