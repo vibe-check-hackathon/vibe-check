@@ -9,7 +9,7 @@ source_channel: "retrospective_public_research"
 created_at: "2026-07-19T00:00:00Z"
 updated_at: "2026-07-19T00:00:00Z"
 decision_deadline: "unknown"
-founder_ids: []
+founder_ids: [FND-MGV-US-0116]
 thesis_id: "THESIS-US-ENTERPRISE"
 investment_vehicle: "MGV.VC"
 portfolio_year: 2022
@@ -37,7 +37,11 @@ funding:
 ## Founders and Team
 
 - **Founder Score snapshot:** not assessed — this research bundle does not fabricate evaluations of real people.
-- Founder-level research was outside this enrichment pass; `founder_ids` remains an empty array for deterministic parsing.
+
+### FND-MGV-US-0116 - Patrick Girouard, Founder and Chief Executive Officer
+
+- **Founder Score snapshot:** not assessed.
+- District Cover's team page lists Girouard as Founder and Chief Executive Officer [SRC-004].
 
 ## Assessment
 
@@ -60,6 +64,7 @@ funding:
 - **SRC-001:** MGV.VC portfolio — https://www.mgv.vc/portfolio
 - **SRC-002:** Coverager funding report — https://coverager.com/district-cover-raises-7-million/
 - **SRC-003:** Company website — https://districtcover.com/
+- **SRC-004:** District Cover about page — https://www.districtcover.com/about
 
 ## Interview
 

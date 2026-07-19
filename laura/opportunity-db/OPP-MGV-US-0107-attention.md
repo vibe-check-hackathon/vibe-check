@@ -9,7 +9,7 @@ source_channel: "retrospective_public_research"
 created_at: "2026-07-19T00:00:00Z"
 updated_at: "2026-07-19T00:00:00Z"
 decision_deadline: "unknown"
-founder_ids: []
+founder_ids: [FND-MGV-US-0114, FND-MGV-US-0115]
 thesis_id: "THESIS-US-ENTERPRISE"
 investment_vehicle: "MGV.VC"
 portfolio_year: 2022
@@ -37,7 +37,16 @@ funding:
 ## Founders and Team
 
 - **Founder Score snapshot:** not assessed — this research bundle does not fabricate evaluations of real people.
-- Founder-level research was outside this enrichment pass; `founder_ids` remains an empty array for deterministic parsing.
+
+### FND-MGV-US-0114 - Anis Bennaceur, Co-Founder & CEO
+
+- **Founder Score snapshot:** not assessed.
+- Attention lists Bennaceur as Co-Founder & CEO, and the Series B announcement says he co-founded the company [SRC-002][SRC-004].
+
+### FND-MGV-US-0115 - Matthias Wickenburg, Co-Founder & CTO
+
+- **Founder Score snapshot:** not assessed.
+- Attention's Series B announcement says the company was founded by Bennaceur and Wickenburg [SRC-002].
 
 ## Assessment
 
@@ -60,6 +69,7 @@ funding:
 - **SRC-001:** MGV.VC portfolio — https://www.mgv.vc/portfolio
 - **SRC-002:** Attention Series B announcement — https://www.attention.com/blog-posts/attention-series-b-press-release
 - **SRC-003:** Company website — https://www.attention.com/
+- **SRC-004:** Attention author profile — https://www.attention.com/authors/anis-bennaceur
 
 ## Interview
 

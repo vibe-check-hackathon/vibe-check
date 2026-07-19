@@ -9,7 +9,7 @@ source_channel: "retrospective_public_research"
 created_at: "2026-07-19T00:00:00Z"
 updated_at: "2026-07-19T00:00:00Z"
 decision_deadline: "unknown"
-founder_ids: []
+founder_ids: [FND-MGV-US-0108, FND-MGV-US-0109]
 thesis_id: "THESIS-US-ENTERPRISE"
 investment_vehicle: "MGV.VC"
 portfolio_year: 2018
@@ -37,7 +37,16 @@ funding:
 ## Founders and Team
 
 - **Founder Score snapshot:** not assessed — this research bundle does not fabricate evaluations of real people.
-- Founder-level research was outside this enrichment pass; `founder_ids` remains an empty array for deterministic parsing.
+
+### FND-MGV-US-0108 - Shantanu Gangal, CEO & Co-Founder
+
+- **Founder Score snapshot:** not assessed.
+- Listed by Prodigal as CEO & Co-Founder [SRC-003].
+
+### FND-MGV-US-0109 - Sangram Raje, CTO & Co-Founder
+
+- **Founder Score snapshot:** not assessed.
+- Listed by Prodigal as CTO & Co-Founder [SRC-003].
 
 ## Assessment
 

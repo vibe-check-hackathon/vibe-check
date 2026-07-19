@@ -9,7 +9,7 @@ source_channel: "retrospective_public_research"
 created_at: "2026-07-19T00:00:00Z"
 updated_at: "2026-07-19T00:00:00Z"
 decision_deadline: "unknown"
-founder_ids: []
+founder_ids: [FND-MGV-US-0112, FND-MGV-US-0113]
 thesis_id: "THESIS-US-ENTERPRISE"
 investment_vehicle: "MGV.VC"
 portfolio_year: 2022
@@ -37,7 +37,16 @@ funding:
 ## Founders and Team
 
 - **Founder Score snapshot:** not assessed — this research bundle does not fabricate evaluations of real people.
-- Founder-level research was outside this enrichment pass; `founder_ids` remains an empty array for deterministic parsing.
+
+### FND-MGV-US-0112 - Cole Riccardi, CEO & Cofounder
+
+- **Founder Score snapshot:** not assessed.
+- Authentic's team page lists Riccardi as CEO & Cofounder [SRC-004].
+
+### FND-MGV-US-0113 - Kyle Babirad, COO & Cofounder
+
+- **Founder Score snapshot:** not assessed.
+- Authentic's team page lists Babirad as COO & Cofounder [SRC-004].
 
 ## Assessment
 

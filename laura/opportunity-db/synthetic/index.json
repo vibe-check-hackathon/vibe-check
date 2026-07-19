@@ -6,6 +6,7 @@
     {
       "id": "OPP-SYN-0001",
       "synthetic": true,
+      "logo": "logos/OPP-SYN-0001.svg",
       "company": "Grantly",
       "sector": "developer tooling",
       "location": "Berlin, DE",
@@ -92,6 +93,7 @@
     {
       "id": "OPP-SYN-0002",
       "synthetic": true,
+      "logo": "logos/OPP-SYN-0002.svg",
       "company": "Rolfsongrid",
       "sector": "logistics AI",
       "location": "Munich, DE",
@@ -158,6 +160,7 @@
     {
       "id": "OPP-SYN-0003",
       "synthetic": true,
+      "logo": "logos/OPP-SYN-0003.svg",
       "company": "Walshworks",
       "sector": "climate software",
       "location": "Amsterdam, NL",
@@ -224,6 +227,7 @@
     {
       "id": "OPP-SYN-0004",
       "synthetic": true,
+      "logo": "logos/OPP-SYN-0004.svg",
       "company": "Hackettloop",
       "sector": "fintech infrastructure",
       "location": "Zurich, CH",
@@ -310,6 +314,7 @@
     {
       "id": "OPP-SYN-0005",
       "synthetic": true,
+      "logo": "logos/OPP-SYN-0005.svg",
       "company": "Lebsacksense",
       "sector": "health tech",
       "location": "Copenhagen, DK",
@@ -376,6 +381,7 @@
     {
       "id": "OPP-SYN-0006",
       "synthetic": true,
+      "logo": "logos/OPP-SYN-0006.svg",
       "company": "Robertslayer",
       "sector": "industrial AI",
       "location": "Vienna, AT",

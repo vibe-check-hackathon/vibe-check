@@ -9,7 +9,7 @@ source_channel: "retrospective_public_research"
 created_at: "2026-07-19T00:00:00Z"
 updated_at: "2026-07-19T00:00:00Z"
 decision_deadline: "unknown"
-founder_ids: []
+founder_ids: [FND-MGV-US-0110, FND-MGV-US-0111]
 thesis_id: "THESIS-US-ENTERPRISE"
 investment_vehicle: "MGV.VC"
 portfolio_year: 2021
@@ -38,7 +38,16 @@ funding:
 ## Founders and Team
 
 - **Founder Score snapshot:** not assessed — this research bundle does not fabricate evaluations of real people.
-- Founder-level research was outside this enrichment pass; `founder_ids` remains an empty array for deterministic parsing.
+
+### FND-MGV-US-0110 - Andrew Wynn, Co-Founder & Co-CEO
+
+- **Founder Score snapshot:** not assessed.
+- Ascend's financing announcement names Andrew Wynn as a two-time insurtech entrepreneur and co-founder [SRC-002].
+
+### FND-MGV-US-0111 - Praveen Chekuri, Co-Founder & Co-CEO
+
+- **Founder Score snapshot:** not assessed.
+- Ascend's financing announcement names Praveen Chekuri as a two-time insurtech entrepreneur and co-founder [SRC-002].
 
 ## Assessment
 

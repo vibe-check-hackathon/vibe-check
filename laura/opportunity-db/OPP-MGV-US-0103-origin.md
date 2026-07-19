@@ -9,7 +9,7 @@ source_channel: "retrospective_public_research"
 created_at: "2026-07-19T00:00:00Z"
 updated_at: "2026-07-19T00:00:00Z"
 decision_deadline: "unknown"
-founder_ids: []
+founder_ids: [FND-MGV-US-0107]
 thesis_id: "THESIS-US-ENTERPRISE"
 investment_vehicle: "MGV.VC"
 portfolio_year: 2019
@@ -38,7 +38,11 @@ funding:
 ## Founders and Team
 
 - **Founder Score snapshot:** not assessed — this research bundle does not fabricate evaluations of real people.
-- Founder-level research was outside this enrichment pass; `founder_ids` remains an empty array for deterministic parsing.
+
+### FND-MGV-US-0107 - Matt Watson, Founder & CEO
+
+- **Founder Score snapshot:** not assessed.
+- Public company and product profiles identify Matt Watson as Origin's Founder/CEO [SRC-005].
 
 ## Assessment
 
@@ -63,6 +67,7 @@ funding:
 - **SRC-002:** Business Wire Series B announcement — https://www.businesswire.com/news/home/20210830005105/en/Origin-Secures-%2456M-in-Series-B-Funding-at-%24400M-Valuation-to-Support-Employee-Financial-Health-on-a-Global-Scale
 - **SRC-003:** CB Insights funding profile — https://www.cbinsights.com/company/origin-2/financials
 - **SRC-004:** Company website — https://useorigin.com/
+- **SRC-005:** Forbes company profile — https://www.forbes.com/companies/origin/
 
 ## Interview
 

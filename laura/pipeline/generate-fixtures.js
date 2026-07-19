@@ -59,6 +59,18 @@ function makeFounder(i, j, domain, role) {
   };
 }
 
+/* simple letter-mark logos in the same visual family as the real portfolio */
+const LOGO_COLORS = ["#2a78d6", "#008300", "#d55181", "#c98500", "#199e70", "#d95926"];
+mkdirSync(join(outDir, "logos"), { recursive: true });
+function writeLogo(oppId, company, i) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">` +
+    `<rect width="64" height="64" rx="14" fill="${LOGO_COLORS[i % LOGO_COLORS.length]}"/>` +
+    `<text x="32" y="43" font-family="Arial, sans-serif" font-size="32" font-weight="700" ` +
+    `fill="#ffffff" text-anchor="middle">${company[0].toUpperCase()}</text></svg>`;
+  writeFileSync(join(outDir, "logos", `${oppId}.svg`), svg, "utf8");
+  return `logos/${oppId}.svg`;
+}
+
 const opportunities = SECTORS.map(([sector, pitch], i) => {
   const base = faker.company.name().split(/[ ,-]/)[0];
   const company = base.charAt(0).toUpperCase() + base.slice(1) + ["ly", "grid", "works", "loop", "sense", "layer"][i];
@@ -66,9 +78,11 @@ const opportunities = SECTORS.map(([sector, pitch], i) => {
   const founders = [makeFounder(i, 0, domain, "CEO"), makeFounder(i, 1, domain, "CTO")];
   if (i % 3 === 0) founders.push(makeFounder(i, 2, domain, "COO"));
   const raise = faker.number.int({ min: 8, max: 25 }) * 100000;
+  const oppId = `OPP-SYN-${String(i + 1).padStart(4, "0")}`;
   return {
-    id: `OPP-SYN-${String(i + 1).padStart(4, "0")}`,
+    id: oppId,
     synthetic: true,
+    logo: writeLogo(oppId, company, i),
     company, sector, location: CITIES[i],
     card: `OPP-SYN-${String(i + 1).padStart(4, "0")}-${kebab(company)}.md`,
     status: STATUSES[i],

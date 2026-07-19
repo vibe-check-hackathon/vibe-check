@@ -9,7 +9,7 @@ source_channel: "retrospective_public_research"
 created_at: "2026-07-19T00:00:00Z"
 updated_at: "2026-07-19T00:00:00Z"
 decision_deadline: "unknown"
-founder_ids: []
+founder_ids: [FND-MGV-US-0101, FND-MGV-US-0102, FND-MGV-US-0103, FND-MGV-US-0104]
 thesis_id: "THESIS-US-ENTERPRISE"
 investment_vehicle: "MGV.VC"
 portfolio_year: 2018
@@ -37,7 +37,26 @@ funding:
 ## Founders and Team
 
 - **Founder Score snapshot:** not assessed — this research bundle does not fabricate evaluations of real people.
-- Founder-level research was outside this enrichment pass; `founder_ids` remains an empty array for deterministic parsing.
+
+### FND-MGV-US-0101 - Swapnil Jain, CEO & Co-Founder
+
+- **Founder Score snapshot:** not assessed.
+- Listed by Observe.AI as CEO & Co-Founder [SRC-003].
+
+### FND-MGV-US-0102 - Jithendra Vepa, CTO & Co-Founder
+
+- **Founder Score snapshot:** not assessed.
+- Listed by Observe.AI as CTO & Co-Founder [SRC-003].
+
+### FND-MGV-US-0103 - Akash Singh, co-founder
+
+- **Founder Score snapshot:** not assessed.
+- Identified as a co-founder in 2018 funding coverage [SRC-004].
+
+### FND-MGV-US-0104 - Sharath Keshava Narayana, co-founder
+
+- **Founder Score snapshot:** not assessed.
+- Identified as a co-founder in 2018 funding coverage [SRC-004].
 
 ## Assessment
 
@@ -60,6 +79,7 @@ funding:
 - **SRC-001:** MGV.VC portfolio — https://www.mgv.vc/portfolio
 - **SRC-002:** Observe.AI Series C announcement, 2022-04-12 — https://observe.ai/press-releases/observe-ai-raises-125m-series-c-to-usher-in-ai-empowered-era-for-contact-centers
 - **SRC-003:** Company website — https://observe.ai/
+- **SRC-004:** TechCrunch 2018 funding coverage — https://techcrunch.com/2018/08/13/observe-ai-raises-8m/
 
 ## Interview
 
