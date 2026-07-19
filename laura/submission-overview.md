@@ -104,3 +104,27 @@ The deeper impact is distributional: when screening is cheap, sourced, and
 consent-based, the founder with no network gets read by the same rules as the
 founder with the warm intro — capital allocated on evidence rather than
 visibility.
+
+## 7. What was the most fun moment during founding?
+
+*(told by Martin — kept for the submitted materials)*
+
+Somewhere around 4 a.m. I found myself cloning Sun's face. Not a metaphor: we
+needed the demo videos of every founder presenting, Sun was busy actually
+finishing the architecture deck, and the avatar pipeline needed a face and a
+voice to autogenerate his segment — so there I sat, bleary-eyed, feeding
+photos of my co-founder into a generator and adjusting lip-sync while he stood
+behind me saying "make me look less tired than you." The absurd part is that
+it worked on the first render and my own video took four attempts — apparently
+I'm harder to clone than Sun, which the team has agreed to interpret
+scientifically. It was the perfect 4 a.m. summary of the whole hackathon: we
+were building a system that verifies what's real about founders, while
+literally synthesizing ourselves to present it — and being scrupulously honest
+about which was which.
+
+> **Autogeneration note:** the founder presentation videos in the demo
+> (`sun-chuanqi.mp4`, `martin-auer.mp4`) are AI-generated avatar clips created
+> at ~4 a.m. from photos and voice samples the teammates provided themselves,
+> with their consent, for demonstration purposes — the same disclosure
+> standard the platform applies to everything else: synthetic content is
+> always labeled as synthetic.
