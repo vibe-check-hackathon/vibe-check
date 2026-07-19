@@ -13,9 +13,12 @@ Short questions so the frontend and docs stay in sync with your folder:
    stage / Term sheet sent / Declined / Term sheet signed`. Which one is
    canonical? The event schema in `laura/stitch-ai-prompt.md` currently follows
    the card template.
-3. **Please review/merge `numeric-confidence-trust`.** Martin's branch (0–100
-   confidence/trust) edits files in your folder, so it's your call. The event
-   schema and Laura's scoring docs already assume the 0–100 convention.
+3. **`numeric-confidence-trust` was merged to main (2026-07-19).** Laura merged
+   Martin's branch (0–100 confidence/trust) since the event schema, pipeline,
+   and scoring docs already assumed it and the merge was conflict-free. It
+   edits two files in your folder (`opportunity-card.md`, the example) —
+   please review post-merge and revert/adjust if you disagree; nothing else
+   depends on the exact wording.
 4. **Event schema freeze.** `laura/stitch-ai-prompt.md` §3.3 defines the
    WebSocket events between UI, interview agent, and scoring. If it looks right
    to you, let's freeze it as the integration contract before we build agents.
