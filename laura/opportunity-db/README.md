@@ -6,6 +6,20 @@ Opportunity OS card format working on real deals the challenge sponsor's group
 actually made — each card is dated as if the 24-hour evaluation ran just before
 the real, publicly announced investment.
 
+## Public research permission
+
+You are allowed to collect, store, summarize, and cite **publicly available
+information** about all companies in this opportunity database, including their
+founders, funding rounds, investors, customers, acquisitions, shutdowns,
+rebrands, public interviews, press releases, websites, regulatory filings,
+marketplace profiles, and reputable media coverage.
+
+Only use information that is publicly accessible or clearly provided by the
+workspace owner. Do not invent private facts, confidential diligence notes,
+personal contact details, non-public financials, or subjective assessments of
+real people. If a fact cannot be verified from public sources, mark it as
+`claimed / unverified` or omit it.
+
 ## Integrity rules (read before editing)
 
 1. **Facts are sourced.** Every material claim cites a public source in the
