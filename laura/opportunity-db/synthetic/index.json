@@ -24,7 +24,9 @@
         {
           "id": "FND-SYN-011",
           "name": "Justina Kunde",
+          "sex": "female",
           "role": "CEO",
+          "avatar": "avatars/FND-SYN-011.png",
           "email": "justina.kunde@grantly.example",
           "linkedin": "https://linkedin.example/in/justina-kunde",
           "phone": "+49 555 1096676",
@@ -42,7 +44,9 @@
         {
           "id": "FND-SYN-012",
           "name": "Macy Steuber",
+          "sex": "male",
           "role": "CTO",
+          "avatar": "avatars/FND-SYN-012.png",
           "email": "macy.steuber@grantly.example",
           "linkedin": "https://linkedin.example/in/macy-steuber",
           "github": "https://github.example/macy-steuber",
@@ -61,7 +65,9 @@
         {
           "id": "FND-SYN-013",
           "name": "Elliott Kreiger",
+          "sex": "male",
           "role": "COO",
+          "avatar": "avatars/FND-SYN-013.png",
           "email": "elliott.kreiger@grantly.example",
           "linkedin": "https://linkedin.example/in/elliott-kreiger",
           "phone": "+49 555 7971585",
@@ -104,7 +110,9 @@
         {
           "id": "FND-SYN-021",
           "name": "Nicole Swaniawski",
+          "sex": "female",
           "role": "CEO",
+          "avatar": "avatars/FND-SYN-021.png",
           "email": "nicole.swaniawski@rolfsongrid.example",
           "linkedin": "https://linkedin.example/in/nicole-swaniawski",
           "phone": "+49 555 8608028",
@@ -122,7 +130,9 @@
         {
           "id": "FND-SYN-022",
           "name": "Salvatore Dickinson",
+          "sex": "male",
           "role": "CTO",
+          "avatar": "avatars/FND-SYN-022.png",
           "email": "salvatore.dickinson@rolfsongrid.example",
           "linkedin": "https://linkedin.example/in/salvatore-dickinson",
           "github": "https://github.example/salvatore-dickinson",
@@ -166,7 +176,9 @@
         {
           "id": "FND-SYN-031",
           "name": "Rey Bruen",
+          "sex": "male",
           "role": "CEO",
+          "avatar": "avatars/FND-SYN-031.png",
           "email": "rey.bruen@walshworks.example",
           "linkedin": "https://linkedin.example/in/rey-bruen",
           "phone": "+49 555 9516320",
@@ -184,7 +196,9 @@
         {
           "id": "FND-SYN-032",
           "name": "Quincy Ryan",
+          "sex": "female",
           "role": "CTO",
+          "avatar": "avatars/FND-SYN-032.png",
           "email": "quincy.ryan@walshworks.example",
           "linkedin": "https://linkedin.example/in/quincy-ryan",
           "github": "https://github.example/quincy-ryan",
@@ -228,7 +242,9 @@
         {
           "id": "FND-SYN-041",
           "name": "Edyth Kuhlman",
+          "sex": "female",
           "role": "CEO",
+          "avatar": "avatars/FND-SYN-041.png",
           "email": "edyth.kuhlman@hackettloop.example",
           "linkedin": "https://linkedin.example/in/edyth-kuhlman",
           "phone": "+49 555 5423795",
@@ -246,7 +262,9 @@
         {
           "id": "FND-SYN-042",
           "name": "Claudine Rodriguez",
+          "sex": "male",
           "role": "CTO",
+          "avatar": "avatars/FND-SYN-042.png",
           "email": "claudine.rodriguez@hackettloop.example",
           "linkedin": "https://linkedin.example/in/claudine-rodriguez",
           "github": "https://github.example/claudine-rodriguez",
@@ -265,7 +283,9 @@
         {
           "id": "FND-SYN-043",
           "name": "Vivian Reynolds",
+          "sex": "female",
           "role": "COO",
+          "avatar": "avatars/FND-SYN-043.png",
           "email": "vivian.reynolds@hackettloop.example",
           "linkedin": "https://linkedin.example/in/vivian-reynolds",
           "phone": "+49 555 7574862",
@@ -308,7 +328,9 @@
         {
           "id": "FND-SYN-051",
           "name": "Monserrate Ratke",
+          "sex": "female",
           "role": "CEO",
+          "avatar": "avatars/FND-SYN-051.png",
           "email": "monserrate.ratke@lebsacksense.example",
           "linkedin": "https://linkedin.example/in/monserrate-ratke",
           "phone": "+49 555 0487947",
@@ -326,7 +348,9 @@
         {
           "id": "FND-SYN-052",
           "name": "Esta Kreiger",
+          "sex": "male",
           "role": "CTO",
+          "avatar": "avatars/FND-SYN-052.png",
           "email": "esta.kreiger@lebsacksense.example",
           "linkedin": "https://linkedin.example/in/esta-kreiger",
           "github": "https://github.example/esta-kreiger",
@@ -370,7 +394,9 @@
         {
           "id": "FND-SYN-061",
           "name": "Agnes O'Kon",
+          "sex": "female",
           "role": "CEO",
+          "avatar": "avatars/FND-SYN-061.png",
           "email": "agnes.o-kon@robertslayer.example",
           "linkedin": "https://linkedin.example/in/agnes-o-kon",
           "phone": "+49 555 6936978",
@@ -388,7 +414,9 @@
         {
           "id": "FND-SYN-062",
           "name": "Guadalupe Tremblay",
+          "sex": "male",
           "role": "CTO",
+          "avatar": "avatars/FND-SYN-062.png",
           "email": "guadalupe.tremblay@robertslayer.example",
           "linkedin": "https://linkedin.example/in/guadalupe-tremblay",
           "github": "https://github.example/guadalupe-tremblay",

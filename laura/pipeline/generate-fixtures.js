@@ -6,7 +6,7 @@
 // Usage: node generate-fixtures.js   (writes ../opportunity-db/synthetic/)
 
 import { faker } from "@faker-js/faker";
-import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -31,13 +31,19 @@ const kebab = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/
 const score = (lo, hi) => faker.number.int({ min: lo, max: hi });
 
 function makeFounder(i, j, domain, role) {
-  const first = faker.person.firstName();
+  // Sex is generated explicitly, then the name is drawn to match it — so
+  // avatar libraries (Figma etc.) key off a reliable field, never name-guessing.
+  const sex = faker.person.sexType();
+  const first = faker.person.firstName(sex);
   const last = faker.person.lastName();
   const name = `${first} ${last}`;
   const handle = kebab(`${first}-${last}`);
+  const id = `FND-SYN-${String(i + 1).padStart(2, "0")}${String(j + 1)}`;
   return {
-    id: `FND-SYN-${String(i + 1).padStart(2, "0")}${String(j + 1)}`,
-    name, role,
+    id,
+    name, sex, role,
+    /* matched library portrait wins over the dicebear placeholder */
+    avatar: existsSync(join(outDir, "avatars", `${id}.png`)) ? `avatars/${id}.png` : `avatars/${id}.svg`,
     email: `${kebab(first)}.${kebab(last)}@${domain}`,
     linkedin: `https://linkedin.example/in/${handle}`,
     github: role === "CTO" ? `https://github.example/${handle}` : undefined,
