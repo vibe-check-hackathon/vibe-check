@@ -8,7 +8,38 @@ Files touched:
 - `laura/frontend/founder.html` — founder personality / psychogram page (new)
 - `laura/founder-axis-scoring.md` — scoring model (added the team complementarity score)
 
-Status: **merged into local `main`** (2 commits ahead of `origin/main`); **not yet pushed**.
+Status: **merged into local `main`**; **not yet pushed**.
+
+---
+
+## 2026-07-18 · Round 5 — hero removed again, breadcrumb restored
+
+Re-applied the dashboard treatment on top of Laura's inbox/studio structure:
+- **Removed the hero** (headline + subhead + centered pipeline) from `index.html`.
+- **Restored the top-left breadcrumb** in the header (`✓ Source › ✓ Develop ›
+  [Match]`), sitting before Laura's `‹ Opportunities` back button / opp-ref.
+- Swapped the hero CSS back out for the breadcrumb CSS (no dead rules left).
+  Laura's `inboxView` / `studioView` toggle and JS are untouched.
+
+## 2026-07-18 · Round 4 — collapsible quotes, hero fix, enriched portfolio
+
+- **`founder.html` — live quotes are now collapsible.** Each axis's "Live evidence"
+  quote is a `<details>` dropdown (collapsed by default; the toggle shows
+  "Live evidence · INT-001 · timestamp" with a rotating caret). Axes without a
+  transcript quote show only the evidence basis, as before.
+- **`index.html` — fixed the broken hero/pipeline layout** (from screenshot): the
+  Round-3 merge had dropped the `.hero` / `.pipeline` / `.stage` / `.chev` CSS
+  (my branch removed those rules and the deletion won the auto-merge), so Laura's
+  hero markup rendered as unstyled stacked text. Restored the hero + pipeline
+  styling and removed the now-dead breadcrumb CSS.
+- **New `Martin/seed-speed-portfolio-enriched.md`** — verified & enriched version
+  of `seed-speed-portfolio.md`, structured as **opportunity-card records** (each
+  with **Idea** + **User**, plus HQ, website, best-effort LinkedIn, founders, round
+  history and seed + speed's role). **15 companies verified this pass** via web
+  research (Finanzguru, Prewave, Pliant, Orq.ai, Cashlink, Enginsight, Kertos,
+  Orderlion, e-mobilio, Presize [Meta exit], happyhotel, RIIICO, Calvin Risk,
+  Briink, Meisterwerk) with named leads/co-investors and dated rounds; the
+  remainder carried over and flagged as not-yet-verified. Sources listed inline.
 
 ---
 
