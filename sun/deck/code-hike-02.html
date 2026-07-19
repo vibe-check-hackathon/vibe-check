@@ -7,6 +7,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💵</text></svg>" />
     <style>
       :root {
+        color-scheme: dark;
         --bg: #0d1117;
         --panel: #161b22;
         --border: #30363d;
@@ -220,8 +221,7 @@
       }
       .card-body {
         padding: 16px 20px 20px;
-        max-height: 62vh;
-        overflow-y: auto;
+        max-height: 80vh;
       }
       .section {
         overflow: hidden;
@@ -370,7 +370,7 @@
             <svg viewBox="0 0 460 370" width="100%">
               <defs>
                 <marker id="m1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
-                  <path d="M0 0L8 4L0 8" fill="none" stroke="#8b949e" stroke-width="1" />
+                  <path d="M0 0L8 4L0 8" fill="none" stroke="#484f58" stroke-width="1" />
                 </marker>
               </defs>
               <g stroke="#484f58" stroke-width="1" fill="none" marker-end="url(#m1)">
@@ -440,7 +440,7 @@
             <svg viewBox="0 0 460 350" width="100%">
               <defs>
                 <marker id="m2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
-                  <path d="M0 0L8 4L0 8" fill="none" stroke="#8b949e" stroke-width="1" />
+                  <path d="M0 0L8 4L0 8" fill="none" stroke="#484f58" stroke-width="1" />
                 </marker>
               </defs>
               <rect x="140" y="10" width="180" height="32" fill="none" stroke="#8b949e" stroke-width="1" />
@@ -504,7 +504,7 @@
             <svg viewBox="0 0 460 350" width="100%">
               <defs>
                 <marker id="m3" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
-                  <path d="M0 0L8 4L0 8" fill="none" stroke="#8b949e" stroke-width="1" />
+                  <path d="M0 0L8 4L0 8" fill="none" stroke="#484f58" stroke-width="1" />
                 </marker>
               </defs>
               <rect x="30" y="42" width="400" height="200" fill="none" stroke="#8b949e" stroke-width="1" stroke-dasharray="5 4" />
@@ -527,7 +527,7 @@
                 <text x="220" y="182" text-anchor="end">offer_3</text>
                 <text x="240" y="182">counter_3</text>
               </g>
-              <text x="230" y="160" text-anchor="middle" font-size="9" font-weight="600" fill="#3fb950">deal</text>
+              <text x="230" y="160" text-anchor="middle" font-size="9" font-weight="600" fill="#3fb950">converge</text>
               <circle cx="230" cy="168" r="2.5" fill="#3fb950" />
               <path d="M230 174 V196" stroke="#484f58" stroke-width="1" fill="none" marker-end="url(#m3)" />
               <rect x="196" y="200" width="68" height="32" fill="none" stroke="#3fb950" stroke-width="1.25" />
@@ -638,6 +638,7 @@
       const visible = new Set();
       const timers = new Map();
       let currentLevel = 0;
+      let keyboardLevel = 0;
 
       const statuses = {
         0: { text: "EMPTY", color: "var(--dim)" },
@@ -698,9 +699,39 @@
 
       steps.forEach((step) => observer.observe(step));
 
-      signoffEl.addEventListener("click", () => {
+      function celebrate() {
         confetti({ particleCount: 140, spread: 75, origin: { y: 0.6 } });
+      }
+
+      function scrollToLevel(level) {
+        const target = level === 0 ? document.querySelector("header") : steps[level - 1];
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      document.addEventListener("keydown", (event) => {
+        const isSpace = event.key === " " || event.code === "Space";
+        const movesDown = event.key === "ArrowDown" || (isSpace && !event.shiftKey);
+        const movesUp = event.key === "ArrowUp" || (isSpace && event.shiftKey);
+        if ((!movesDown && !movesUp) || event.repeat) return;
+        event.preventDefault();
+
+        keyboardLevel = Math.max(keyboardLevel, currentLevel);
+        if (movesUp) {
+          keyboardLevel = Math.max(0, keyboardLevel - 1);
+          scrollToLevel(keyboardLevel);
+          return;
+        }
+
+        if (keyboardLevel >= steps.length) {
+          celebrate();
+          return;
+        }
+
+        keyboardLevel += 1;
+        scrollToLevel(keyboardLevel);
       });
+
+      signoffEl.addEventListener("click", celebrate);
     </script>
   </body>
 </html>
