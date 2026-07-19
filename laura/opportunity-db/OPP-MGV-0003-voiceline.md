@@ -7,7 +7,7 @@ source_channel: outbound
 created_at: 2026-02-23T09:00:00Z
 updated_at: 2026-07-19T00:00:00Z
 decision_deadline: 2026-02-24T09:00:00Z
-founder_ids: [FND-MGV-0005]
+founder_ids: [FND-MGV-0005, FND-MGV-0010]
 thesis_id: THESIS-001
 real_event: "€10M Series A led by ALSTIN Capital and Peak, announced 2026-02-24"
 data_basis: public sources, compiled 2026-07-19 — retrospective demo card
@@ -33,8 +33,12 @@ a €2.4M seed (2024) led by Venture Stars and Scalehouse Capital [CLM-002][SRC-
 
 - **Founder Score snapshot:** not assessed — no fabricated evaluations of real people
 - CEO and co-founder per funding coverage [CLM-003][SRC-002]
-- Co-founder team: additional co-founders exist per company sources; names not
-  verified here [GAP-001]
+
+### FND-MGV-0010 - Sebastian Pinkas, CTO & co-founder
+
+- **Founder Score snapshot:** not assessed
+- CTO and co-founder per VoiceLine's about page and Munich Startup coverage
+  [CLM-004][SRC-005][SRC-006]
 
 ## Assessment
 
@@ -51,7 +55,8 @@ a €2.4M seed (2024) led by Venture Stars and Scalehouse Capital [CLM-002][SRC-
 | CLM-001 | €10M Series A led by ALSTIN + Peak, announced 2026-02-24 | verified | 90/100 | [SRC-002][SRC-004] |
 | CLM-002 | €2.4M seed (2024), Venture Stars + Scalehouse | verified | 80/100 | [SRC-003] |
 | CLM-003 | CEO & co-founder: Dr. Nicolas Höflinger | verified | 80/100 | [SRC-002] |
-| GAP-001 | Full co-founder team and backgrounds | open | unknown | Check company site / registry |
+| CLM-004 | CTO & co-founder: Sebastian Pinkas | verified | 85/100 | [SRC-005][SRC-006] |
+| GAP-001 | Full founder backgrounds | open | unknown | Check registry / direct diligence |
 | GAP-002 | ARR and enterprise customer list | open | unknown | Not publicly disclosed |
 
 ### Sources
@@ -60,6 +65,8 @@ a €2.4M seed (2024) led by Venture Stars and Scalehouse Capital [CLM-002][SRC-
 - **SRC-002:** EU-Startups, 2026-02-24 — https://www.eu-startups.com/2026/02/munich-based-voiceline-raises-e10-million-to-scale-its-voice-ai-platform-for-enterprise-frontline-teams/
 - **SRC-003:** Munich Startup (seed round) — https://www.munich-startup.de/en/103913/voiceline-seed-financing/
 - **SRC-004:** Tech Funding News — https://techfundingnews.com/germanys-voiceline-secures-e10m-led-by-alstin-capital-to-scale-voice-ai-across-europe/
+- **SRC-005:** VoiceLine about page, fetched 2026-07-19 — https://voiceline.ai/about
+- **SRC-006:** Munich Startup Series A coverage, 2026-02-28 — https://www.munich-startup.de/en/117517/voiceline-series-a/
 
 ## Interview
 
