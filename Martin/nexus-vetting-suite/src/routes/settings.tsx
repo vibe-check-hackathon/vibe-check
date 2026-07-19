@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge } from "@/components/ui-kit";
@@ -9,12 +10,21 @@ export const Route = createFileRoute("/settings")({
   component: SettingsPage,
 });
 
-const THESIS = [
-  { k: "Sectors", v: "Climate hard-tech · Vertical SaaS · Applied AI infra · Fintech" },
-  { k: "Stages", v: "Pre-seed → Series A · check size €500K – €5M" },
-  { k: "Geography", v: "DACH · Benelux · Nordics · UK · France" },
-  { k: "Risk appetite", v: "Technical risk yes · regulatory risk selective · consumer risk no" },
-];
+/* The fund thesis is live data (laura/pipeline/thesis.json) served and
+ * updated via GET/POST /thesis — the Thesis Engine, not decoration. */
+type ThesisDoc = {
+  fund: {
+    sectors: string[];
+    stages: string[];
+    geographies: string[];
+    checkSizeUsd: { min: number; max: number };
+    targetOwnership: number;
+    riskAppetite: string;
+    maxOpenGaps: number;
+  };
+} & Record<string, unknown>;
+
+const money = (n: number) => (n >= 1e6 ? `$${n / 1e6}M` : `$${Math.round(n / 1e3)}K`);
 
 const AGENTS = [
   { n: "Kestrel v3", r: "Founder interviews", status: "Active", model: "GPT-5.2 + ElevenLabs" },
@@ -25,6 +35,70 @@ const AGENTS = [
 ];
 
 export function SettingsPage() {
+  const [thesis, setThesis] = useState<ThesisDoc | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<Record<string, string>>({});
+  const [saved, setSaved] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/thesis").then((r) => r.json()).then(setThesis).catch(() => {});
+  }, []);
+
+  function startEdit() {
+    if (!thesis) return;
+    setDraft({
+      sectors: thesis.fund.sectors.join(", "),
+      stages: thesis.fund.stages.join(", "),
+      geographies: thesis.fund.geographies.join(", "),
+      checkMin: String(thesis.fund.checkSizeUsd.min),
+      checkMax: String(thesis.fund.checkSizeUsd.max),
+      ownership: String(thesis.fund.targetOwnership),
+      risk: thesis.fund.riskAppetite,
+      maxGaps: String(thesis.fund.maxOpenGaps),
+    });
+    setEditing(true);
+  }
+
+  async function save() {
+    if (!thesis) return;
+    const next: ThesisDoc = {
+      ...thesis,
+      fund: {
+        ...thesis.fund,
+        sectors: draft.sectors.split(",").map((s) => s.trim()).filter(Boolean),
+        stages: draft.stages.split(",").map((s) => s.trim()).filter(Boolean),
+        geographies: draft.geographies.split(",").map((s) => s.trim()).filter(Boolean),
+        checkSizeUsd: { min: Number(draft.checkMin) || 0, max: Number(draft.checkMax) || 0 },
+        targetOwnership: Number(draft.ownership) || 0,
+        riskAppetite: draft.risk,
+        maxOpenGaps: Number(draft.maxGaps) || 0,
+      },
+    };
+    const res = await fetch("/thesis", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(next, null, 2),
+    });
+    if (res.ok) {
+      setThesis(next);
+      setEditing(false);
+      setSaved("Saved — screening and scoring now use the updated lens.");
+      setTimeout(() => setSaved(null), 4000);
+    } else {
+      setSaved("Save failed — is the dev server running?");
+    }
+  }
+
+  const thesisRows = thesis
+    ? [
+        { k: "Sectors", v: thesis.fund.sectors.join(" · ") },
+        { k: "Stages", v: `${thesis.fund.stages.join(" · ")} · check ${money(thesis.fund.checkSizeUsd.min)} – ${money(thesis.fund.checkSizeUsd.max)}` },
+        { k: "Geography", v: thesis.fund.geographies.join(" · ") },
+        { k: "Ownership", v: `${Math.round(thesis.fund.targetOwnership * 100)}% target` },
+        { k: "Risk appetite", v: `${thesis.fund.riskAppetite} · max ${thesis.fund.maxOpenGaps} open gaps at decision` },
+      ]
+    : [{ k: "Loading", v: "reading thesis.json via /thesis…" }];
+
   return (
     <AppShell>
       <PageHeader
@@ -35,17 +109,60 @@ export function SettingsPage() {
 
       <div className="px-8 py-6 grid lg:grid-cols-2 gap-4">
         <Card className="p-0">
-          <div className="px-5 py-3.5 border-b border-border text-[13px] font-medium">Fund thesis</div>
-          <div className="divide-y divide-border">
-            {THESIS.map((t) => (
-              <div key={t.k} className="grid grid-cols-[140px_1fr] gap-4 px-5 py-3">
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground pt-0.5">{t.k}</div>
-                <div className="text-[12.5px]">{t.v}</div>
-              </div>
-            ))}
+          <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
+            <span className="text-[13px] font-medium">Fund thesis</span>
+            <Badge tone="teal">live · THESIS-001</Badge>
           </div>
-          <div className="border-t border-border p-4 flex justify-end">
-            <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]">Edit thesis</button>
+          {!editing ? (
+            <div className="divide-y divide-border">
+              {thesisRows.map((t) => (
+                <div key={t.k} className="grid grid-cols-[140px_1fr] gap-4 px-5 py-3">
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground pt-0.5">{t.k}</div>
+                  <div className="text-[12.5px]">{t.v}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-5 space-y-3">
+              {(
+                [
+                  ["sectors", "Sectors (comma-separated)"],
+                  ["stages", "Stages (comma-separated)"],
+                  ["geographies", "Geographies (comma-separated)"],
+                  ["checkMin", "Check size min (USD)"],
+                  ["checkMax", "Check size max (USD)"],
+                  ["ownership", "Ownership target (0–1)"],
+                  ["risk", "Risk appetite"],
+                  ["maxGaps", "Max open gaps at decision"],
+                ] as const
+              ).map(([key, label]) => (
+                <label key={key} className="block">
+                  <div className="mb-1 text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
+                  <input
+                    value={draft[key] ?? ""}
+                    onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
+                    className="w-full rounded-md border border-border bg-card px-3 py-1.5 text-[12.5px] outline-none focus:border-ring"
+                  />
+                </label>
+              ))}
+            </div>
+          )}
+          <div className="border-t border-border p-4 flex items-center justify-end gap-3">
+            {saved && <span className="text-[11.5px] text-positive">{saved}</span>}
+            {!editing ? (
+              <button onClick={startEdit} className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]">
+                Edit thesis
+              </button>
+            ) : (
+              <>
+                <button onClick={() => setEditing(false)} className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]">
+                  Cancel
+                </button>
+                <button onClick={save} className="h-8 rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground">
+                  Save thesis
+                </button>
+              </>
+            )}
           </div>
         </Card>
 

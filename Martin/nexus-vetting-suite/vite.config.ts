@@ -5,9 +5,11 @@
 //     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join, normalize, extname, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+// @ts-expect-error — canonical screening lives in laura's plain-ESM pipeline (no type defs; single source of truth)
+import { screenOpportunity } from "../../laura/pipeline/lib/screening.js";
 
 /* Serve laura/opportunity-db as /opportunity-db/* directly from the single
  * source of truth — no copied data in public/. The old copy used a cards/
@@ -22,6 +24,12 @@ const MIME: Record<string, string> = {
 };
 
 const THESIS_PATH = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "laura", "pipeline", "thesis.json");
+const INBOX_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "laura", "pipeline", "inbox");
+
+async function readThesisFlat() {
+  const raw = JSON.parse(await readFile(THESIS_PATH, "utf8"));
+  return { raw, sectors: raw.fund.sectors, maxCheckUsd: raw.fund.checkSizeUsd.max };
+}
 
 const lauraOpportunityDb = () => ({
   name: "serve-laura-opportunity-db",
@@ -54,6 +62,36 @@ const lauraOpportunityDb = () => ({
       } catch {
         next();
       }
+    });
+    // Inbound application endpoint (MVP #4): deck + company name is the
+    // minimum bar; the canonical first-pass screen runs immediately.
+    server.middlewares.use("/apply", (req, res, next) => {
+      if (req.method !== "POST") return next();
+      let body = "";
+      req.on("data", (c: string) => (body += c));
+      req.on("end", async () => {
+        res.setHeader("Content-Type", "application/json");
+        try {
+          const application = JSON.parse(body);
+          if (!application.company || !application.deck) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: "company and deck are the minimum bar (challenge brief #4)" }));
+            return;
+          }
+          const verdict = screenOpportunity(application, await readThesisFlat());
+          const id = `APP-${Date.now()}`;
+          await mkdir(INBOX_DIR, { recursive: true });
+          await writeFile(
+            join(INBOX_DIR, `${id}.json`),
+            JSON.stringify({ id, receivedAt: new Date().toISOString(), screening: verdict, application }, null, 2),
+            "utf8",
+          );
+          res.end(JSON.stringify({ id, ...verdict }));
+        } catch {
+          res.statusCode = 400;
+          res.end(JSON.stringify({ error: "invalid json" }));
+        }
+      });
     });
     server.middlewares.use("/opportunity-db", async (req, res, next) => {
       try {

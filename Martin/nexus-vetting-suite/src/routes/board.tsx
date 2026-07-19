@@ -707,8 +707,21 @@ function axisValuesFor(s: Startup, f: FounderRef): Record<string, number> | null
 }
 
 function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
   const outcome = outcomeOf(s);
   const portfolioAlignments = s.stage === "Portfolio" ? [] : alignmentsFor(s, PORTFOLIO_POOL);
+  const outreachDraft = [
+    `Subject: ${s.company} — early-stage conversation`,
+    "",
+    `Hi ${s.founders[0]?.name?.split(" ")[0] ?? "there"},`,
+    "",
+    `${s.activitySignal ? `We noticed ${s.activitySignal}. ` : ""}${s.outboundRationale ?? "Your work fits our fund thesis."}`,
+    "",
+    "We write first checks at pre-seed/seed and give a clear answer within 24 hours of a complete application — deck plus company name is enough to start. Cold outreach, not cold investment: if raising is on your roadmap, we would like a real application from you.",
+    "",
+    "Best,",
+    "The fund team",
+  ].join("\n");
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-label={`${s.company} details`}>
       <div className="absolute inset-0 bg-foreground/40" onClick={onClose} />
@@ -805,6 +818,22 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
               An existing portfolio relationship in the same domain = warm intro path, reference source,
               or competitive-overlap check before term sheet.
             </p>
+          </DetailBlock>
+        )}
+
+        {s.outboundSelected && (
+          <DetailBlock title="Activate — outreach draft">
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(outreachDraft).then(() => {
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2500);
+                });
+              }}
+              className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]"
+            >
+              {copied ? "✓ Copied — paste into your mail client" : "Copy outreach draft (cites the activity signal)"}
+            </button>
           </DetailBlock>
         )}
 

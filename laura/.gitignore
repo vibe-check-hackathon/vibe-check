@@ -2,5 +2,6 @@
 *.zip
 # Generated pipeline artifacts
 pipeline/output/
+pipeline/inbox/
 # Person-level link collections stay local by policy — never push
 opportunity-db/founder-profiles/
