@@ -50,12 +50,15 @@ type SyntheticOpp = {
 
 type OutboundOpp = SyntheticOpp & {
   outboundSelected: true;
-  realCompany: true;
+  realCompany: boolean;
   currentAsOf: string;
   latestRound?: string;
   outboundRationale?: string;
   activitySignal?: string;
   sources?: { label: string; url: string }[];
+  /** Added by the live LLM scan (POST /outbound-scan) rather than the research doc. */
+  freshScan?: boolean;
+  verification?: string;
 };
 
 function moneyLabel(amount?: number) {
@@ -112,7 +115,13 @@ function mapOutboundSelected(o: OutboundOpp): Startup {
   return {
     id: o.id,
     company: o.company,
-    oneLiner: `${o.oneLiner} (outbound selected - public source record)`,
+    oneLiner: `${o.oneLiner} ${
+      o.freshScan
+        ? o.verification === "web-searched"
+          ? "(live scan - web-sourced, verify before outreach)"
+          : "(live scan - UNVERIFIED model recall)"
+        : "(outbound selected - public source record)"
+    }`,
     founders: o.founders.map((f) => ({
       id: f.id,
       name: f.name,
@@ -159,6 +168,11 @@ function offThesis(o: OutboundOpp): boolean {
  * board and back must not make the synthetic/outbound deals flicker out and
  * refetch — they should already be there. */
 let cache: Promise<Startup[]> | null = null;
+
+/** Force the next load to refetch — call after the live outbound scan adds records. */
+export function invalidateSyntheticCache() {
+  cache = null;
+}
 
 export function loadSyntheticStartups(): Promise<Startup[]> {
   cache ??= fetchSyntheticStartups().catch((e) => {

@@ -18,7 +18,7 @@ import {
   type Stage,
   type Startup,
 } from "@/lib/data";
-import { loadSyntheticStartups } from "@/lib/synthetic-opportunities";
+import { loadSyntheticStartups, invalidateSyntheticCache } from "@/lib/synthetic-opportunities";
 import { useSubmittedApplications, applicationToStartup } from "@/lib/applications";
 import { ArrowDownUp, FileText, Filter, Globe2, LayoutGrid, Lock, Mic, Rows, Plus, Search, Sparkles, X, Youtube } from "lucide-react";
 
@@ -59,6 +59,8 @@ function BoardPage() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
   const [llmIds, setLlmIds] = useState<string[] | null>(null);
+  const [scanRegion, setScanRegion] = useState("europe");
+  const [scanning, setScanning] = useState(false);
 
   /** Natural-language table commands: "sort by money", "exclude historical", "only synthetic", "reset". */
   function applyCommand(text: string) {
@@ -190,6 +192,41 @@ function BoardPage() {
       setFeedback(`LLM (${data.provider}) matched ${data.ids.length} deal${data.ids.length === 1 ? "" : "s"}${data.reason ? `: ${data.reason}` : ""} — "reset" to clear`);
     } catch {
       setFeedback("Could not reach the LLM fallback — is the dev server running?");
+    }
+  }
+
+  /** Live outbound refresh: the server asks the configured LLM (web search on
+   *  Claude keys, labeled recall otherwise), screens the finds, persists them,
+   *  and the board reloads so the new deals pop in — and stay. */
+  async function runScan() {
+    setScanning(true);
+    setFeedback(`Scanning ${scanRegion === "us" ? "the US" : scanRegion === "china" ? "China" : "Europe"} for new on-thesis startups…`);
+    try {
+      const res = await fetch("/outbound-scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ region: scanRegion }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setFeedback(data.error ?? "Scan failed.");
+        return;
+      }
+      invalidateSyntheticCache();
+      setSynthetic(await loadSyntheticStartups());
+      if (data.added === 0) {
+        setFeedback("Scan finished — nothing new passed the thesis screen.");
+        return;
+      }
+      setFilters({ ...NO_FILTERS, outboundOnly: true });
+      setView("table");
+      setFeedback(
+        `Scan added ${data.added} new lead${data.added === 1 ? "" : "s"} (${data.mode === "web-searched" ? "web-sourced" : "UNVERIFIED model recall — verify before use"}): ${data.companies.join(", ")} — showing outbound, "reset" to clear`,
+      );
+    } catch {
+      setFeedback("Could not reach the scan endpoint — is the dev server running?");
+    } finally {
+      setScanning(false);
     }
   }
 
@@ -394,6 +431,30 @@ function BoardPage() {
               className={`grid h-6 w-6 shrink-0 place-items-center rounded border ${listening ? "border-negative text-negative animate-pulse" : "border-border bg-surface text-muted-foreground"}`}
             >
               <Mic className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          {/* Live outbound refresh: LLM scan structured by the intelligence-
+              brief template, screened, persisted — new deals pop in and stay. */}
+          <div className="flex items-center gap-1.5">
+            <select
+              value={scanRegion}
+              onChange={(e) => setScanRegion(e.target.value)}
+              className="h-8 rounded-md border border-border bg-card px-2 text-[12px] outline-none"
+              title="Region for the outbound scan"
+            >
+              <option value="europe">Europe</option>
+              <option value="us">US</option>
+              <option value="china">China</option>
+            </select>
+            <button
+              onClick={runScan}
+              disabled={scanning}
+              className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5 disabled:opacity-60"
+              title="Ask the configured LLM to find new on-thesis startups in this region"
+            >
+              <Globe2 className={`h-3.5 w-3.5 ${scanning ? "animate-spin" : ""}`} />
+              {scanning ? "Scanning…" : "Scan outbound"}
             </button>
           </div>
 

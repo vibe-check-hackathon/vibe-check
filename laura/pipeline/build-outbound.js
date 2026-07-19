@@ -176,7 +176,9 @@ function buildRecords() {
 }
 
 const index = JSON.parse(readFileSync(INDEX, "utf8"));
-index.outboundSelected = buildRecords();
+// Rebuild the research-doc records but keep anything the live scan added.
+const freshScans = (index.outboundSelected ?? []).filter((r) => r.freshScan);
+index.outboundSelected = [...buildRecords(), ...freshScans];
 index.outboundBasis =
   "public-source outbound research (MGV-OUTBOUND-2026-COMBINED.md): real companies, quoted public facts, founder-evidence coverage scores only; screened via lib/screening.js; portfolio adjacency from Martin/seed-speed-portfolio-enriched.md";
 writeFileSync(INDEX, JSON.stringify(index, null, 2) + "\n", "utf8");

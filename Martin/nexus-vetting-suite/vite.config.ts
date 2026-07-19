@@ -12,6 +12,8 @@ import { fileURLToPath } from "node:url";
 import { screenOpportunity } from "../../laura/pipeline/lib/screening.js";
 // @ts-expect-error — same pipeline convention: provider-agnostic LLM adapter, key set via laura/pipeline/set-key.js
 import { filterDealsWithLLM, keyStatus, loadConfig } from "../../laura/pipeline/lib/llm.js";
+// @ts-expect-error — live outbound refresh: template-driven LLM scan, screened before it reaches the board
+import { scanOutbound } from "../../laura/pipeline/lib/outbound-scan.js";
 // @ts-expect-error — same pipeline: founder profiling + interview hypotheses
 import { buildFounderProfiles } from "../../laura/pipeline/lib/founder-profiles.js";
 
@@ -235,6 +237,42 @@ const lauraOpportunityDb = () => ({
         } catch (e) {
           res.statusCode = 502;
           res.end(JSON.stringify({ error: `LLM call failed: ${e instanceof Error ? e.message : "unknown"}` }));
+        }
+      });
+    });
+    // Live outbound refresh (MVP #5): LLM scan for new candidates in a region,
+    // structured by the intelligence-brief template, screened, then persisted
+    // to the synthetic index so the new deals pop onto the board and stay.
+    server.middlewares.use("/outbound-scan", (req, res, next) => {
+      if (req.method !== "POST") return next();
+      let body = "";
+      req.on("data", (c: string) => (body += c));
+      req.on("end", async () => {
+        res.setHeader("Content-Type", "application/json");
+        if (!loadConfig()) {
+          res.statusCode = 501;
+          res.end(JSON.stringify({ error: "no LLM key (or expired) — run: node laura/pipeline/set-key.js, then retry" }));
+          return;
+        }
+        try {
+          const { region } = JSON.parse(body || "{}");
+          const indexPath = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "laura", "opportunity-db", "synthetic", "index.json");
+          const index = JSON.parse(await readFile(indexPath, "utf8"));
+          const existingCompanies = [
+            ...(index.outboundSelected ?? []),
+            ...(index.currentApplications ?? []),
+          ].map((r: { company: string }) => r.company);
+          const { records, mode } = await scanOutbound({
+            region: String(region ?? "europe").toLowerCase(),
+            existingCompanies,
+            thesis: await readThesisFlat(),
+          });
+          index.outboundSelected = [...(index.outboundSelected ?? []), ...records];
+          await writeFile(indexPath, JSON.stringify(index, null, 2) + "\n", "utf8");
+          res.end(JSON.stringify({ added: records.length, mode, companies: records.map((r: { company: string }) => r.company) }));
+        } catch (e) {
+          res.statusCode = 502;
+          res.end(JSON.stringify({ error: `scan failed: ${e instanceof Error ? e.message : "unknown"}` }));
         }
       });
     });
