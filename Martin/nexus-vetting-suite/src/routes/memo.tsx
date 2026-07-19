@@ -77,7 +77,7 @@ export function MemoPage() {
           <>
             {picker}
             <Badge tone="teal">Confidence 84</Badge>
-            <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5">
+            <button onClick={() => window.print()} className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5">
               <FileText className="h-3.5 w-3.5" /> Export PDF
             </button>
             <button className="h-8 rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground">Send to IC</button>
@@ -297,7 +297,7 @@ function DealMemo({ s, picker }: { s: Startup; picker: ReactNode }) {
           <>
             {picker}
             <Badge tone={confidence != null ? "teal" : "outline"}>{confidence != null ? `Confidence ${confidence}` : "Confidence —"}</Badge>
-            <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5">
+            <button onClick={() => window.print()} className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] flex items-center gap-1.5">
               <FileText className="h-3.5 w-3.5" /> Export PDF
             </button>
           </>

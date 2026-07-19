@@ -3,6 +3,7 @@ import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge } from "@/components/ui-kit";
 import { CheckCircle2, AlertTriangle, HelpCircle, ChevronRight } from "lucide-react";
 import { INVESTOR } from "@/lib/data";
+import { TermSheetStudio } from "@/components/TermSheetStudio";
 
 export const Route = createFileRoute("/diligence")({
   head: () => ({
@@ -177,6 +178,12 @@ export function DiligencePage() {
             ))}
           </ul>
         </Card>
+
+        {/* Approval gate deliverable: the annotated term sheet, adapting live
+            to the team analysis, with per-change reasoning + evidence. */}
+        <div className="lg:col-span-2">
+          <TermSheetStudio company="FirstCheck" askUsd={1200000} />
+        </div>
       </div>
     </AppShell>
   );
