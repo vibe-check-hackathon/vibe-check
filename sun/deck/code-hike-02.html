@@ -7,6 +7,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💵</text></svg>" />
     <style>
       :root {
+        color-scheme: dark;
         --bg: #0d1117;
         --panel: #161b22;
         --border: #30363d;
@@ -220,8 +221,7 @@
       }
       .card-body {
         padding: 16px 20px 20px;
-        max-height: 62vh;
-        overflow-y: auto;
+        max-height: 80vh;
       }
       .section {
         overflow: hidden;
@@ -638,6 +638,7 @@
       const visible = new Set();
       const timers = new Map();
       let currentLevel = 0;
+      let keyboardLevel = 0;
 
       const statuses = {
         0: { text: "EMPTY", color: "var(--dim)" },
@@ -698,9 +699,39 @@
 
       steps.forEach((step) => observer.observe(step));
 
-      signoffEl.addEventListener("click", () => {
+      function celebrate() {
         confetti({ particleCount: 140, spread: 75, origin: { y: 0.6 } });
+      }
+
+      function scrollToLevel(level) {
+        const target = level === 0 ? document.querySelector("header") : steps[level - 1];
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      document.addEventListener("keydown", (event) => {
+        const isSpace = event.key === " " || event.code === "Space";
+        const movesDown = event.key === "ArrowDown" || (isSpace && !event.shiftKey);
+        const movesUp = event.key === "ArrowUp" || (isSpace && event.shiftKey);
+        if ((!movesDown && !movesUp) || event.repeat) return;
+        event.preventDefault();
+
+        keyboardLevel = Math.max(keyboardLevel, currentLevel);
+        if (movesUp) {
+          keyboardLevel = Math.max(0, keyboardLevel - 1);
+          scrollToLevel(keyboardLevel);
+          return;
+        }
+
+        if (keyboardLevel >= steps.length) {
+          celebrate();
+          return;
+        }
+
+        keyboardLevel += 1;
+        scrollToLevel(keyboardLevel);
       });
+
+      signoffEl.addEventListener("click", celebrate);
     </script>
   </body>
 </html>
