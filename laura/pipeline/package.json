@@ -6,5 +6,8 @@
   "description": "Sourcing and Developing stages of the Opportunity OS pipeline (sun/system-architecture.md), zero dependencies",
   "scripts": {
     "demo": "node run-demo.js"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.5.0"
   }
 }
