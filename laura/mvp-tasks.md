@@ -36,17 +36,22 @@ Sun's spec), `stitch-ai-prompt.md` §3 (event contract).
 - [x] **Synthetic full-consent tier** — seeded faker cohort with contacts,
       portraits, sub-scores (`pipeline/generate-fixtures.js`).
 
-## 3. Multi-Attribute Reasoning ✅ rule-based / 🔲 LLM
+## 3. Multi-Attribute Reasoning ✅
 
 - [x] **Beyond keyword search** — board command bar parses free text like
       *"technical founder, Berlin, AI infra, traction, no prior VC backing"*
       into AND-ed predicates over structured fields (domain classifier, geo
       table, founder-role check, funding-history check, accelerator signal) —
       `board.tsx parseAttributeQuery()`. Typed or voice (Web Speech API).
-- [ ] **LLM fallback for unbounded queries** — build: when the rule parser
-      finds nothing, POST the query + deal JSON schema to Claude
-      (claude-sonnet-5) asking for a filter spec; same predicate shape.
-      Seam already exists (the `!notes.length` branch). ~1h + API key.
+- [x] **LLM fallback for unbounded queries** — when the rule parser finds
+      nothing, the board POSTs query + compact deal JSON to `/nl-query`
+      (vite middleware), which asks whichever LLM is configured and filters
+      the table to the returned ids. Provider-agnostic adapter in
+      `pipeline/lib/llm.js` (Claude / OpenAI / local OpenAI-compatible,
+      detected from the key); key entered in a terminal via
+      `node laura/pipeline/set-key.js`, cached 24h in gitignored
+      `pipeline/.llm-key.json`, read per request (no restart). Graceful
+      501 when no key. Verified end to end against the live endpoint.
 
 ## 4. Inbound: Application & Automated Screening ✅ pipeline / 🔲 form
 
@@ -75,10 +80,30 @@ Sun's spec), `stitch-ai-prompt.md` §3 (event contract).
       was Series B+/unicorn scale, i.e. clearly off-thesis for a
       pre-seed/seed fund — and the screening backend now blocks such records
       structurally.
+- [x] **Current applications are live** � `laura/opportunity-db/synthetic/index.json`
+      exposes `currentApplications` (6 fully synthetic, consent-safe records)
+      plus legacy-compatible `opportunities`. Martin's board loader maps these
+      to `Startup` records with `synthetic: true`, `currentApplication: true`,
+      founder avatars, contact fields, and demo-only sub-scores.
+- [x] **Outbound guardrail works** � the same JSON file currently exposes
+      `outboundSelected: []`. This is intentional: the earlier public-source
+      outbound list was late-stage/unicorn-scale and therefore off-thesis.
+      Martin's `loadSyntheticStartups()` also mirrors the canonical screen and
+      filters any future outbound record with Series B+ or billion-scale signals
+      before it reaches the board.
 - [ ] **Identify (re-run on-thesis)** — rescan for genuinely early-stage
       targets (pre-seed/seed, EU-leaning, B2B software: fresh YC/accelerator
       cohorts, new GitHub projects, stealth-exit signals) and add records
       that pass `screenOpportunity`. Research task, ~1–2h.
+- [ ] **LLM research handoff** � when asking an LLM to add outbound records,
+      constrain it to the thesis before writing files: `stage in {pre-seed,
+      seed}`, no Series B+, no unicorn/billion valuation, realistic initial
+      check fit (~$100K), B2B software/AI/data/automation, preferably EU/DACH
+      or globally accessible. Each candidate must include public source URLs,
+      founder names as public facts only, `assessed: false`, neutral initials
+      avatars, `activitySignal`, `outboundRationale`, and a markdown card under
+      `laura/opportunity-db/synthetic/outbound/`. Run the canonical screen
+      before adding to `outboundSelected`.
 - [x] **Converge** — outbound records flow through the same `Startup` shape,
       stages, and screening UI as inbound (one funnel).
 - [x] **Activate (outreach draft)** — outbound detail dialogs carry a

@@ -56,6 +56,7 @@ function BoardPage() {
   const [command, setCommand] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
+  const [llmIds, setLlmIds] = useState<string[] | null>(null);
 
   /** Natural-language table commands: "sort by money", "exclude historical", "only synthetic", "reset". */
   function applyCommand(text: string) {
@@ -67,6 +68,7 @@ function BoardPage() {
       setSortDir(-1);
       setQuery("");
       setAttrQuery("");
+      setLlmIds(null);
       setFeedback("Reset - showing all deals, original order.");
       return;
     }
@@ -134,7 +136,8 @@ function BoardPage() {
         setFeedback(`attribute search: ${attrs.map((a) => a.label).join(" + ")} (all must match) — "reset" to clear`);
         return;
       }
-      setFeedback('Did not catch a command - try "sort by money", "hide portfolio", "outbound", "reset", or an attribute query like "technical founder, berlin, ai infra, no prior vc backing".');
+      // Rule parser found nothing — hand the query to the LLM fallback (MVP #3).
+      void llmFallback(t);
       return;
     }
     setSortKey(sk);
@@ -142,6 +145,50 @@ function BoardPage() {
     setFilters(next);
     setView("table");
     setFeedback(notes.join(" · "));
+  }
+
+  /** Unbounded queries the rule parser can't handle go to /nl-query, which asks
+   *  whichever LLM key was set at launch (node laura/pipeline/set-key.js). */
+  async function llmFallback(t: string) {
+    setFeedback("Rule parser found nothing — asking the LLM…");
+    const compact = all.map((s) => ({
+      id: s.id,
+      company: s.company,
+      oneLiner: s.oneLiner,
+      sector: s.sector,
+      geography: s.geography,
+      stage: s.stage,
+      round: s.round,
+      ask: s.ask,
+      submitted: s.submitted,
+      companyStatus: s.companyStatus ?? undefined,
+      sourceChannel: s.sourceChannel,
+      activitySignal: s.activitySignal ?? undefined,
+      synthetic: s.synthetic ?? false,
+      outboundSelected: s.outboundSelected ?? false,
+      founders: s.founders.map((f) => ({ name: f.name, role: f.role })),
+    }));
+    try {
+      const res = await fetch("/nl-query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: t, deals: compact }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setFeedback(data.error ?? "LLM fallback unavailable — try a structured command like \"sort by money\" or \"only outbound\".");
+        return;
+      }
+      if (!data.ids?.length) {
+        setFeedback(`LLM found no matching deals${data.reason ? ` — ${data.reason}` : ""}. "reset" to clear.`);
+        return;
+      }
+      setLlmIds(data.ids);
+      setView("table");
+      setFeedback(`LLM (${data.provider}) matched ${data.ids.length} deal${data.ids.length === 1 ? "" : "s"}${data.reason ? `: ${data.reason}` : ""} — "reset" to clear`);
+    } catch {
+      setFeedback("Could not reach the LLM fallback — is the dev server running?");
+    }
   }
 
   function startVoice() {
@@ -177,6 +224,7 @@ function BoardPage() {
   const normalizedQuery = query.trim().toLowerCase();
   const attrPreds = attrQuery ? parseAttributeQuery(attrQuery) : [];
   const visibleDeals = all
+    .filter((s) => !llmIds || llmIds.includes(s.id))
     .filter((s) => attrPreds.every((p) => p.ok(s)))
     .filter((s) => !(filters.historical && s.stage === "Portfolio"))
     .filter((s) => !(filters.synthetic && s.synthetic))

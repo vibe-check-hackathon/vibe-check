@@ -10,6 +10,8 @@ import { join, normalize, extname, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 // @ts-expect-error — canonical screening lives in laura's plain-ESM pipeline (no type defs; single source of truth)
 import { screenOpportunity } from "../../laura/pipeline/lib/screening.js";
+// @ts-expect-error — same pipeline convention: provider-agnostic LLM adapter, key set via laura/pipeline/set-key.js
+import { filterDealsWithLLM, keyStatus, loadConfig } from "../../laura/pipeline/lib/llm.js";
 
 /* Serve laura/opportunity-db as /opportunity-db/* directly from the single
  * source of truth — no copied data in public/. The old copy used a cards/
@@ -90,6 +92,35 @@ const lauraOpportunityDb = () => ({
         } catch {
           res.statusCode = 400;
           res.end(JSON.stringify({ error: "invalid json" }));
+        }
+      });
+    });
+    // LLM fallback for the board command bar (MVP #3): free-text queries the
+    // rule parser can't handle. Key comes from set-key.js (24h) or env vars;
+    // the key file is read per request, so no dev-server restart after set-key.
+    console.log(`  ➜  LLM: ${keyStatus()}`);
+    server.middlewares.use("/nl-query", (req, res, next) => {
+      if (req.method !== "POST") return next();
+      let body = "";
+      req.on("data", (c: string) => (body += c));
+      req.on("end", async () => {
+        res.setHeader("Content-Type", "application/json");
+        if (!loadConfig()) {
+          res.statusCode = 501;
+          res.end(JSON.stringify({ error: "no LLM key (or expired) — run: node laura/pipeline/set-key.js, then retry" }));
+          return;
+        }
+        try {
+          const { query, deals } = JSON.parse(body);
+          if (!query || !Array.isArray(deals)) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: "expected { query, deals }" }));
+            return;
+          }
+          res.end(JSON.stringify(await filterDealsWithLLM(query, deals)));
+        } catch (e) {
+          res.statusCode = 502;
+          res.end(JSON.stringify({ error: `LLM call failed: ${e instanceof Error ? e.message : "unknown"}` }));
         }
       });
     });
