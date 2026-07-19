@@ -5,7 +5,7 @@
 //     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { join, normalize, extname, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -21,9 +21,40 @@ const MIME: Record<string, string> = {
   ".svg": "image/svg+xml",
 };
 
+const THESIS_PATH = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "laura", "pipeline", "thesis.json");
+
 const lauraOpportunityDb = () => ({
   name: "serve-laura-opportunity-db",
   configureServer(server: { middlewares: { use: (route: string, fn: (req: any, res: any, next: () => void) => void) => void } }) {
+    // Thesis Engine endpoint (MVP #1): the investor's fund lens, read + update.
+    server.middlewares.use("/thesis", async (req, res, next) => {
+      try {
+        if (req.method === "GET") {
+          res.setHeader("Content-Type", "application/json");
+          res.end(await readFile(THESIS_PATH));
+          return;
+        }
+        if (req.method === "POST") {
+          let body = "";
+          req.on("data", (c: string) => (body += c));
+          req.on("end", async () => {
+            try {
+              JSON.parse(body);
+              await writeFile(THESIS_PATH, body, "utf8");
+              res.statusCode = 204;
+              res.end();
+            } catch {
+              res.statusCode = 400;
+              res.end("invalid json");
+            }
+          });
+          return;
+        }
+        next();
+      } catch {
+        next();
+      }
+    });
     server.middlewares.use("/opportunity-db", async (req, res, next) => {
       try {
         let rel = decodeURIComponent((req.url ?? "/").split("?")[0]);

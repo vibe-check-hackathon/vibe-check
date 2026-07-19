@@ -13,10 +13,12 @@ Sun's spec), `stitch-ai-prompt.md` §3 (event contract).
 - [x] **Every recommendation filtered through it** — `pipeline/developing.js`
       `assessThesisFit()` + the negotiation model derive targets/reservation
       from thesis values; `run-demo.js` and `serve.js` both consume it.
+- [x] **Thesis backend endpoints** — `GET/POST /thesis` on both servers
+      (nexus vite middleware + `serve.js`) reading/writing `thesis.json`;
+      pipeline picks changes up on next run.
 - [ ] **Investor-editable thesis UI** — build: a nexus `/thesis` route with a
-      form bound to the thesis fields; POST to a `/thesis` endpoint added in
-      `serve.js` (or vite middleware) that rewrites `thesis.json`; pipeline
-      rerun picks it up. ~1–2h.
+      form bound to the fields, POSTing to the existing `/thesis` endpoint.
+      Backend done; form only. ~1h.
 
 ## 2. Smart Data Collection & Management ✅
 
@@ -48,20 +50,29 @@ Sun's spec), `stitch-ai-prompt.md` §3 (event contract).
 
 - [x] **Apply (deck + name minimum)** — `sample/intake-acme.json` models the
       minimal application; Sourcing (`sourcing.js`) builds the card from it.
-- [x] **Screen (fast first-pass)** — Developing (`developing.js`) corroborates
-      claims, flags contradictions, checks thesis fit, and gates at the human
-      approval step; full run visible via `node serve.js` event stream.
+- [x] **Screen (fast first-pass)** — canonical screen in
+      `pipeline/lib/screening.js` (thesis-parameterized: late-stage rounds and
+      billion-scale valuations hard-fail with reasons; sector/stage-unclear
+      ride along as soft flags), exposed as `POST /screen` on serve.js and
+      mirrored in the nexus loader so off-thesis records never reach the
+      board. Developing then corroborates, flags contradictions, and gates at
+      human approval.
 - [ ] **Public apply form** — build: nexus `/apply` route (company, deck
       upload, founder emails) writing an intake JSON; pipeline picks it up.
       The intake JSON shape is the contract — no new design needed. ~2h.
 
 ## 5. Outbound: Identification & Activation ✅ identify / 🔲 activate
 
-- [x] **Identify** — `opportunity-db/synthetic/outbound/`: 10 real
-      public-source records (Lovable, Cursor, ElevenLabs, Granola, Clay,
-      Synthesia, Helsing, Decagon, Mistral, Mercor) with activity signals,
-      rationale, and sources; rendered on the board as "outbound selected",
-      founders unassessed.
+- [x] **Identify (mechanism)** — outbound record shape, loader, and board
+      rendering exist end to end. The first batch (Lovable, Cursor,
+      ElevenLabs, Mistral, Helsing…) was **removed 2026-07-19**: every record
+      was Series B+/unicorn scale, i.e. clearly off-thesis for a
+      pre-seed/seed fund — and the screening backend now blocks such records
+      structurally.
+- [ ] **Identify (re-run on-thesis)** — rescan for genuinely early-stage
+      targets (pre-seed/seed, EU-leaning, B2B software: fresh YC/accelerator
+      cohorts, new GitHub projects, stealth-exit signals) and add records
+      that pass `screenOpportunity`. Research task, ~1–2h.
 - [x] **Converge** — outbound records flow through the same `Startup` shape,
       stages, and screening UI as inbound (one funnel).
 - [ ] **Activate (outreach draft)** — build: "Draft outreach" button on

@@ -144,6 +144,15 @@ function mapOutboundSelected(o: OutboundOpp): Startup {
   };
 }
 
+/* Client-side mirror of the canonical first-pass screen in
+ * laura/pipeline/lib/screening.js: late-stage rounds and billion-scale
+ * valuations are off-thesis (Pre-seed/Seed entry, ~$100K checks) and must
+ * never reach the board — keep in sync with the canonical rules. */
+function offThesis(o: OutboundOpp): boolean {
+  const t = [o.stage, o.latestRound].filter(Boolean).join(" ").toLowerCase();
+  return /series\s+[b-z]\b/.test(t) || /\d+(?:[.,]\d+)?\s*b(?:illion|\b)/.test(t);
+}
+
 export async function loadSyntheticStartups(): Promise<Startup[]> {
   const res = await fetch("/opportunity-db/synthetic/index.json");
   if (!res.ok) return [];
@@ -153,7 +162,7 @@ export async function loadSyntheticStartups(): Promise<Startup[]> {
     outboundSelected?: OutboundOpp[];
   };
   const currentApplications = db.currentApplications ?? db.opportunities ?? [];
-  const outboundSelected = db.outboundSelected ?? [];
+  const outboundSelected = (db.outboundSelected ?? []).filter((o) => !offThesis(o));
   return [
     ...currentApplications.map(mapCurrentApplication),
     ...outboundSelected.map(mapOutboundSelected),
