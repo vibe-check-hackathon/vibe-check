@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge } from "@/components/ui-kit";
+import { INVESTOR } from "@/lib/data";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -221,7 +222,7 @@ export function SettingsPage() {
           <div className="px-5 py-3.5 border-b border-border text-[13px] font-medium">Team</div>
           <div className="divide-y divide-border">
             {[
-              ["Marlene Krüger", "Partner · Screening lead", "MK"],
+              [INVESTOR.name, INVESTOR.role, INVESTOR.initials],
               ["Henrik Aalto", "Partner · Diligence", "HA"],
               ["Sofia Marín", "Principal", "SM"],
               ["David Kim", "Analyst", "DK"],

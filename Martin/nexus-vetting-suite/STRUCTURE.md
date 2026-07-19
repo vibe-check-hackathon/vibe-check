@@ -47,6 +47,41 @@ stage there and the bar, the redirect target, and the sidebar all follow.
 `/applications` and `/references` are still live and reachable from search and
 in-page links; they are simply not in the sidebar or the stage bar.
 
+## Profile switcher
+
+Top-right of the header, next to the account menu. Toggles which side of the
+marketplace you are on; the choice persists in `localStorage`.
+
+| View | Sidebar | Stage bar |
+| --- | --- | --- |
+| **Investor** | Board · Pipeline · Settings | shown |
+| **Startup** | Your application · Settings | hidden |
+
+State lives in `src/lib/view-mode.tsx`. It deliberately renders `investor` on
+first paint (server and client) and adopts the stored value after mount, so
+hydration does not mismatch.
+
+## Inbound applications
+
+Submitting the apply form runs a chain, all of it server-side in the dev
+middleware (`vite.config.ts`):
+
+1. `POST /apply` screens the application against the fund thesis.
+2. `buildFounderProfiles()` resolves each founder's public profile and drafts
+   the personality hypotheses the agent interview must test.
+3. The record is written to `laura/pipeline/inbox/` (gitignored).
+4. `GET /applications` serves them back.
+
+The board reads that endpoint and renders the card in the **same shape as every
+other card** — no special-casing — landing in the `Screened` column with the
+pass/fail verdict attached. The founder page shows the generated profiles and
+their hypotheses above the Acme psychogram.
+
+**Nothing generated here is scored.** Applicants are real people; the profiles
+carry hypotheses with a stated basis and are marked unassessed until the
+interview supplies evidence. This follows the existing guardrail that real
+founders are never given fabricated psychometric judgments.
+
 ## Backend
 
 `laura/pipeline/` is unchanged and still drives the data. It is now **API-only**:
@@ -59,6 +94,14 @@ favour of this app.
 | `POST /approve` | Fires the human approval gate |
 | `GET /thesis` | Fund criteria from `thesis.json` |
 | `GET /opportunity-db/*` | Opportunity cards and logos |
+
+The investor app's own dev endpoints (in `vite.config.ts`, not `serve.js`):
+
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /apply` | Screen an application, profile its founders, file it |
+| `GET /applications` | Everything in the inbox, newest first |
+| `GET`/`POST /thesis` | Fund criteria |
 
 Run it with `node laura/pipeline/serve.js` (port 4173). Requests to `/` now
 404 by design — there is no static frontend behind it any more.

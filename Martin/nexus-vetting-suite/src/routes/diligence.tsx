@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge } from "@/components/ui-kit";
 import { CheckCircle2, AlertTriangle, HelpCircle, Clock } from "lucide-react";
+import { INVESTOR } from "@/lib/data";
 
 export const Route = createFileRoute("/diligence")({
   head: () => ({
@@ -16,7 +17,7 @@ type Lane = { title: string; owner: string; progress: number; items: Item[] };
 const LANES: Lane[] = [
   {
     title: "People",
-    owner: "Kestrel + Marlene",
+    owner: `Kestrel + ${INVESTOR.name.split("-")[0]}`,
     progress: 82,
     items: [
       { label: "Founder background verified (Osei, Berger)", status: "verified" },
@@ -49,7 +50,7 @@ const LANES: Lane[] = [
   },
   {
     title: "Traction",
-    owner: "Marlene",
+    owner: INVESTOR.name.split("-")[0],
     progress: 55,
     items: [
       { label: "Holcim LoI verified", status: "verified" },
@@ -85,7 +86,7 @@ const LANES: Lane[] = [
 const LOG = [
   { t: "09:41", who: "Kestrel", msg: "Reference call with Prof. Weber completed · consistency 98%" },
   { t: "09:22", who: "System", msg: "GitHub commit velocity verified · 3.1× 30-day avg" },
-  { t: "08:58", who: "Marlene", msg: "Requested EPFL license terms from founder" },
+  { t: "08:58", who: INVESTOR.name.split("-")[0], msg: "Requested EPFL license terms from founder" },
   { t: "08:41", who: "Kestrel", msg: "Contradiction flagged: pilot scale (40 vs 12 t/day)" },
   { t: "08:12", who: "System", msg: "thyssenkrupp LoI · counter-signature outstanding" },
   { t: "07:55", who: "Kestrel", msg: "Live reference call started with Ana Fischer" },

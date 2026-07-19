@@ -5,7 +5,8 @@ import {
 } from "recharts";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge } from "@/components/ui-kit";
-import { Sparkles, Lock, ChevronRight } from "lucide-react";
+import { Sparkles, Lock, ChevronRight, UserPlus } from "lucide-react";
+import { useSubmittedApplications } from "@/lib/applications";
 import { ACME_FOUNDERS, ACME_TEAM, type DemoFounder } from "@/lib/data";
 
 export const Route = createFileRoute("/founder")({
@@ -53,6 +54,8 @@ function FounderPage() {
           <span>This scored psychogram runs only on the fictional <span className="font-medium">Acme</span> demo. Real Maschmeyer founders (Secfix, deskbird, VoiceLine…) are shown from public data and <span className="font-medium">deliberately never scored</span> — the suite does not fabricate psychometric judgments of real people.</span>
         </div>
       </div>
+
+      <InboundFounders />
 
       <div className="px-8 pt-4">
         <div className="flex gap-2">
@@ -205,5 +208,82 @@ function TabBtn({ active, onClick, initials, color, children }: { active: boolea
       <span className="h-6 w-6 rounded-full grid place-items-center text-[10px] font-semibold text-primary-foreground" style={{ background: color ?? "var(--muted-foreground)" }}>{initials}</span>
       {children}
     </button>
+  );
+}
+
+/**
+ * Founder profiles generated when an application is submitted. These carry
+ * hypotheses to test, never scores — the applicant is a real person and no
+ * axis has evidence behind it until the interview runs.
+ */
+function InboundFounders() {
+  const submitted = useSubmittedApplications();
+  if (submitted.length === 0) return null;
+
+  return (
+    <div className="px-8 pt-5">
+      <Card className="p-5">
+        <div className="flex items-center gap-2">
+          <UserPlus className="h-4 w-4 text-primary" />
+          <span className="text-[13.5px] font-medium">Inbound founder profiles</span>
+          <Badge tone="outline">{submitted.reduce((n, r) => n + r.founders.length, 0)} founders</Badge>
+        </div>
+        <p className="mt-1.5 text-[12px] text-muted-foreground">
+          Created automatically on submission, with the personality hypotheses the agent interview has to test.
+          Unscored by design.
+        </p>
+
+        <div className="mt-4 space-y-4">
+          {submitted.map((record) => (
+            <div key={record.id} className="rounded-md border border-border">
+              <div className="flex items-center justify-between border-b border-border px-3 py-2">
+                <span className="text-[12.5px] font-medium">{record.application.company}</span>
+                <Badge tone={record.screening?.pass ? "positive" : "outline"}>
+                  {record.screening?.pass ? "Passed screening" : "Screened out"}
+                </Badge>
+              </div>
+              {record.founders.map((f) => (
+                <div key={f.id} className="px-3 py-3 border-b border-border last:border-b-0">
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-7 w-7 rounded-full bg-surface-2 grid place-items-center text-[11px] font-medium">
+                      {f.avatar.value}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="text-[12.5px] font-medium">
+                        {f.name}
+                        {f.role && <span className="ml-1.5 text-muted-foreground font-normal">{f.role}</span>}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground truncate">
+                        {f.public.linkedin ? (
+                          <a href={f.public.linkedin} target="_blank" rel="noreferrer" className="hover:underline">
+                            {f.public.linkedin.replace("https://www.", "")}
+                          </a>
+                        ) : (
+                          "no public profile resolved"
+                        )}
+                        {" · "}
+                        <span className="uppercase tracking-wider">{f.public.status}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ul className="mt-2.5 space-y-1.5 pl-9">
+                    {f.hypotheses.map((h) => (
+                      <li key={h.id} className="text-[12px]">
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground mr-1.5">
+                          {h.axis}
+                        </span>
+                        <span className="text-foreground/90">{h.text}</span>
+                        <span className="block text-[11px] text-muted-foreground/80">{h.basis}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
   );
 }

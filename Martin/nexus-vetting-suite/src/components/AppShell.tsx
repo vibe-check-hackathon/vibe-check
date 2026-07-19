@@ -8,6 +8,9 @@ import {
   Search,
   Command,
   Bell,
+  FileText,
+  Building2,
+  Briefcase,
   CornerDownLeft,
   ChevronDown,
   Check,
@@ -15,16 +18,25 @@ import {
 } from "lucide-react";
 import logo from "@/assets/vibecheck.svg.asset.json";
 import { PipelineStages, isPipelineRoute, PIPELINE_STAGES } from "@/components/PipelineStages";
-import { STARTUPS } from "@/lib/data";
+import { STARTUPS, INVESTOR } from "@/lib/data";
+import { useViewMode, type ViewMode } from "@/lib/view-mode";
 
 /**
  * Top-level navigation only. The four pipeline stages (snapshot → founders →
  * interview → diligence) live in the horizontal stage bar, not here.
  */
-const NAV: { to: string; label: string; icon: LucideIcon; exact?: boolean }[] = [
+type NavItem = { to: string; label: string; icon: LucideIcon; exact?: boolean };
+
+const INVESTOR_NAV: NavItem[] = [
   { to: "/board", label: "Board", icon: Kanban },
   // Pipeline has no page of its own — it enters at the first stage.
   { to: PIPELINE_STAGES[0].to, label: "Pipeline", icon: LayoutDashboard, exact: true },
+  { to: "/settings", label: "Settings", icon: Settings },
+];
+
+/** The startup side sees its own application, never the deal flow. */
+const STARTUP_NAV: NavItem[] = [
+  { to: "/apply", label: "Your application", icon: FileText },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -38,6 +50,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     if (isInvestor()) setAuthed(true);
     else window.location.href = "/apply";
   }, []);
+  /* The gate decides who you are; this toggle lets an authenticated investor
+   * preview the startup side without logging out. */
+  const { mode, setMode } = useViewMode();
+  const NAV = mode === "investor" ? INVESTOR_NAV : STARTUP_NAV;
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const search = useRouterState({ select: (s) => s.location.search as { sector?: string } });
   const navigate = useNavigate();
@@ -239,21 +255,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   )}
                 </div>
 
+                {/* Profile switcher — which side of the marketplace you are on */}
+                <ProfileSwitcher mode={mode} setMode={setMode} />
+
                 {/* User (moved from sidebar) */}
                 <div className="relative pl-1">
                   <button
                     onClick={() => setMenu(menu === "user" ? null : "user")}
                     className="flex items-center gap-2 h-8 rounded-md border border-border bg-surface pl-1 pr-2 hover:bg-accent transition-colors"
                   >
-                    <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground grid place-items-center text-[10px] font-semibold">MK</span>
-                    <span className="hidden lg:block text-[12px] font-medium leading-none">Marlene Krüger</span>
+                    <Avatar />
+                    <span className="hidden lg:block text-[12px] font-medium leading-none">
+                      {mode === "investor" ? INVESTOR.name : "Acme Robotics"}
+                    </span>
                     <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </button>
                   {menu === "user" && (
-                    <div className="absolute right-0 top-10 w-56 rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50 py-1">
+                    <div className="absolute right-0 top-10 w-60 rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50 py-1">
                       <div className="px-3 py-2 border-b border-border">
-                        <div className="text-[12.5px] font-medium">Marlene Krüger</div>
-                        <div className="text-[11px] text-muted-foreground">Partner · Screening lead</div>
+                        <div className="text-[12.5px] font-medium">
+                          {mode === "investor" ? INVESTOR.name : "Acme Robotics"}
+                        </div>
+                        <div className="text-[11px] text-muted-foreground">
+                          {mode === "investor" ? INVESTOR.role : "Founder · applicant"}
+                        </div>
                       </div>
                       <MenuItem onClick={() => { setMenu(null); navigate({ to: "/settings" as never }); }}>Settings</MenuItem>
                       <MenuItem onClick={() => { logout(); window.location.href = "/apply"; }}>Log out</MenuItem>
@@ -265,7 +290,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          {isPipelineRoute(pathname) && <PipelineStages />}
+          {mode === "investor" && isPipelineRoute(pathname) && <PipelineStages />}
 
           <main className="flex-1 min-w-0">{children}</main>
         </div>
@@ -273,6 +298,61 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* click-away backdrop for header menus */}
       {menu && <div className="fixed inset-0 z-40" onClick={() => setMenu(null)} />}
+    </div>
+  );
+}
+
+/** Investor photo when one is supplied, initials until then. */
+function Avatar() {
+  if (INVESTOR.avatarUrl) {
+    return (
+      <img
+        src={INVESTOR.avatarUrl}
+        alt={INVESTOR.name}
+        className="h-6 w-6 rounded-full object-cover"
+      />
+    );
+  }
+  return (
+    <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground grid place-items-center text-[10px] font-semibold">
+      {INVESTOR.initials}
+    </span>
+  );
+}
+
+/** Segmented investor/startup toggle, pinned in the header's top-right group. */
+function ProfileSwitcher({ mode, setMode }: { mode: ViewMode; setMode: (m: ViewMode) => void }) {
+  const options: { id: ViewMode; label: string; icon: typeof Briefcase }[] = [
+    { id: "investor", label: "Investor", icon: Briefcase },
+    { id: "startup", label: "Startup", icon: Building2 },
+  ];
+
+  return (
+    <div
+      role="tablist"
+      aria-label="Profile view"
+      className="flex items-center gap-0.5 h-8 rounded-md border border-border bg-surface p-0.5"
+    >
+      {options.map(({ id, label, icon: Icon }) => {
+        const active = mode === id;
+        return (
+          <button
+            key={id}
+            role="tab"
+            aria-selected={active}
+            onClick={() => setMode(id)}
+            className={
+              "h-7 rounded px-2 text-[12px] flex items-center gap-1.5 transition-colors " +
+              (active
+                ? "bg-primary text-primary-foreground font-medium"
+                : "text-muted-foreground hover:text-foreground")
+            }
+          >
+            <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+            <span className="hidden sm:block">{label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }
