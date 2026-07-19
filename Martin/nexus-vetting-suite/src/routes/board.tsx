@@ -19,7 +19,7 @@ import {
   type Startup,
 } from "@/lib/data";
 import { loadSyntheticStartups } from "@/lib/synthetic-opportunities";
-import { FileText, Filter, Globe2, LayoutGrid, Lock, Mic, Rows, Plus, Sparkles, X, Youtube } from "lucide-react";
+import { ArrowDownUp, FileText, Filter, Globe2, LayoutGrid, Lock, Mic, Rows, Plus, Search, Sparkles, X, Youtube } from "lucide-react";
 
 export const Route = createFileRoute("/board")({
   head: () => ({
@@ -29,8 +29,20 @@ export const Route = createFileRoute("/board")({
 });
 
 type SortKey = "date" | "money" | "name" | "score" | null;
-type TableFilters = { historical: boolean; synthetic: boolean; realOnly: boolean; syntheticOnly: boolean };
-const NO_FILTERS: TableFilters = { historical: false, synthetic: false, realOnly: false, syntheticOnly: false };
+type TableFilters = {
+  historical: boolean;
+  synthetic: boolean;
+  realOnly: boolean;
+  syntheticOnly: boolean;
+  outboundOnly: boolean;
+};
+const NO_FILTERS: TableFilters = {
+  historical: false,
+  synthetic: false,
+  realOnly: false,
+  syntheticOnly: false,
+  outboundOnly: false,
+};
 
 function BoardPage() {
   const [synthetic, setSynthetic] = useState<Startup[]>([]);
@@ -39,6 +51,7 @@ function BoardPage() {
   const [sortKey, setSortKey] = useState<SortKey>(null);
   const [sortDir, setSortDir] = useState<1 | -1>(-1);
   const [filters, setFilters] = useState<TableFilters>(NO_FILTERS);
+  const [query, setQuery] = useState("");
   const [command, setCommand] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
@@ -50,7 +63,9 @@ function BoardPage() {
     if (/reset|clear|show all/.test(t)) {
       setFilters(NO_FILTERS);
       setSortKey(null);
-      setFeedback("Reset — showing all deals, original order.");
+      setSortDir(-1);
+      setQuery("");
+      setFeedback("Reset - showing all deals, original order.");
       return;
     }
     const notes: string[] = [];
@@ -85,24 +100,32 @@ function BoardPage() {
       next.historical = false;
       notes.push("including historical portfolio");
     }
-    if (/(exclude|hide|without|no|remove) synthetic/.test(t)) {
+    if (/(exclude|hide|without|no|remove) (synthetic|current app|current application)/.test(t)) {
       next.synthetic = true;
       next.syntheticOnly = false;
-      notes.push("excluding synthetic cohort");
+      notes.push("excluding current applications");
     }
-    if (/only synthetic|synthetic only/.test(t)) {
+    if (/only synthetic|synthetic only|only current app|current app only|current applications/.test(t)) {
       next.syntheticOnly = true;
       next.realOnly = false;
+      next.outboundOnly = false;
       next.synthetic = false;
-      notes.push("synthetic cohort only");
+      notes.push("current applications only");
+    }
+    if (/only outbound|outbound only|outbound selected/.test(t)) {
+      next.outboundOnly = true;
+      next.syntheticOnly = false;
+      next.realOnly = false;
+      notes.push("outbound selected only");
     }
     if (/only (real|official)|(real|official) only|official cards/.test(t)) {
       next.realOnly = true;
       next.syntheticOnly = false;
+      next.outboundOnly = false;
       notes.push("official cards only");
     }
     if (!notes.length) {
-      setFeedback('Did not catch a command — try "sort by money", "sort by date oldest", "exclude historical", "only synthetic", "reset".');
+      setFeedback('Did not catch a command - try "sort by money", "hide portfolio", "current apps", "outbound", "reset".');
       return;
     }
     setSortKey(sk);
@@ -142,20 +165,45 @@ function BoardPage() {
   }, []);
 
   const all = [...STARTUPS, ...synthetic];
-  /* Portfolio lives in its own overview section under the board, not as a lane. */
-  const pipelineStages = STAGES.filter((s) => s !== "Portfolio");
-  const portfolio = all.filter((x) => x.stage === "Portfolio");
-  const pipelineDeals = all.filter((x) => x.stage !== "Portfolio");
-  const byStage: Record<Stage, typeof STARTUPS> = Object.fromEntries(
-    pipelineStages.map((s) => [s, all.filter((x) => x.stage === s)]),
-  ) as never;
-
-  /* Table rows after the AI command bar's filters + sort. */
-  let tableRows = all
+  const normalizedQuery = query.trim().toLowerCase();
+  const visibleDeals = all
     .filter((s) => !(filters.historical && s.stage === "Portfolio"))
     .filter((s) => !(filters.synthetic && s.synthetic))
     .filter((s) => !(filters.syntheticOnly && !s.synthetic))
-    .filter((s) => !(filters.realOnly && (s.synthetic || s.demo)));
+    .filter((s) => !(filters.outboundOnly && !s.outboundSelected))
+    .filter((s) => !(filters.realOnly && (s.synthetic || s.demo || s.outboundSelected)))
+    .filter((s) => {
+      if (!normalizedQuery) return true;
+      const haystack = [
+        s.company,
+        s.sector,
+        s.geography,
+        s.stage,
+        s.round,
+        s.ask,
+        s.companyStatus,
+        s.vehicle,
+        s.sourceChannel,
+        s.activitySignal,
+        s.outboundRationale,
+        s.oneLiner,
+        founderNames(s.founders),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(normalizedQuery);
+    });
+  /* Portfolio lives in its own overview section under the board, not as a lane. */
+  const pipelineStages = STAGES.filter((s) => s !== "Portfolio");
+  const portfolio = visibleDeals.filter((x) => x.stage === "Portfolio");
+  const pipelineDeals = visibleDeals.filter((x) => x.stage !== "Portfolio");
+  const byStage: Record<Stage, typeof STARTUPS> = Object.fromEntries(
+    pipelineStages.map((s) => [s, visibleDeals.filter((x) => x.stage === s)]),
+  ) as never;
+
+  /* Table rows after the AI command bar's filters + sort. */
+  let tableRows = visibleDeals;
   if (sortKey) {
     tableRows = [...tableRows].sort((a, b) => {
       if (sortKey === "name") return a.company.localeCompare(b.company) * sortDir;
@@ -187,20 +235,128 @@ function BoardPage() {
                 <Rows className="h-3 w-3" /> Table
               </button>
             </div>
-            <button
-              onClick={() => {
-                const next = !filters.realOnly;
-                setFilters({ ...filters, realOnly: next, syntheticOnly: false });
-                setView("table");
-                setFeedback(next ? "Official cards only." : "Showing all deals.");
-              }}
-              className={`h-8 rounded-md border px-3 text-[12px] flex items-center gap-1.5 ${filters.realOnly ? "border-primary/50 bg-secondary text-secondary-foreground" : "border-border bg-surface"}`}
-            >
-              <Filter className="h-3 w-3" /> Official cards
-            </button>
           </>
         }
       />
+
+      <div className="border-b border-border bg-background px-6 py-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative min-w-[220px] flex-1">
+            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search companies, founders, sectors..."
+              className="h-8 w-full rounded-md border border-border bg-surface pl-8 pr-3 text-[12.5px] outline-none focus:ring-1 focus:ring-ring"
+            />
+          </div>
+
+          <ToolbarToggle
+            active={filters.realOnly}
+            label="Official only"
+            onClick={() => {
+              const next = !filters.realOnly;
+              setFilters({ ...filters, realOnly: next, syntheticOnly: false, outboundOnly: false, synthetic: false });
+              setFeedback(next ? "Official cards only." : "Showing official, current application, outbound, and demo deals.");
+            }}
+          />
+          <ToolbarToggle
+            active={filters.syntheticOnly}
+            label="Current apps"
+            onClick={() => {
+              const next = !filters.syntheticOnly;
+              setFilters({ ...filters, syntheticOnly: next, realOnly: false, outboundOnly: false, synthetic: false });
+              setFeedback(next ? "Current applications only." : "Showing all deal types.");
+            }}
+          />
+          <ToolbarToggle
+            active={filters.outboundOnly}
+            label="Outbound selected"
+            onClick={() => {
+              const next = !filters.outboundOnly;
+              setFilters({ ...filters, outboundOnly: next, syntheticOnly: false, realOnly: false });
+              setFeedback(next ? "Outbound selected only." : "Showing all deal types.");
+            }}
+          />
+          <ToolbarToggle
+            active={filters.historical}
+            label="Hide portfolio"
+            onClick={() => {
+              const next = !filters.historical;
+              setFilters({ ...filters, historical: next });
+              setFeedback(next ? "Historical portfolio hidden." : "Historical portfolio visible.");
+            }}
+          />
+
+          <div className="flex items-center gap-1 rounded-md border border-border bg-surface px-2">
+            <ArrowDownUp className="h-3.5 w-3.5 text-muted-foreground" />
+            <select
+              value={sortKey ?? "none"}
+              onChange={(e) => {
+                const value = e.target.value as Exclude<SortKey, null> | "none";
+                setSortKey(value === "none" ? null : value);
+                setFeedback(value === "none" ? "Original order." : `Sorted by ${value}.`);
+              }}
+              className="h-8 bg-transparent text-[12px] outline-none"
+            >
+              <option value="none">Sort</option>
+              <option value="money">Amount</option>
+              <option value="date">Date</option>
+              <option value="name">Name</option>
+              <option value="score">Founder score</option>
+            </select>
+            <button
+              onClick={() => setSortDir(sortDir === -1 ? 1 : -1)}
+              className="h-6 rounded border border-border bg-background px-1.5 text-[10.5px] text-muted-foreground hover:text-foreground"
+              title="Toggle sort direction"
+            >
+              {sortDir === -1 ? "Desc" : "Asc"}
+            </button>
+          </div>
+
+          <div className="flex min-w-[260px] flex-1 items-center gap-2 rounded-md border border-border bg-card px-2.5 py-1.5">
+            <Sparkles className="h-3.5 w-3.5 shrink-0 text-teal" />
+            <input
+              value={command}
+              onChange={(e) => setCommand(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && applyCommand(command)}
+              placeholder='Command: "sort by money", "current apps", "outbound", "hide portfolio", "reset"'
+              className="w-full bg-transparent text-[12.5px] outline-none placeholder:text-muted-foreground/70"
+            />
+            <button onClick={() => applyCommand(command)} className="h-6 rounded border border-border bg-surface px-2 text-[11px]">
+              Apply
+            </button>
+            <button
+              onClick={startVoice}
+              title="Speak a command"
+              className={`grid h-6 w-6 shrink-0 place-items-center rounded border ${listening ? "border-negative text-negative animate-pulse" : "border-border bg-surface text-muted-foreground"}`}
+            >
+              <Mic className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          <button
+            onClick={() => {
+              setFilters(NO_FILTERS);
+              setSortKey(null);
+              setSortDir(-1);
+              setQuery("");
+              setCommand("");
+              setFeedback("Reset - showing all deals, original order.");
+            }}
+            className="h-8 rounded-md border border-border bg-surface px-3 text-[12px] text-muted-foreground hover:text-foreground"
+          >
+            Reset
+          </button>
+        </div>
+        <div className="mt-2 flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
+          <span>
+            Showing {visibleDeals.length} of {all.length} deals
+            {sortKey ? ` - sorted by ${sortKey} (${sortDir === -1 ? "descending" : "ascending"})` : ""}
+          </span>
+          {feedback && <span>{feedback}</span>}
+        </div>
+      </div>
 
       {view === "kanban" && (<>
       <div className="px-6 py-5 overflow-x-auto">
@@ -253,7 +409,8 @@ function BoardPage() {
                       </div>
                       {s.urgency === "High" && <Badge tone="warning">Urgent</Badge>}
                       {s.trustScore != null && s.trustScore >= 85 && <Badge tone="positive">Trust {s.trustScore}</Badge>}
-                      {s.synthetic && <Badge tone="positive">synthetic</Badge>}
+                      {s.currentApplication && <Badge tone="positive">current app</Badge>}
+                      {s.outboundSelected && <Badge tone="teal">outbound</Badge>}
                       {!s.assessed && <Badge tone="outline">not assessed</Badge>}
                     </div>
                     {(s.website || s.sourceCardUrl) && (
@@ -326,29 +483,6 @@ function BoardPage() {
       {/* Table view */}
       {view === "table" && (
       <Section title="All deals · table">
-        <div className="mb-2 flex items-center gap-2">
-          <div className="flex flex-1 items-center gap-2 rounded-md border border-border bg-card px-2.5 py-1.5">
-            <Sparkles className="h-3.5 w-3.5 shrink-0 text-teal" />
-            <input
-              value={command}
-              onChange={(e) => setCommand(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && applyCommand(command)}
-              placeholder='Tell the table what to do — "sort by money", "sort by date oldest", "exclude historical", "only synthetic", "reset"'
-              className="w-full bg-transparent text-[12.5px] outline-none placeholder:text-muted-foreground/70"
-            />
-          </div>
-          <button onClick={() => applyCommand(command)} className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]">
-            Apply
-          </button>
-          <button
-            onClick={startVoice}
-            title="Speak a command"
-            className={`h-8 w-8 grid place-items-center rounded-md border ${listening ? "border-negative text-negative animate-pulse" : "border-border bg-surface text-muted-foreground"}`}
-          >
-            <Mic className="h-3.5 w-3.5" />
-          </button>
-        </div>
-        {feedback && <div className="mb-2 text-[11px] text-muted-foreground">✓ {feedback}</div>}
         <Card className="p-0 overflow-hidden">
           <table className="w-full text-[12.5px]">
             <thead className="bg-surface border-b border-border text-muted-foreground">
@@ -365,6 +499,13 @@ function BoardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
+              {tableRows.length === 0 && (
+                <tr>
+                  <td colSpan={9} className="px-4 py-8 text-center text-[12px] text-muted-foreground">
+                    No deals match the current search and filters.
+                  </td>
+                </tr>
+              )}
               {tableRows.map((s) => (
                 <tr key={s.id} onClick={() => setSelected(s)} className="hover:bg-surface/60 cursor-pointer">
                   <td className="px-4 py-2.5">
@@ -408,6 +549,29 @@ function BoardPage() {
   );
 }
 
+function ToolbarToggle({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`h-8 rounded-md border px-3 text-[12px] transition-colors ${
+        active
+          ? "border-primary/50 bg-secondary text-secondary-foreground"
+          : "border-border bg-surface text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  Portfolio alignment: shared domains between a pipeline deal and    */
 /*  existing portfolio companies = warm contact / synergy candidates.  */
@@ -446,8 +610,13 @@ const PORTFOLIO_POOL = STARTUPS.filter((s) => s.stage === "Portfolio");
 
 /* ---------- table sorting helpers (AI command bar) ---------- */
 function parseMoney(ask: string): number {
-  const m = ask.match(/([\d.]+)\s*M/i);
-  return m ? parseFloat(m[1]) : -1;
+  const m = ask.match(/([\d.]+)\s*([BMK])?/i);
+  if (!m) return -1;
+  const n = parseFloat(m[1]);
+  const unit = (m[2] ?? "").toUpperCase();
+  if (unit === "B") return n * 1000;
+  if (unit === "K") return n / 1000;
+  return n;
 }
 function parseDateKey(submitted: string): number {
   const full = Date.parse(submitted);
@@ -499,7 +668,8 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               <span className={`text-[11px] px-1.5 py-0.5 rounded ${stageColor(s.stage)}`}>{s.stage}</span>
               {outcome && <Badge tone={outcome.tone}>{outcome.label}</Badge>}
-              {s.synthetic && <Badge tone="positive">synthetic — nobody real</Badge>}
+              {s.currentApplication && <Badge tone="positive">current app - fictional</Badge>}
+              {s.outboundSelected && <Badge tone="teal">outbound selected</Badge>}
               {s.demo && <Badge tone="positive">live demo (fictional)</Badge>}
               {!s.assessed && <Badge tone="outline">not assessed</Badge>}
             </div>
@@ -512,7 +682,19 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
           </DetailBlock>
         )}
 
-        {!s.demo && !s.synthetic && (
+        {s.outboundRationale && (
+          <DetailBlock title="Why selected">
+            <p className="text-[12.5px] leading-relaxed text-foreground/90">{s.outboundRationale}</p>
+          </DetailBlock>
+        )}
+
+        {s.activitySignal && (
+          <DetailBlock title="Current activity signal">
+            <p className="text-[12.5px] leading-relaxed text-foreground/90">{s.activitySignal}</p>
+          </DetailBlock>
+        )}
+
+        {!s.demo && !s.synthetic && !s.outboundSelected && (
           <DetailBlock title="Evaluation retrospective">
             <div className="rounded-md border border-border bg-surface p-2.5">
               <div className="text-[11.5px] text-muted-foreground">
@@ -539,7 +721,7 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
           </DetailBlock>
         )}
 
-        <DetailBlock title={s.synthetic ? "Founders — full data & sub-scores (fictional people)" : "Founders — evaluation metrics"}>
+        <DetailBlock title={s.synthetic ? "Founders - full data & sub-scores (fictional people)" : "Founders - public records, not scored"}>
           <div className="space-y-2">
             {s.founders.map((f) => (
               <FounderRow key={f.id ?? f.name} founder={f} company={s.company} synthetic={!!s.synthetic} axes={axisValuesFor(s, f)} />
@@ -596,12 +778,26 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
           </DetailBlock>
         )}
 
+        {s.sources && s.sources.length > 0 && (
+          <DetailBlock title="Public sources">
+            <div className="space-y-1.5">
+              {s.sources.map((source) => (
+                <a key={source.url} href={source.url} target="_blank" rel="noreferrer" className="block text-[12px] text-primary hover:underline">
+                  {source.label}
+                </a>
+              ))}
+            </div>
+          </DetailBlock>
+        )}
+
         <p className="mt-4 border-t border-border pt-3 text-[10.5px] leading-relaxed text-muted-foreground">
           {s.synthetic
-            ? "Generated with faker.js (seed 4242): every person, score, email, and domain is fictional (.example TLD). This tier shows the full-consent experience we do not simulate for real people."
+            ? "Current application demo: generated with faker.js (seed 4242). Every person, score, email, and domain is fictional (.example TLD), so the full-consent scoring experience is safe to show."
             : s.demo
               ? "Fictional demo company — powers the live interview studio and founder psychogram."
-              : "Public sources only. Founder evaluations intentionally not assessed — no fabricated judgments of real people. LinkedIn links are search queries, not confirmed profiles."}
+              : s.outboundSelected
+                ? "Outbound-selected real company. Public sources only; founders are intentionally not scored. LinkedIn links are search queries, not confirmed profiles."
+                : "Public sources only. Founder evaluations intentionally not assessed — no fabricated judgments of real people. LinkedIn links are search queries, not confirmed profiles."}
         </p>
       </Card>
     </div>

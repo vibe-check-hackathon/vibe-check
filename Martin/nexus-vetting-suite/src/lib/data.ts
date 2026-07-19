@@ -81,6 +81,18 @@ export type Startup = {
   demo?: boolean;
   /** Faker-generated cohort from laura/opportunity-db/synthetic — nobody real. */
   synthetic?: boolean;
+  /** Synthetic demo opportunity that represents a current inbound application. */
+  currentApplication?: boolean;
+  /** Public-source real startup selected for outbound research. */
+  outboundSelected?: boolean;
+  /** Source channel for board filtering and detail labels. */
+  sourceChannel?: string;
+  /** Public activity signal behind an outbound-selected record. */
+  activitySignal?: string | null;
+  /** Why the company was selected for outbound. */
+  outboundRationale?: string | null;
+  /** Source URLs backing outbound-selected records. */
+  sources?: { label: string; url: string }[];
 };
 
 /**

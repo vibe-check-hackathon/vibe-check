@@ -6,7 +6,7 @@
 // Usage: node generate-fixtures.js   (writes ../opportunity-db/synthetic/)
 
 import { faker } from "@faker-js/faker";
-import { writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { writeFileSync, mkdirSync, existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -96,6 +96,16 @@ const opportunities = SECTORS.map(([sector, pitch], i) => {
   };
 });
 
+const existingIndexPath = join(outDir, "index.json");
+const preservedOutboundSelected = existsSync(existingIndexPath)
+  ? (JSON.parse(readFileSync(existingIndexPath, "utf8")).outboundSelected ?? [])
+  : [];
+const currentApplications = opportunities.map((o) => ({
+  ...o,
+  currentApplication: true,
+  sourceChannel: "current_application",
+}));
+
 for (const o of opportunities) {
   const founderMd = o.founders.map((f) => `### ${f.id} - ${f.name}, ${f.role}
 
@@ -136,9 +146,12 @@ ${founderMd}
 
 writeFileSync(join(outDir, "index.json"), JSON.stringify({
   generated: new Date().toISOString().slice(0, 10),
-  generator: "generate-fixtures.js, @faker-js/faker seed 4242",
-  basis: "fully synthetic people and companies; .example domains; safe to show and push",
-  opportunities,
+  collectionDate: "2026-07-19",
+  generator: "generate-fixtures.js, @faker-js/faker seed 4242 + preserved public-source outbound curation",
+  basis: "currentApplications are fully synthetic consent-safe demo applications; outboundSelected are real public-source startup records with no founder scoring",
+  opportunities: currentApplications,
+  currentApplications,
+  outboundSelected: preservedOutboundSelected,
 }, null, 2), "utf8");
 
 console.log(`wrote ${opportunities.length} synthetic opportunities to opportunity-db/synthetic/`);
