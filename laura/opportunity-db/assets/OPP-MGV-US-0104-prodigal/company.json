@@ -1,0 +1,10 @@
+{
+  "company": "Prodigal",
+  "website": "https://www.prodigaltech.com/",
+  "channels": {
+    "website": "https://www.prodigaltech.com/",
+    "linkedinCompanySearch": "https://www.linkedin.com/search/results/companies/?keywords=Prodigal"
+  },
+  "assets": { "logo": "logo.png", "logoSource": "favicon via google s2 service, domain prodigaltech.com", "fetched": "2026-07-19" },
+  "policy": "company-level public assets only; no personal data of founders stored (consent-gated per system design)"
+}
