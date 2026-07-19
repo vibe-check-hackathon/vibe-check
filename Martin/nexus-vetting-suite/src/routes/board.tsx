@@ -42,8 +42,12 @@ function BoardPage() {
   }, []);
 
   const all = [...STARTUPS, ...synthetic];
+  /* Portfolio lives in its own overview section under the board, not as a lane. */
+  const pipelineStages = STAGES.filter((s) => s !== "Portfolio");
+  const portfolio = all.filter((x) => x.stage === "Portfolio");
+  const pipelineDeals = all.filter((x) => x.stage !== "Portfolio");
   const byStage: Record<Stage, typeof STARTUPS> = Object.fromEntries(
-    STAGES.map((s) => [s, all.filter((x) => x.stage === s)]),
+    pipelineStages.map((s) => [s, all.filter((x) => x.stage === s)]),
   ) as never;
 
   return (
@@ -71,7 +75,7 @@ function BoardPage() {
 
       <div className="px-6 py-5 overflow-x-auto">
         <div className="flex gap-3 min-w-max">
-          {STAGES.map((stage) => (
+          {pipelineStages.map((stage) => (
             <div key={stage} className="w-[280px] shrink-0">
               <div className="flex items-center justify-between mb-2 px-1">
                 <div className="flex items-center gap-2">
@@ -144,6 +148,50 @@ function BoardPage() {
         </div>
       </div>
 
+      {/* Portfolio overview — existing contacts + alignments with new deals */}
+      <Section title="Portfolio · existing contacts & potential alignments">
+        <p className="mb-3 -mt-1 text-[11.5px] text-muted-foreground">
+          Companies the group already backed. Shared domains with pipeline deals are shown as
+          alignment chips — an existing contact is an intro path, a reference source, or a synergy check.
+        </p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {portfolio.map((p) => {
+            const aligned = alignmentsFor(p, pipelineDeals);
+            const outcome = outcomeOf(p);
+            return (
+              <Card key={p.id} onClick={() => setSelected(p)} className="p-3 hover:border-primary/40 transition-colors cursor-pointer">
+                <div className="flex items-start gap-2.5">
+                  <CompanyMark startup={p} />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[13px] font-medium truncate">{p.company}</div>
+                    <div className="text-[11px] text-muted-foreground truncate">{p.sector}</div>
+                  </div>
+                  {outcome && <Badge tone={outcome.tone}>{outcome.label.split(" — ")[0]}</Badge>}
+                </div>
+                <div className="mt-2 text-[10.5px] text-muted-foreground truncate">
+                  Contacts: {founderNames(p.founders)}
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-border pt-2">
+                  {aligned.length ? (
+                    <>
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Aligns</span>
+                      {aligned.slice(0, 3).map(({ co, shared }) => (
+                        <span key={co.id} title={`shared: ${shared.join(", ")}`} className="rounded border border-border bg-secondary px-1.5 py-0.5 text-[10px] text-secondary-foreground">
+                          {co.company}
+                        </span>
+                      ))}
+                      {aligned.length > 3 && <span className="text-[10px] text-muted-foreground">+{aligned.length - 3}</span>}
+                    </>
+                  ) : (
+                    <span className="text-[10px] text-muted-foreground">No pipeline alignment yet</span>
+                  )}
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      </Section>
+
       {/* Table view */}
       <Section title="All deals · table">
         <Card className="p-0 overflow-hidden">
@@ -204,6 +252,42 @@ function BoardPage() {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Portfolio alignment: shared domains between a pipeline deal and    */
+/*  existing portfolio companies = warm contact / synergy candidates.  */
+/* ------------------------------------------------------------------ */
+const DOMAIN_MAP: [RegExp, string][] = [
+  [/robot|vision-guided|picking/, "robotics"],
+  [/warehouse|logistic|freight|fulfil|supply chain/, "logistics"],
+  [/schedul|routing|optimi[sz]|solver/, "planning & ops"],
+  [/voice|speech|frontline/, "voice AI"],
+  [/sales|marketing|revenue|crm/, "go-to-market"],
+  [/complian|security|kyc|aml/, "security & compliance"],
+  [/climate|carbon|emission|heat-pump|energy/, "climate"],
+  [/finance|insurance|fintech|card|payment|spend|lending|reconcil|collections/, "finance & insurance"],
+  [/health|clinic|prior-auth|care\b/, "health"],
+  [/workplace|desk booking|hybrid work|human resources|office/, "workplace & HR"],
+  [/developer|dev tool|ci flake|tooling/, "developer tools"],
+  [/property|real estate|construction|buildstock/, "real estate"],
+  [/industrial|manufactur|packaging|acoustic/, "industrial AI"],
+];
+
+function domainsOf(s: Startup): string[] {
+  const text = `${s.sector} ${s.oneLiner}`.toLowerCase();
+  return DOMAIN_MAP.filter(([re]) => re.test(text)).map(([, domain]) => domain);
+}
+
+/** Companies in `pool` sharing at least one domain with `target`. */
+function alignmentsFor(target: Startup, pool: Startup[]): { co: Startup; shared: string[] }[] {
+  const targetDomains = domainsOf(target);
+  return pool
+    .filter((p) => p.id !== target.id)
+    .map((p) => ({ co: p, shared: domainsOf(p).filter((d) => targetDomains.includes(d)) }))
+    .filter((x) => x.shared.length > 0);
+}
+
+const PORTFOLIO_POOL = STARTUPS.filter((s) => s.stage === "Portfolio");
+
 /** The five founder-evaluation axes (laura/founder-axis-scoring.md). */
 const FOUNDER_AXES = ["Resilience", "Autonomy", "Curiosity", "Perseverance", "Co-founder fit"] as const;
 const SYNTHETIC_SCORE_KEYS: Record<(typeof FOUNDER_AXES)[number], string> = {
@@ -228,6 +312,7 @@ function axisValuesFor(s: Startup, f: FounderRef): Record<string, number> | null
 
 function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => void }) {
   const outcome = outcomeOf(s);
+  const portfolioAlignments = s.stage === "Portfolio" ? [] : alignmentsFor(s, PORTFOLIO_POOL);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-label={`${s.company} details`}>
       <div className="absolute inset-0 bg-foreground/40" onClick={onClose} />
@@ -293,6 +378,26 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
             ))}
           </div>
         </DetailBlock>
+
+        {portfolioAlignments.length > 0 && (
+          <DetailBlock title="Portfolio alignments — existing contacts">
+            <div className="space-y-1.5">
+              {portfolioAlignments.map(({ co, shared }) => (
+                <div key={co.id} className="flex items-center gap-2 rounded-md border border-border bg-surface px-2.5 py-1.5">
+                  <span className="text-[12px] font-medium">{co.company}</span>
+                  <span className="text-[10.5px] text-muted-foreground">shared: {shared.join(", ")}</span>
+                  <span className="ml-auto text-[10.5px] text-muted-foreground truncate max-w-[180px]">
+                    contact: {founderNames(co.founders)}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-1.5 text-[10.5px] text-muted-foreground">
+              An existing portfolio relationship in the same domain = warm intro path, reference source,
+              or competitive-overlap check before term sheet.
+            </p>
+          </DetailBlock>
+        )}
 
         <DetailBlock title="Interview">
           {s.interviewUrl ? (
