@@ -159,6 +159,10 @@
       }
       figure {
         margin: 20px 0 0;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px;
       }
       figcaption {
         font-family: var(--mono);
@@ -330,23 +334,25 @@
   </head>
   <body>
     <header>
-      <h1>Opportunity OS — <span>Signal 2 Deal</span></h1>
+      <h1>Opportunity OS — <span>Signal → Deal</span></h1>
       <p>
-        Three agents work on one Opportunity Card <br />
-        Each stage owned by a single agent. <br />
-        Humans keep final authority.
+        Three agents carry one Opportunity Card from raw signal to signed deal. Each stage is owned by a single agent; every fact, assessment, and term flows
+        through the Card. Humans keep final authority.
       </p>
+      <p style="margin-top: 8px; color: var(--dim)">Scroll down to build the Card. Scroll up to rewind it.</p>
+      <div class="scroll-hint">▼ SOURCING · RESEARCHING · INTERVIEWING</div>
     </header>
 
     <div class="hike">
       <div class="steps">
         <!-- ============ 01 SOURCING ============ -->
         <section class="step" data-step="1">
-          <div class="step-tag" style="color: var(--blue)">Stage 01</div>
-          <h2>Sourcing</h2>
+          <div class="step-tag" style="color: var(--blue)">Stage 01 / Fig. 1 — Funnel</div>
+          <h2><span class="num" style="color: var(--blue)">01</span>Sourcing</h2>
+          <p class="agent-line">agent: <b style="color: var(--blue)">Sourcer</b> — gathers facts into the Opportunity Card</p>
           <p class="lede">
-            Inbound and outbound signal parsed into verifiable facts. Founders and ideas recognized across opportunities. Data lands in the Card with source
-            attached.
+            Every inbound deck, form, and public signal is parsed into verifiable facts. Founders are recognized across opportunities, and each fact lands in
+            the Card with its source attached.
           </p>
 
           <p class="label">Tech stack</p>
@@ -374,7 +380,7 @@
                 <path d="M285 84 L250 152" />
                 <path d="M400 84 L290 152" />
               </g>
-              <g fill="var(--bg)" stroke="#8b949e" stroke-width="1">
+              <g fill="var(--panel)" stroke="#8b949e" stroke-width="1">
                 <rect x="50" y="14" width="100" height="30" />
                 <rect x="180" y="14" width="100" height="30" />
                 <rect x="310" y="14" width="100" height="30" />
@@ -403,8 +409,8 @@
               <text x="230" y="269" text-anchor="middle" font-size="11" font-weight="600" fill="#e6edf3">OPPORTUNITY CARD</text>
               <g font-size="10" fill="#8b949e">
                 <text x="128" y="300">founder_id</text>
-                <text x="128" y="320">fact + source</text>
-                <text x="128" y="340">...</text>
+                <text x="128" y="320">fact_01 · source: deck</text>
+                <text x="128" y="340">fact_02 · source: github</text>
               </g>
             </svg>
             <figcaption>fig 1 — many sources, one card</figcaption>
@@ -413,8 +419,9 @@
 
         <!-- ============ 02 RESEARCHING ============ -->
         <section class="step" data-step="2">
-          <div class="step-tag" style="color: var(--purple)">Stage 02</div>
-          <h2>Researching</h2>
+          <div class="step-tag" style="color: var(--purple)">Stage 02 / Fig. 2 — Lenses</div>
+          <h2><span class="num" style="color: var(--purple)">02</span>Researching</h2>
+          <p class="agent-line">agent: <b style="color: var(--purple)">Researcher</b> — evaluates the Opportunity against the investment thesis</p>
           <p class="lede">
             The Card is judged along three independent axes — Founder, Market, Idea × Market. Evidence is gathered per axis; contradictions stay visible. The
             result is a draft term sheet where every number traces back to evidence.
@@ -477,8 +484,9 @@
 
         <!-- ============ 03 INTERVIEWING ============ -->
         <section class="step" data-step="3">
-          <div class="step-tag" style="color: var(--green)">Stage 03</div>
-          <h2>Interviewing</h2>
+          <div class="step-tag" style="color: var(--green)">Stage 03 / Fig. 3 — Convergence</div>
+          <h2><span class="num" style="color: var(--green)">03</span>Interviewing</h2>
+          <p class="agent-line">agent: <b style="color: var(--green)">Interviewer</b> — negotiates towards the optimal deal</p>
           <p class="lede">
             A live voice interview resolves the Card's open questions, then negotiation converges founder and investor positions within human-approved bounds.
             Anything out of bounds escalates to the investor, who keeps final authority.
