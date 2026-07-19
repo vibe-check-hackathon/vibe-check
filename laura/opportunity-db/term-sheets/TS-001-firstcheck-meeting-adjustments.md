@@ -34,10 +34,10 @@ founders can read exactly why each number and each term moved.
 |---|---:|---:|---|
 | Martin Auer | 70 | **84 ▲** | Led the product walkthrough with dated specifics; met the ARR challenge with the contracted-vs-signed distinction — resilience and autonomy detectors fired repeatedly. |
 | Sun Chuanqi | 69 | **82 ▲** | Architecture depth on direct challenge, no hedging; covered technical territory the others left untouched — complementarity and domain evidence accrued. |
-| Laura Spies | 71 | **74 ▲ (slight)** | Steady, consistent with the written record; no *new* evidence surfaced, so the score barely moved — **nothing changing much is itself the correct output** when a meeting only confirms what was known. |
-| Mehdi | 65 | **38 ▼** | **Intentionally played disengaged**: deflected two direct questions, joked through the revenue reconciliation, offered no first-person ownership — hedging/evasion detectors fired, evidence count stalled, and his engagement sub-score fell below the thesis floor. |
+| Laura Spies | 71 | **76 ▲ (slight)** | Steady and consistent with the written record — and when Mehdi's camera froze she switched the demo over to her own screen without breaking stride (response-to-adversity credit). Still only a slight move: a meeting that mostly confirms the record should change little. |
+| Mehdi | 65 | **36 ▼** | **Intentionally staged**: his camera stayed frozen through the meeting (preparation penalty — equipment untested), he deflected two direct questions and joked through the revenue reconciliation — hedging/evasion detectors fired, evidence stalled, engagement fell below the thesis floor. **His design work remains fully credited in the evidence base** (shipped product/design counts as product_shipping evidence); the meeting penalty prices preparation, never talent. |
 
-Team founder score: mean(84, 82, 74, 38) ≈ **70**. Confidence rises only
+Team founder score: mean(84, 82, 76, 36) ≈ **70** (unchanged — Laura's save offsets the deeper preparation penalty). Confidence rises only
 modestly — three strong performances cannot fully offset one founder whose
 answers produced no verifiable evidence.
 

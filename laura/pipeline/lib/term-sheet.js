@@ -153,40 +153,88 @@ export function generateTermSheet(analysis, thesis = loadThesis()) {
   };
 }
 
-/** Deterministic markdown with stable TS-§n anchors for PDF annotation. */
+/** Deterministic markdown following Martin's template
+ *  (Martin/firstcheck-maschmeyer-termsheet-template.md, §1–19): standard seed
+ *  terms verbatim, negotiated fields filled by this engine per his §14 —
+ *  agreed value + rationale + link to the analysis event. */
 export function renderTermSheet(result) {
   if (result.status === "blocked") {
-    return `# Term sheet — ${result.company}\n\n**BLOCKED — no ZOPA.** ${result.adjustments[0].because}\n(${result.adjustments[0].evidence})\n`;
+    return `# Term sheet — ${result.company}\n\n**WITHHELD — no ZOPA.** ${result.adjustments[0].because}\n(${result.adjustments[0].evidence})\n`;
   }
-  const { terms, base, adjustments } = result;
-  const row = (id, label, value, baseValue) =>
-    `| TS-§${id} | ${label} | ${value} |${String(value) !== String(baseValue) ? " ⬅ adapted |" : " |"}`;
-  return `# Term sheet (draft) — ${result.company}
+  const { terms: t, adjustments } = result;
+  const negotiated = adjustments
+    .map((a, i) => `| N${i + 1} | ${a.term} | ${typeof a.to === "object" ? "50% closing / 50% verification" : String(a.to)} | ${a.because} | ${a.evidence} |`)
+    .join("\n");
+  return `# ${result.company} / Maschmeyer Group — Seed Term Sheet
+*Per the FirstCheck template (firstcheck-maschmeyer-termsheet-template.md). Non-binding demo document — counsel review required.*
 
 > ${result.summary}
-> Status: **${result.status}** — human approval required. ${result.basis}
 
-| § | Term | Value | |
-|---|---|---|---|
-${row(1, "Instrument", terms.instrument, base.instrument)}
-${row(2, "Investment", `$${terms.checkUsd / 1e3}K`, `$${base.checkUsd / 1e3}K`)}
-${row(3, "Valuation cap", `$${terms.valuationCapM}M post-money`, `$${base.valuationCapM}M post-money`)}
-${row(4, "Discount", `${terms.discountPct}%`, `${base.discountPct}%`)}
-${row(5, "Pro-rata rights", terms.proRata ? "yes" : "no", base.proRata ? "yes" : "no")}
-${row(6, "Board rights", terms.boardRights, base.boardRights)}
-${row(7, "Information rights", terms.informationRights, base.informationRights)}
-${row(8, "Closing timeline", `${terms.closingDays} days`, `${base.closingDays} days`)}
-${row(9, "Tranches", terms.tranches ? `${terms.tranches.atSigning * 100}% signing / ${terms.tranches.onMilestone * 100}% on ${terms.tranches.milestone}` : "none", "none")}
-${row(10, "Conditions precedent", terms.conditionsPrecedent.length ? terms.conditionsPrecedent.join("; ") : "none", "none")}
-${row(11, "Framing", terms.followOnFraming ? "strategic follow-on (not lead)" : "lead first check", "lead first check")}
+## 1. Parties
+- **Company:** ${result.company}. **Investor:** Maschmeyer Group, investing via **FirstCheck**.
 
-## What the analysis did to the terms
+## 2. Financing overview
+- **Security:** ${t.instrument}. **Investment amount:** **$${(t.checkUsd / 1e3).toFixed(0)}K**${t.tranches ? ` — ${t.tranches.atSigning * 100}% at closing, ${t.tranches.onMilestone * 100}% upon ${t.tranches.milestone}` : " in a single tranche"}.
+${t.followOnFraming ? "- **Framing:** strategic follow-on participation, not a lead." : "- **Framing:** first check; Investor may be identified as lead."}
 
-${adjustments.length ? adjustments.map((a, i) => `${i + 1}. **${a.term}**: ${JSON.stringify(a.from)} → ${JSON.stringify(a.to)}\n   *Why:* ${a.because}\n   *Evidence:* ${a.evidence}`).join("\n") : "No adjustments — the base thesis terms stand."}
+## 3. Valuation and ownership
+- **Valuation cap:** **$${t.valuationCapM}M post-money**${t.discountPct ? `, discount ${t.discountPct}%` : ", no discount"}.
+> Valuation is set by FirstCheck using a standard method that considers the target market, competitive landscape, business model, traction to date, and founder profile, rather than only a headline number.
 
-## Negotiation envelope
+## 4. Liquidation preference
+- 1x non-participating preferred; on liquidation the greater of return of investment or pro-rata as-converted.
 
-Investor $${result.envelope.investor.range[0]}–${result.envelope.investor.range[1]}M (target $${result.envelope.investor.target}M) · founder $${result.envelope.founder.range[0]}–${result.envelope.founder.range[1]}M · ZOPA $${result.envelope.zopa[0]}–${result.envelope.zopa[1]}M.
+## 5. Dividends
+- Non-cumulative, if and when declared by the Board, pari passu with other preferred.
+
+## 6. Conversion
+- Automatic on qualified IPO or preferred-majority approval; 1:1 ratio, standard anti-dilution adjustments.
+
+## 7. Pro rata rights *(negotiated by agent)*
+- ${t.proRata ? "Investor has the right, but not the obligation, to participate in future priced equity financings to maintain fully-diluted ownership; customary exceptions apply; right non-transferable." : "Waived for this financing."}
+
+## 8. Drag-along rights *(negotiated by agent)*
+- Standard drag with Board + preferred-majority + common-majority triggers; founder protections and price floors per shareholders agreement.
+
+## 9. Anti-dilution
+- Broad-based weighted average for down rounds; standard exclusions.
+
+## 10. Information rights
+- ${t.informationRights}.
+
+## 11. Board and governance
+- **Board at seed:** 2 founder seats, no investor seat. **Observer:** ${t.boardRights === "none" ? "none at this stage" : t.boardRights}.
+- Reserved matters per template (senior issuances, share-capital changes, redemptions, sale/merger, board size).
+
+## 12. Founder vesting
+- Reverse vesting, 4 years / 1-year cliff; specifics in definitive documents.
+
+## 13. Transfer restrictions; tag-along / ROFR
+- ROFR for Company/Investor on founder transfers; investor tag-along per shareholders agreement.
+
+## 14. Negotiated fields (filled by the FirstCheck negotiation agent)
+| # | Field | Agreed value | Rationale | Analysis event / evidence |
+|---|---|---|---|---|
+${negotiated || "| — | — | thesis base terms | no adjustments triggered | — |"}
+
+## 15. Conditions to closing
+${t.conditionsPrecedent.length ? t.conditionsPrecedent.map((c) => `- ${c}`).join("\n") : "- Completion of satisfactory confirmatory due diligence."}
+- Definitive documents; regulatory/third-party approvals if applicable.
+
+## 16. Exclusivity and confidentiality
+- **Exclusivity:** ${t.closingDays} days from signing. **Confidentiality:** terms confidential, standard exceptions. *(Binding sections.)*
+
+## 17. Expenses
+- Company covers reasonable Investor legal costs up to €30,000, subject to agreement.
+
+## 18. Binding / non-binding
+- Commercial terms non-binding; confidentiality, exclusivity, governing law and expenses binding once signed.
+
+## 19. Governing law
+- Delaware / as agreed in definitive documents.
+
+---
+**Envelope:** investor $${result.envelope.investor.range[0]}–${result.envelope.investor.range[1]}M (target $${result.envelope.investor.target}M) · founder $${result.envelope.founder.range[0]}–${result.envelope.founder.range[1]}M · ZOPA $${result.envelope.zopa[0]}–${result.envelope.zopa[1]}M. Human approval required.
 `;
 }
 

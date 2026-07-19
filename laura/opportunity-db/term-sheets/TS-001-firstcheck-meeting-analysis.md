@@ -21,8 +21,9 @@
 }
 ```
 
-Team founder score **70/100** = mean of Martin **84**, Sun **82**, Laura **74**,
-Mehdi **38** (scripted). Confidence **58/100**: three challenge-tested
+Team founder score **70/100** = mean of Martin **84**, Sun **82**, Laura **76**
+(camera save credited), Mehdi **36** (frozen camera + disengagement — scripted;
+his design contribution stays fully credited as product_shipping evidence). Confidence **58/100**: three challenge-tested
 performances, one chair producing no creditable evidence, one contradiction
 verbally addressed but uncorroborated. Trust **92/100**: the written evidence
 base itself is strong and sourced.
