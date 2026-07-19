@@ -5,35 +5,45 @@
 //     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
-import { join, normalize, extname, dirname } from "node:path";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 // @ts-expect-error — canonical screening lives in laura's plain-ESM pipeline (no type defs; single source of truth)
 import { screenOpportunity } from "../../laura/pipeline/lib/screening.js";
 // @ts-expect-error — same pipeline convention: provider-agnostic LLM adapter, key set via laura/pipeline/set-key.js
 import { filterDealsWithLLM, keyStatus, loadConfig } from "../../laura/pipeline/lib/llm.js";
 // @ts-expect-error — live outbound refresh: template-driven LLM scan, screened before it reaches the board
-import { scanOutbound, briefMarkdown } from "../../laura/pipeline/lib/outbound-scan.js";
+import { briefMarkdown, scanOutbound } from "../../laura/pipeline/lib/outbound-scan.js";
 // @ts-expect-error — Checky: retrieval-grounded assistant over the opportunity DB
 import { askAssistant } from "../../laura/pipeline/lib/assistant.js";
 // @ts-expect-error — key management shared with set-key.js (24h cache, gitignored)
-import { saveKey, clearKey } from "../../laura/pipeline/lib/llm.js";
+import { clearKey, saveKey } from "../../laura/pipeline/lib/llm.js";
 // @ts-expect-error — same pipeline: founder profiling + interview hypotheses
 import { buildFounderProfiles } from "../../laura/pipeline/lib/founder-profiles.js";
 // @ts-expect-error — Resend invitation mail
 import { sendInterviewInvite } from "../../laura/pipeline/lib/email.js";
 // @ts-expect-error — ElevenLabs live interview
-import { getSignedUrl, buildDynamicVariables } from "../../laura/pipeline/lib/interview-agent.js";
+import { buildDynamicVariables, getSignedUrl } from "../../laura/pipeline/lib/interview-agent.js";
 // @ts-expect-error — service key store
-import { serviceStatus, serviceConfig } from "../../laura/pipeline/lib/service-keys.js";
+import { serviceConfig, serviceStatus } from "../../laura/pipeline/lib/service-keys.js";
 // @ts-expect-error — adaptive term sheets: thesis base terms adapted by team analysis, every change explained
-import { generateTermSheet, renderTermSheet, renderLegalTermSheet } from "../../laura/pipeline/lib/term-sheet.js";
+import {
+  generateTermSheet,
+  renderLegalTermSheet,
+  renderTermSheet,
+} from "../../laura/pipeline/lib/term-sheet.js";
 
 /* Serve laura/opportunity-db as /opportunity-db/* directly from the single
  * source of truth — no copied data in public/. The old copy used a cards/
  * subfolder; laura keeps cards at the DB root, so that prefix is rewritten.
  * Dev-server only (fine for the hackathon demo; a build would copy the DB). */
-const DB_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "laura", "opportunity-db");
+const DB_ROOT = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "laura",
+  "opportunity-db",
+);
 const MIME: Record<string, string> = {
   ".json": "application/json",
   ".md": "text/plain; charset=utf-8",
@@ -41,14 +51,40 @@ const MIME: Record<string, string> = {
   ".svg": "image/svg+xml",
 };
 
-const THESIS_PATH = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "laura", "pipeline", "thesis.json");
-const INBOX_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "laura", "pipeline", "inbox");
+const THESIS_PATH = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "laura",
+  "pipeline",
+  "thesis.json",
+);
+const INBOX_DIR = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "laura",
+  "pipeline",
+  "inbox",
+);
 
-const slug = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-const initials = (value: string) => value.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("");
+const slug = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+const initials = (value: string) =>
+  value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
 const parseUsd = (value: unknown) => {
   if (typeof value === "number") return value;
-  const text = String(value ?? "").replace(/,/g, "").trim();
+  const text = String(value ?? "")
+    .replace(/,/g, "")
+    .trim();
   const match = text.match(/([\d.]+)\s*([mbk])?/i);
   if (!match) return undefined;
   const n = Number(match[1]);
@@ -60,9 +96,17 @@ const parseUsd = (value: unknown) => {
 };
 
 function normalizeFounders(application: any, appId: string) {
-  const raw = Array.isArray(application.founders) && application.founders.length
-    ? application.founders
-    : [{ name: application.founderName, email: application.founderEmail, linkedin: application.linkedin, role: "Founder" }];
+  const raw =
+    Array.isArray(application.founders) && application.founders.length
+      ? application.founders
+      : [
+          {
+            name: application.founderName,
+            email: application.founderEmail,
+            linkedin: application.linkedin,
+            role: "Founder",
+          },
+        ];
   return raw
     .map((f: any, index: number) => ({
       id: `FND-${appId}-${String(index + 1).padStart(2, "0")}`,
@@ -80,11 +124,23 @@ function normalizeApplication(application: any, id: string) {
   const founders = normalizeFounders(application, id);
   const materials = [
     application.deck && { description: "Pitch deck", origin: "founder", url: application.deck },
-    application.website && { description: "Company website", origin: "founder", url: application.website },
-    application.productDemo && { description: "Product demo", origin: "founder", url: application.productDemo },
+    application.website && {
+      description: "Company website",
+      origin: "founder",
+      url: application.website,
+    },
+    application.productDemo && {
+      description: "Product demo",
+      origin: "founder",
+      url: application.productDemo,
+    },
     ...founders.flatMap((f: any) => [
       f.linkedin && { description: `${f.name} LinkedIn`, origin: "founder", url: f.linkedin },
-      f.github && { description: `${f.name} GitHub / personal site`, origin: "founder", url: f.github },
+      f.github && {
+        description: `${f.name} GitHub / personal site`,
+        origin: "founder",
+        url: f.github,
+      },
     ]),
   ].filter(Boolean);
   const intake = {
@@ -106,7 +162,11 @@ function normalizeApplication(application: any, id: string) {
       linkedin: f.linkedin,
       github: f.github || undefined,
       assessed: false,
-      avatar: { type: "initials", value: initials(f.name), basis: "neutral placeholder; submitted application" },
+      avatar: {
+        type: "initials",
+        value: initials(f.name),
+        basis: "neutral placeholder; submitted application",
+      },
       background: [
         `${f.role || "Founder"} submitted as part of application`,
         `LinkedIn supplied: ${f.linkedin}`,
@@ -130,9 +190,24 @@ function normalizeApplication(application: any, id: string) {
   return { opportunityId, founders, intake };
 }
 
-function applicationMarkdown(id: string, receivedAt: string, screening: any, normalized: ReturnType<typeof normalizeApplication>) {
-  const founderRows = normalized.intake.founders.map((f: any) => `- ${f.id}: ${f.name}, ${f.role} — LinkedIn: ${f.linkedin}${f.github ? `; GitHub/site: ${f.github}` : ""}`).join("\n");
-  const materialRows = normalized.intake.materials.map((m: any, i: number) => `- SRC-${String(i + 1).padStart(3, "0")}: ${m.description}${m.url ? ` — ${m.url}` : ""}`).join("\n");
+function applicationMarkdown(
+  id: string,
+  receivedAt: string,
+  screening: any,
+  normalized: ReturnType<typeof normalizeApplication>,
+) {
+  const founderRows = normalized.intake.founders
+    .map(
+      (f: any) =>
+        `- ${f.id}: ${f.name}, ${f.role} — LinkedIn: ${f.linkedin}${f.github ? `; GitHub/site: ${f.github}` : ""}`,
+    )
+    .join("\n");
+  const materialRows = normalized.intake.materials
+    .map(
+      (m: any, i: number) =>
+        `- SRC-${String(i + 1).padStart(3, "0")}: ${m.description}${m.url ? ` — ${m.url}` : ""}`,
+    )
+    .join("\n");
   return `# ${normalized.intake.company} application\n\n- **Application ID:** ${id}\n- **Opportunity ID:** ${normalized.opportunityId}\n- **Received:** ${receivedAt}\n- **Screening:** ${screening.pass ? "pass" : "screened out"}\n\n## Company\n\n${normalized.intake.oneLiner}\n\n- **Stage:** ${normalized.intake.stage}\n- **Location:** ${normalized.intake.location}\n- **Raise USD:** ${normalized.intake.raiseUsd ?? "unknown"}\n- **Sector:** ${normalized.intake.companyProfile.sector}\n\n## Founders\n\n${founderRows}\n\n## Materials\n\n${materialRows}\n\n## Screening\n\n- **Hard fails:** ${screening.hardFails.length ? screening.hardFails.join("; ") : "none"}\n- **Soft flags:** ${screening.softFlags.length ? screening.softFlags.join("; ") : "none"}\n`;
 }
 
@@ -143,7 +218,11 @@ async function readThesisFlat() {
 
 const lauraOpportunityDb = () => ({
   name: "serve-laura-opportunity-db",
-  configureServer(server: { middlewares: { use: (route: string, fn: (req: any, res: any, next: () => void) => void) => void } }) {
+  configureServer(server: {
+    middlewares: {
+      use: (route: string, fn: (req: any, res: any, next: () => void) => void) => void;
+    };
+  }) {
     // Thesis Engine endpoint (MVP #1): the investor's fund lens, read + update.
     server.middlewares.use("/thesis", async (req, res, next) => {
       try {
@@ -185,23 +264,37 @@ const lauraOpportunityDb = () => ({
           const application = JSON.parse(body);
           if (!application.company || !application.deck) {
             res.statusCode = 400;
-            res.end(JSON.stringify({ error: "company and deck are the minimum bar (challenge brief #4)" }));
+            res.end(
+              JSON.stringify({
+                error: "company and deck are the minimum bar (challenge brief #4)",
+              }),
+            );
             return;
           }
           const id = `APP-${Date.now()}`;
           const normalized = normalizeApplication(application, id);
-          if (!normalized.intake.founders.length || normalized.intake.founders.some((f: any) => !f.linkedin)) {
+          if (
+            !normalized.intake.founders.length ||
+            normalized.intake.founders.some((f: any) => !f.linkedin)
+          ) {
             res.statusCode = 400;
-            res.end(JSON.stringify({ error: "at least one founder is required, and every founder needs LinkedIn" }));
+            res.end(
+              JSON.stringify({
+                error: "at least one founder is required, and every founder needs LinkedIn",
+              }),
+            );
             return;
           }
-          const verdict = screenOpportunity({
-            ...application,
-            stage: normalized.intake.stage,
-            round: normalized.intake.round,
-            sector: normalized.intake.companyProfile.sector,
-            oneLiner: normalized.intake.oneLiner,
-          }, await readThesisFlat());
+          const verdict = screenOpportunity(
+            {
+              ...application,
+              stage: normalized.intake.stage,
+              round: normalized.intake.round,
+              sector: normalized.intake.companyProfile.sector,
+              oneLiner: normalized.intake.oneLiner,
+            },
+            await readThesisFlat(),
+          );
           // Profiling pass on the normalized founders: personality hypotheses
           // for the agent interview to test. Unscored by design.
           const founders = buildFounderProfiles(
@@ -212,11 +305,29 @@ const lauraOpportunityDb = () => ({
           await mkdir(INBOX_DIR, { recursive: true });
           await writeFile(
             join(INBOX_DIR, `${id}.json`),
-            JSON.stringify({ id, opportunityId: normalized.opportunityId, receivedAt, screening: verdict, application, intake: normalized.intake, founders }, null, 2),
+            JSON.stringify(
+              {
+                id,
+                opportunityId: normalized.opportunityId,
+                receivedAt,
+                screening: verdict,
+                application,
+                intake: normalized.intake,
+                founders,
+              },
+              null,
+              2,
+            ),
             "utf8",
           );
-          await writeFile(join(INBOX_DIR, `${id}.md`), applicationMarkdown(id, receivedAt, verdict, normalized), "utf8");
-          res.end(JSON.stringify({ id, opportunityId: normalized.opportunityId, ...verdict, founders }));
+          await writeFile(
+            join(INBOX_DIR, `${id}.md`),
+            applicationMarkdown(id, receivedAt, verdict, normalized),
+            "utf8",
+          );
+          res.end(
+            JSON.stringify({ id, opportunityId: normalized.opportunityId, ...verdict, founders }),
+          );
         } catch {
           res.statusCode = 400;
           res.end(JSON.stringify({ error: "invalid json" }));
@@ -236,7 +347,11 @@ const lauraOpportunityDb = () => ({
         res.setHeader("Content-Type", "application/json");
         if (!loadConfig()) {
           res.statusCode = 501;
-          res.end(JSON.stringify({ error: "no LLM key (or expired) — run: node laura/pipeline/set-key.js, then retry" }));
+          res.end(
+            JSON.stringify({
+              error: "no LLM key (or expired) — run: node laura/pipeline/set-key.js, then retry",
+            }),
+          );
           return;
         }
         try {
@@ -249,7 +364,11 @@ const lauraOpportunityDb = () => ({
           res.end(JSON.stringify(await filterDealsWithLLM(query, deals)));
         } catch (e) {
           res.statusCode = 502;
-          res.end(JSON.stringify({ error: `LLM call failed: ${e instanceof Error ? e.message : "unknown"}` }));
+          res.end(
+            JSON.stringify({
+              error: `LLM call failed: ${e instanceof Error ? e.message : "unknown"}`,
+            }),
+          );
         }
       });
     });
@@ -264,12 +383,24 @@ const lauraOpportunityDb = () => ({
         res.setHeader("Content-Type", "application/json");
         if (!loadConfig()) {
           res.statusCode = 501;
-          res.end(JSON.stringify({ error: "no LLM key (or expired) — run: node laura/pipeline/set-key.js, then retry" }));
+          res.end(
+            JSON.stringify({
+              error: "no LLM key (or expired) — run: node laura/pipeline/set-key.js, then retry",
+            }),
+          );
           return;
         }
         try {
           const { region } = JSON.parse(body || "{}");
-          const indexPath = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "laura", "opportunity-db", "synthetic", "index.json");
+          const indexPath = join(
+            dirname(fileURLToPath(import.meta.url)),
+            "..",
+            "..",
+            "laura",
+            "opportunity-db",
+            "synthetic",
+            "index.json",
+          );
           const index = JSON.parse(await readFile(indexPath, "utf8"));
           const existingCompanies = [
             ...(index.outboundSelected ?? []),
@@ -290,10 +421,18 @@ const lauraOpportunityDb = () => ({
           }
           index.outboundSelected = [...(index.outboundSelected ?? []), ...records];
           await writeFile(indexPath, JSON.stringify(index, null, 2) + "\n", "utf8");
-          res.end(JSON.stringify({ added: records.length, mode, companies: records.map((r: { company: string }) => r.company) }));
+          res.end(
+            JSON.stringify({
+              added: records.length,
+              mode,
+              companies: records.map((r: { company: string }) => r.company),
+            }),
+          );
         } catch (e) {
           res.statusCode = 502;
-          res.end(JSON.stringify({ error: `scan failed: ${e instanceof Error ? e.message : "unknown"}` }));
+          res.end(
+            JSON.stringify({ error: `scan failed: ${e instanceof Error ? e.message : "unknown"}` }),
+          );
         }
       });
     });
@@ -319,7 +458,11 @@ const lauraOpportunityDb = () => ({
           res.end(JSON.stringify(await askAssistant(messages)));
         } catch (e) {
           res.statusCode = 502;
-          res.end(JSON.stringify({ error: `assistant failed: ${e instanceof Error ? e.message : "unknown"}` }));
+          res.end(
+            JSON.stringify({
+              error: `assistant failed: ${e instanceof Error ? e.message : "unknown"}`,
+            }),
+          );
         }
       });
     });
@@ -328,7 +471,13 @@ const lauraOpportunityDb = () => ({
     server.middlewares.use("/llm-key", (req, res, next) => {
       res.setHeader("Content-Type", "application/json");
       if (req.method === "GET") {
-        res.end(JSON.stringify({ status: keyStatus(), active: !!loadConfig(), provider: loadConfig()?.provider ?? null }));
+        res.end(
+          JSON.stringify({
+            status: keyStatus(),
+            active: !!loadConfig(),
+            provider: loadConfig()?.provider ?? null,
+          }),
+        );
         return;
       }
       if (req.method === "DELETE") {
@@ -368,7 +517,8 @@ const lauraOpportunityDb = () => ({
         // Backfill founder profiles for records written before profiles existed
         // — old inbox JSON must never crash the board.
         for (const r of records) {
-          if (!Array.isArray(r.founders)) r.founders = buildFounderProfiles(r.application ?? {}, r.id);
+          if (!Array.isArray(r.founders))
+            r.founders = buildFounderProfiles(r.application ?? {}, r.id);
         }
         records.sort((a, b) => String(b.receivedAt).localeCompare(String(a.receivedAt)));
         res.end(JSON.stringify(records));
@@ -388,17 +538,24 @@ const lauraOpportunityDb = () => ({
           const { applicationId, live } = JSON.parse(body || "{}");
           if (!applicationId || !/^APP-\d+$/.test(String(applicationId))) {
             res.statusCode = 400;
-            res.end(JSON.stringify({ error: "expected { applicationId: 'APP-…' } from the inbox" }));
+            res.end(
+              JSON.stringify({ error: "expected { applicationId: 'APP-…' } from the inbox" }),
+            );
             return;
           }
-          const record = JSON.parse(await readFile(join(INBOX_DIR, `${applicationId}.json`), "utf8"));
+          const record = JSON.parse(
+            await readFile(join(INBOX_DIR, `${applicationId}.json`), "utf8"),
+          );
           const founder = record.founders?.[0] ?? record.intake?.founders?.[0];
           const result = await sendInterviewInvite({
             to: founder?.email ?? record.application?.founderEmail,
             founderName: founder?.name,
             company: record.application?.company,
             interviewUrl: `${req.headers.origin ?? "http://localhost:8080"}/interviews?opp=${record.opportunityId ?? applicationId}`,
-            hypothesisCount: (record.founders ?? []).reduce((n: number, f: any) => n + (f.hypotheses?.length ?? 0), 0),
+            hypothesisCount: (record.founders ?? []).reduce(
+              (n: number, f: any) => n + (f.hypotheses?.length ?? 0),
+              0,
+            ),
             live: live === true,
           });
           res.end(JSON.stringify(result));
@@ -443,11 +600,13 @@ const lauraOpportunityDb = () => ({
     server.middlewares.use("/integrations", (req, res, next) => {
       if (req.method !== "GET") return next();
       res.setHeader("Content-Type", "application/json");
-      res.end(JSON.stringify({
-        resend: Boolean(serviceConfig("resend")),
-        elevenlabs: Boolean(serviceConfig("elevenlabs")),
-        detail: serviceStatus(),
-      }));
+      res.end(
+        JSON.stringify({
+          resend: Boolean(serviceConfig("resend")),
+          elevenlabs: Boolean(serviceConfig("elevenlabs")),
+          detail: serviceStatus(),
+        }),
+      );
     });
 
     // Adaptive term sheets (feeds Martin's annotated-PDF work): POST a team
@@ -463,15 +622,22 @@ const lauraOpportunityDb = () => ({
           const analysis = JSON.parse(body || "{}");
           if (!analysis.company) {
             res.statusCode = 400;
-            res.end(JSON.stringify({ error: "expected { company, askUsd?, founderScore?, founderScoreConfidence?, trustScore?, contradictions?, gaps?, softFlags?, axisCappedBy? }" }));
+            res.end(
+              JSON.stringify({
+                error:
+                  "expected { company, askUsd?, founderScore?, founderScoreConfidence?, trustScore?, contradictions?, gaps?, softFlags?, axisCappedBy? }",
+              }),
+            );
             return;
           }
           const result = generateTermSheet(analysis);
-          res.end(JSON.stringify({
-            ...result,
-            markdown: renderTermSheet(result),
-            legalText: renderLegalTermSheet(result, { founders: analysis.founders ?? [] }),
-          }));
+          res.end(
+            JSON.stringify({
+              ...result,
+              markdown: renderTermSheet(result),
+              legalText: renderLegalTermSheet(result, { founders: analysis.founders ?? [] }),
+            }),
+          );
         } catch (e) {
           res.statusCode = 400;
           res.end(JSON.stringify({ error: e instanceof Error ? e.message : "invalid json" }));
@@ -486,7 +652,14 @@ const lauraOpportunityDb = () => ({
         const file = join(SUN_DECK, normalize(rel).replace(/^([.\\/])+/, ""));
         if (!file.startsWith(SUN_DECK)) return next();
         const data = await readFile(file);
-        res.setHeader("Content-Type", extname(file) === ".html" ? "text/html; charset=utf-8" : extname(file) === ".mp3" ? "audio/mpeg" : MIME[extname(file)] ?? "application/octet-stream");
+        res.setHeader(
+          "Content-Type",
+          extname(file) === ".html"
+            ? "text/html; charset=utf-8"
+            : extname(file) === ".mp3"
+              ? "audio/mpeg"
+              : (MIME[extname(file)] ?? "application/octet-stream"),
+        );
         res.end(data);
       } catch {
         next();
@@ -516,5 +689,6 @@ export default defineConfig({
   },
   vite: {
     plugins: [lauraOpportunityDb()],
+    base: "/vite-check/",
   },
 });
