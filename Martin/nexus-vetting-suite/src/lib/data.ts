@@ -1,0 +1,344 @@
+export type Stage =
+  | "Inbound"
+  | "Screened"
+  | "Interview"
+  | "Reference"
+  | "Diligence"
+  | "Partner Review"
+  | "Term Sheet";
+
+export const STAGES: Stage[] = [
+  "Inbound",
+  "Screened",
+  "Interview",
+  "Reference",
+  "Diligence",
+  "Partner Review",
+  "Term Sheet",
+];
+
+export type Startup = {
+  id: string;
+  company: string;
+  oneLiner: string;
+  founders: string[];
+  stage: Stage;
+  sector: string;
+  geography: string;
+  round: string;
+  ask: string;
+  /**
+   * Real founders sourced from public data are intentionally NOT scored — the
+   * suite never fabricates psychometric judgments of real people. Only the
+   * fictional demo opportunity (Acme) is `assessed`.
+   */
+  assessed: boolean;
+  founderScore: number | null;
+  marketScore: number | null;
+  ideaMarketScore: number | null;
+  trustScore: number | null;
+  urgency: "Low" | "Medium" | "High";
+  submitted: string;
+  thesisFit: number | null;
+  /** Verified real-world outcome (public), if any. */
+  realEvent?: string;
+  /** Public founder interview URL, if one exists. */
+  interviewUrl?: string | null;
+  /** The single fictional card that powers the live interview + psychogram demo. */
+  demo?: boolean;
+};
+
+/**
+ * Pipeline = the real Maschmeyer Group opportunity DB (public sources only,
+ * from `laura/opportunity-db`) + one fictional demo card (Acme) that the live
+ * interview studio and founder psychogram run on. Real founders stay unassessed.
+ */
+export const STARTUPS: Startup[] = [
+  {
+    id: "acme",
+    company: "Acme Robotics",
+    oneLiner:
+      "Vision-guided picking software — warehouse robots learn new objects from a short operator demonstration.",
+    founders: ["Ada Keller", "Minh Tran"],
+    stage: "Interview",
+    sector: "Robotics / AI",
+    geography: "Berlin, DE",
+    round: "Pre-seed",
+    ask: "€1.2M",
+    assessed: true,
+    founderScore: 76,
+    marketScore: 62,
+    ideaMarketScore: 58,
+    trustScore: 55,
+    urgency: "High",
+    submitted: "2026-07-18",
+    thesisFit: 0.72,
+    interviewUrl: null,
+    demo: true,
+  },
+  {
+    id: "secfix",
+    company: "Secfix",
+    oneLiner:
+      "Europe's AI security-compliance platform — cuts ISO 27001 / SOC 2 / GDPR work up to 90% for SMBs.",
+    founders: ["Fabiola Munguia", "Grigory Emelianov"],
+    stage: "Term Sheet",
+    sector: "Security / Compliance",
+    geography: "Berlin / Munich, DE",
+    round: "Series A",
+    ask: "$12M",
+    assessed: false,
+    founderScore: null,
+    marketScore: null,
+    ideaMarketScore: null,
+    trustScore: null,
+    urgency: "Medium",
+    submitted: "2026-02-24",
+    thesisFit: null,
+    realEvent: "$12M Series A led by ALSTIN Capital (announced 2026-02-25)",
+    interviewUrl: "https://www.youtube.com/watch?v=k_Rkq40O3kU",
+  },
+  {
+    id: "deskbird",
+    company: "deskbird",
+    oneLiner:
+      "Hybrid-workplace management — desk and meeting-room booking for flexible offices.",
+    founders: ["Ivan Cossu", "Jonas Hess"],
+    stage: "Term Sheet",
+    sector: "Workplace SaaS",
+    geography: "St. Gallen, CH",
+    round: "Series A",
+    ask: "$13M",
+    assessed: false,
+    founderScore: null,
+    marketScore: null,
+    ideaMarketScore: null,
+    trustScore: null,
+    urgency: "Medium",
+    submitted: "2023-09-01",
+    thesisFit: null,
+    realEvent:
+      "$13M Series A led by ALSTIN Capital & AXA Venture Partners (announced 2023-09-06)",
+    interviewUrl: "https://www.youtube.com/watch?v=Flx_ZmOau68",
+  },
+  {
+    id: "voiceline",
+    company: "VoiceLine",
+    oneLiner:
+      "Voice AI for enterprise frontline sales — capture field data hands-free, straight into the CRM.",
+    founders: ["Dr. Nicolas Höflinger"],
+    stage: "Term Sheet",
+    sector: "Voice AI",
+    geography: "Munich, DE",
+    round: "Series A",
+    ask: "€10M",
+    assessed: false,
+    founderScore: null,
+    marketScore: null,
+    ideaMarketScore: null,
+    trustScore: null,
+    urgency: "Low",
+    submitted: "2026-02-20",
+    thesisFit: null,
+    realEvent: "€10M Series A led by ALSTIN Capital & Peak (announced 2026-02-24)",
+    interviewUrl: null,
+  },
+  {
+    id: "timefold",
+    company: "Timefold",
+    oneLiner:
+      "Scheduling and routing optimization engine — an open-source planning solver for operations.",
+    founders: ["—"],
+    stage: "Screened",
+    sector: "Optimization",
+    geography: "Unverified",
+    round: "—",
+    ask: "—",
+    assessed: false,
+    founderScore: null,
+    marketScore: null,
+    ideaMarketScore: null,
+    trustScore: null,
+    urgency: "Low",
+    submitted: "2026-07-19",
+    thesisFit: null,
+    realEvent: "Maschmeyer portfolio listing (unverified)",
+    interviewUrl: null,
+  },
+  {
+    id: "climatiq",
+    company: "Climatiq",
+    oneLiner:
+      "Carbon-intelligence API — embed emissions calculations into any software product.",
+    founders: ["—"],
+    stage: "Screened",
+    sector: "Climate / Data",
+    geography: "Berlin, DE",
+    round: "—",
+    ask: "—",
+    assessed: false,
+    founderScore: null,
+    marketScore: null,
+    ideaMarketScore: null,
+    trustScore: null,
+    urgency: "Low",
+    submitted: "2026-07-19",
+    thesisFit: null,
+    realEvent: "Maschmeyer portfolio listing (unverified)",
+    interviewUrl: null,
+  },
+  {
+    id: "pliant",
+    company: "Pliant",
+    oneLiner:
+      "Adaptable corporate cards and spend management with API-based card issuing.",
+    founders: ["—"],
+    stage: "Screened",
+    sector: "Fintech",
+    geography: "Berlin, DE",
+    round: "—",
+    ask: "—",
+    assessed: false,
+    founderScore: null,
+    marketScore: null,
+    ideaMarketScore: null,
+    trustScore: null,
+    urgency: "Low",
+    submitted: "2026-07-19",
+    thesisFit: null,
+    realEvent: "Maschmeyer portfolio listing (unverified)",
+    interviewUrl: null,
+  },
+];
+
+export const METRICS = {
+  activeApplications: 7,
+  assessedDeals: 1,
+  publicOutcomes: 4,
+  diligenceInProgress: 3,
+  decisionsDue24h: 1,
+  interviewsAvailable: 2,
+};
+
+export const FUNNEL = [
+  { stage: "Sourcing", count: 214, delta: "public + inbound" },
+  { stage: "Screening", count: 7, delta: "6 real · 1 demo" },
+  { stage: "Interview", count: 1, delta: "Acme · live" },
+  { stage: "Diligence", count: 3, delta: "confidential" },
+  { stage: "Term Sheet", count: 3, delta: "ALSTIN-led (real)" },
+];
+
+export function stageColor(stage: Stage) {
+  const map: Record<Stage, string> = {
+    Inbound: "bg-muted text-muted-foreground",
+    Screened: "bg-accent text-accent-foreground",
+    Interview: "bg-teal-soft text-foreground",
+    Reference: "bg-teal-soft text-foreground",
+    Diligence: "bg-teal-soft text-foreground",
+    "Partner Review": "bg-primary/10 text-primary",
+    "Term Sheet": "bg-primary text-primary-foreground",
+  };
+  return map[stage];
+}
+
+export function scoreTone(n: number | null) {
+  if (n === null) return "text-muted-foreground";
+  if (n >= 80) return "text-positive";
+  if (n >= 65) return "text-foreground";
+  if (n >= 50) return "text-warning";
+  return "text-negative";
+}
+
+/** Render a score, or an em-dash for unassessed real founders. */
+export function fmtScore(n: number | null) {
+  return n === null ? "—" : String(n);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Acme demo — the fictional card the live interview + psychogram use */
+/*  (mirrors laura/frontend + sun/opportunity-card-example.md)         */
+/* ------------------------------------------------------------------ */
+
+export type Axis = { key: string; full: string; v: number; conf: number };
+
+export type DemoFounder = {
+  id: string;
+  name: string;
+  role: string;
+  initials: string;
+  score: number;
+  confidence: number;
+  trend: "improving" | "stable";
+  history: string;
+  axes: Axis[];
+};
+
+export const AXIS_FULL: Record<string, string> = {
+  Resilience: "Resilience / emotional stability",
+  Autonomy: "Autonomy / self-reliance",
+  Curiosity: "Curiosity / adaptability",
+  Perseverance: "Perseverance",
+  "Co-founder fit": "Co-founder complementarity",
+};
+
+export const ACME_FOUNDERS: DemoFounder[] = [
+  {
+    id: "FND-0007",
+    name: "Ada Keller",
+    role: "CEO",
+    initials: "AK",
+    score: 76,
+    confidence: 60,
+    trend: "improving",
+    history:
+      "Former robotics research engineer; led a picking-system deployment at two distribution centres. Full-time since Jan 2026.",
+    axes: [
+      { key: "Resilience", full: AXIS_FULL.Resilience, v: 82, conf: 62 },
+      { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 80, conf: 60 },
+      { key: "Curiosity", full: AXIS_FULL.Curiosity, v: 77, conf: 55 },
+      { key: "Perseverance", full: AXIS_FULL.Perseverance, v: 74, conf: 52 },
+      { key: "Co-founder fit", full: AXIS_FULL["Co-founder fit"], v: 75, conf: 50 },
+    ],
+  },
+  {
+    id: "FND-0008",
+    name: "Minh Tran",
+    role: "CTO",
+    initials: "MT",
+    score: 72,
+    confidence: 62,
+    trend: "stable",
+    history:
+      "Published relevant imitation-learning research and built the current product prototype. Model IP ownership not yet documented (GAP-002).",
+    axes: [
+      { key: "Resilience", full: AXIS_FULL.Resilience, v: 68, conf: 55 },
+      { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 79, conf: 65 },
+      { key: "Curiosity", full: AXIS_FULL.Curiosity, v: 83, conf: 66 },
+      { key: "Perseverance", full: AXIS_FULL.Perseverance, v: 70, conf: 52 },
+      { key: "Co-founder fit", full: AXIS_FULL["Co-founder fit"], v: 75, conf: 50 },
+    ],
+  },
+];
+
+export const ACME_TEAM = {
+  score: 71,
+  confidence: 55,
+  components: [
+    {
+      name: "Skill complementarity",
+      v: 85,
+      why: "Commercial CEO × technical CTO — different critical functions, not duplicate strengths.",
+    },
+    {
+      name: "Decision clarity",
+      v: 74,
+      why: "Both founders describe the same decision process and split product vs. commercial calls cleanly.",
+    },
+    {
+      name: "Pressure-tested history",
+      v: 45,
+      why: "Conflict handling not yet observed under real pressure — the ceiling-gating component.",
+    },
+  ],
+  note: "Scored as a pair, never as an average of the two founders. Per Wasserman, ~65% of startup failures trace to people problems, so the co-founder dynamic carries its own gated score.",
+};
