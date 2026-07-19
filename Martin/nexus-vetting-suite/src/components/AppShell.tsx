@@ -14,6 +14,7 @@ import {
   Check,
   type LucideIcon,
 } from "lucide-react";
+import { FirstCheckLogo } from "@/components/FirstCheckLogo";
 import { PipelineStages, isPipelineRoute, PIPELINE_STAGES } from "@/components/PipelineStages";
 import { Checky } from "@/components/Checky";
 import { STARTUPS, INVESTOR, STARTUP_USER, type Startup } from "@/lib/data";
@@ -123,16 +124,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           style={{ backgroundImage: "linear-gradient(180deg, var(--sidebar), color-mix(in srgb, var(--sidebar) 80%, #000))" }}
         >
           <div className="flex h-14 items-center gap-2 px-5 border-b border-sidebar-border">
-            {/* Inline mark: the previous asset URL 404s (external Lovable CDN). */}
-            <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0" role="img" aria-label="FirstCheck">
-              <rect x="1.5" y="1.5" width="21" height="21" rx="6" fill="none" stroke="currentColor" strokeWidth="1.6" opacity="0.55" />
-              <path d="M7 12.4l3.4 3.4L17 8.8" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-serif text-[17px] leading-none tracking-tight text-sidebar-foreground">
-                FirstCheck
-              </span>
-            </div>
+            <FirstCheckLogo className="h-5 w-auto text-sidebar-foreground" />
           </div>
 
           {mode === "investor" && (

@@ -5,7 +5,7 @@ import { LogIn } from "lucide-react";
 import { login } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Investor login · VibeCheck" }] }),
+  head: () => ({ meta: [{ title: "Investor login · FirstCheck" }] }),
   component: LoginPage,
 });
 

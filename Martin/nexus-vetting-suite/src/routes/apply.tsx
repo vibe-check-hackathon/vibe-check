@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, Badge } from "@/components/ui-kit";
+import { FirstCheckLogo } from "@/components/FirstCheckLogo";
 import { AlertTriangle, CheckCircle2, ExternalLink, Plus, Send, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/apply")({
-  head: () => ({ meta: [{ title: "Apply · VibeCheck" }] }),
+  head: () => ({ meta: [{ title: "Apply · FirstCheck" }] }),
   component: ApplyPage,
 });
 
@@ -113,8 +114,9 @@ function ApplyPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border px-6 py-3 flex items-center justify-between">
-        <div className="text-[15px] font-semibold">
-          VibeCheck <span className="text-muted-foreground font-normal">· founder application</span>
+        <div className="flex items-baseline gap-2">
+          <FirstCheckLogo className="h-4 w-auto text-foreground" />
+          <span className="text-[13px] text-muted-foreground">· founder application</span>
         </div>
         <Link to={"/login" as never} className="text-[12px] text-muted-foreground hover:text-foreground">
           Investor login →
