@@ -3,26 +3,28 @@ import { useEffect, useMemo, useState } from "react";
 import { isInvestor, logout } from "@/lib/auth";
 import {
   Kanban,
-  FileText,
-  ScrollText,
+  LayoutDashboard,
   Settings,
   Search,
   Command,
   Bell,
-  Mic,
   CornerDownLeft,
   ChevronDown,
   Check,
   type LucideIcon,
 } from "lucide-react";
 import logo from "@/assets/vibecheck.svg.asset.json";
+import { PipelineStages, isPipelineRoute, PIPELINE_STAGES } from "@/components/PipelineStages";
 import { STARTUPS } from "@/lib/data";
 
+/**
+ * Top-level navigation only. The four pipeline stages (snapshot → founders →
+ * interview → diligence) live in the horizontal stage bar, not here.
+ */
 const NAV: { to: string; label: string; icon: LucideIcon; exact?: boolean }[] = [
   { to: "/board", label: "Board", icon: Kanban },
-  { to: "/applications", label: "Opportunity", icon: FileText },
-  { to: "/interviews", label: "Live Interview", icon: Mic },
-  { to: "/memo", label: "Decision Memo", icon: ScrollText },
+  // Pipeline has no page of its own — it enters at the first stage.
+  { to: PIPELINE_STAGES[0].to, label: "Pipeline", icon: LayoutDashboard, exact: true },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -106,8 +108,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           <nav className="flex-1 px-2 space-y-0.5">
             {NAV.map((item) => {
+              // Pipeline stays lit while you are inside any of its stages.
               const active = item.exact
-                ? pathname === item.to
+                ? pathname === item.to || isPipelineRoute(pathname)
                 : pathname.startsWith(item.to);
               const Icon = item.icon;
               return (
@@ -261,6 +264,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           </header>
+
+          {isPipelineRoute(pathname) && <PipelineStages />}
 
           <main className="flex-1 min-w-0">{children}</main>
         </div>
