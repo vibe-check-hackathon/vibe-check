@@ -384,6 +384,11 @@ const lauraOpportunityDb = () => ({
         res.setHeader("Content-Type", "application/json");
         try {
           const { applicationId, live } = JSON.parse(body || "{}");
+          if (!applicationId || !/^APP-\d+$/.test(String(applicationId))) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: "expected { applicationId: 'APP-…' } from the inbox" }));
+            return;
+          }
           const record = JSON.parse(await readFile(join(INBOX_DIR, `${applicationId}.json`), "utf8"));
           const founder = record.founders?.[0] ?? record.intake?.founders?.[0];
           const result = await sendInterviewInvite({
