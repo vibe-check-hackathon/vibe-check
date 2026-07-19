@@ -1,0 +1,4 @@
+# Ignore raw design-tool exports; extracted files live in stitch-export/
+*.zip
+# Generated pipeline artifacts
+pipeline/output/

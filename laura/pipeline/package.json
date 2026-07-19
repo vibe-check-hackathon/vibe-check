@@ -1,0 +1,10 @@
+{
+  "name": "vibecheck-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Sourcing and Developing stages of the Opportunity OS pipeline (sun/system-architecture.md), zero dependencies",
+  "scripts": {
+    "demo": "node run-demo.js"
+  }
+}

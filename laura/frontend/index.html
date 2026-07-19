@@ -326,6 +326,57 @@
   .updates li::before { content: "▸"; position: absolute; left: 0; color: var(--accent-warm-text); }
   .updates li .t { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 6px; }
 
+  /* ---------- inbox (portfolio view) ---------- */
+  .view-hidden { display: none !important; }
+  .inbox { max-width: 1240px; margin: 36px auto 80px; padding: 0 28px; }
+  .inbox > h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .opp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .opp-card {
+    background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius);
+    padding: 18px; cursor: pointer; box-shadow: var(--elev);
+    transition: transform 0.2s ease, border-color 0.2s ease; text-align: left; font: inherit; color: inherit;
+  }
+  .opp-card:hover { transform: translateY(-2px); border-color: rgba(57, 135, 229, 0.5); }
+  .opp-card.disabled { opacity: 0.55; cursor: default; }
+  .opp-card.disabled:hover { transform: none; border-color: var(--hairline); }
+  .oc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .oc-id { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .opp-card h3 { font-size: 16px; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .opp-card p { font-size: 12.5px; color: var(--ink-2); margin-bottom: 12px; min-height: 38px; }
+  .axis-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { font-size: 10.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--hairline); color: var(--ink-2); }
+  .oc-meta { display: flex; justify-content: space-between; margin-top: 12px; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* ---------- approval sheet (human gate) ---------- */
+  .sheet-backdrop {
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 40;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+  }
+  .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+  .sheet {
+    position: fixed; left: 50%; bottom: 0; transform: translate(-50%, 110%);
+    width: min(680px, 94vw); background: var(--surface); border: 1px solid var(--hairline);
+    border-bottom: none; border-radius: 18px 18px 0 0; padding: 22px 24px; z-index: 41;
+    transition: transform 0.45s cubic-bezier(0.3, 0.8, 0.3, 1);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  }
+  .sheet.open { transform: translate(-50%, 0); }
+  .sheet h3 { font-size: 17px; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .sheet .rec { font-size: 14px; color: var(--ink-2); margin-bottom: 12px; }
+  .sheet .rec strong { color: var(--ink); }
+  .sheet .axis-chips { margin-bottom: 6px; }
+  .sheet .blockers { font-size: 12.5px; color: var(--accent-warm-text); margin-top: 8px; }
+  .sheet-actions { display: flex; gap: 10px; margin-top: 18px; }
+
+  /* ---------- draggable reservation handle ---------- */
+  .drag-handle {
+    position: absolute; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--ink); border: 2px solid var(--surface);
+    cursor: ew-resize; transform: translate(-50%, -50%); z-index: 2; touch-action: none;
+    transition: left 0.9s cubic-bezier(0.3, 0.8, 0.3, 1);
+  }
+  .drag-handle.dragging { transition: none; }
+
   /* tooltip */
   #tip {
     position: fixed; z-index: 50; pointer-events: none; display: none;
@@ -346,7 +397,8 @@
 
 <header>
   <div class="brand">VibeCheck <span>Studio</span></div>
-  <div class="opp-ref">OPP-2026-0001 · Acme Robotics · Pre-seed</div>
+  <button class="ctl" id="btnBack" style="display:none">‹ Opportunities</button>
+  <div class="opp-ref" id="oppRef">OPP-2026-0001 · Acme Robotics · Pre-seed</div>
   <span class="pill live" id="statusPill">Interviewing</span>
   <div class="spacer"></div>
   <div class="deadline">Decision deadline in <strong>14h 22m</strong></div>
@@ -369,7 +421,54 @@
   </div>
 </section>
 
-<main class="app">
+<main class="inbox" id="inboxView">
+  <h2>Opportunities — sorted by decision deadline</h2>
+  <div class="opp-grid">
+    <button class="opp-card" id="cardAcme">
+      <div class="oc-top"><span class="oc-id">OPP-2026-0001</span><span class="pill live">Interviewing</span></div>
+      <h3>Acme Robotics</h3>
+      <p>Vision-guided picking software — warehouse robots learn new objects from a short operator demonstration.</p>
+      <div class="axis-chips">
+        <span class="chip">Founder: Strong · 60</span>
+        <span class="chip">Market: Bullish · 55</span>
+        <span class="chip">Idea: Promising · 50</span>
+      </div>
+      <div class="oc-meta"><span>Pre-seed · Berlin</span><span>decides in 14h 22m</span></div>
+    </button>
+    <button class="opp-card disabled" tabindex="-1">
+      <div class="oc-top"><span class="oc-id">OPP-2026-0002</span><span class="pill">Research</span></div>
+      <h3>HeliosGrid</h3>
+      <p>Battery fleet orchestration software for industrial micro-grids.</p>
+      <div class="axis-chips">
+        <span class="chip">Founder: — · unknown</span>
+        <span class="chip">Market: Bullish · 48</span>
+      </div>
+      <div class="oc-meta"><span>Pre-seed · Munich</span><span>decides in 21h 05m</span></div>
+    </button>
+    <button class="opp-card disabled" tabindex="-1">
+      <div class="oc-top"><span class="oc-id">OPP-2026-0008</span><span class="pill">Diligence</span></div>
+      <h3>Parseline</h3>
+      <p>Type-safe data contracts for event pipelines. Investor BATNA for OPP-2026-0001.</p>
+      <div class="axis-chips">
+        <span class="chip">Founder: Strong · 71</span>
+        <span class="chip">Market: Neutral · 58</span>
+        <span class="chip">Idea: Proven wedge · 66</span>
+      </div>
+      <div class="oc-meta"><span>Seed · Amsterdam</span><span>decides in 9h 40m</span></div>
+    </button>
+    <button class="opp-card disabled" tabindex="-1">
+      <div class="oc-top"><span class="oc-id">OPP-2026-0011</span><span class="pill">Intake</span></div>
+      <h3>Loopwear</h3>
+      <p>Resale logistics for fashion brands; applied via inbound form 40 minutes ago.</p>
+      <div class="axis-chips">
+        <span class="chip">Sourcing…</span>
+      </div>
+      <div class="oc-meta"><span>Pre-seed · Lisbon</span><span>decides in 23h 20m</span></div>
+    </button>
+  </div>
+</main>
+
+<main class="app view-hidden" id="studioView">
   <!-- left: the call -->
   <div class="col">
     <div class="panel">
@@ -464,6 +563,7 @@
           <div class="band" id="bandFounder"><span class="band-lbl">Founders</span></div>
           <div class="marker" id="mkInvTarget" style="top:24px"></div>
           <div class="marker" id="mkFndTarget" style="top:68px"></div>
+          <div class="drag-handle" id="dragRes" style="top:24px" title="Drag to set the investor reservation point"></div>
         </div>
         <div class="legend">
           <span class="key"><span class="sw" style="background:var(--investor)"></span>Investor settlement range</span>
@@ -477,7 +577,7 @@
 
       <table class="model-table">
         <tr><th></th><th>BATNA</th><th>Reservation</th><th>Target</th></tr>
-        <tr><td>Investor</td><td>OPP-2026-0008</td><td>$12M</td><td id="invTargetCell">$9M</td></tr>
+        <tr><td>Investor</td><td>OPP-2026-0008</td><td id="invResCell">$12M</td><td id="invTargetCell">$9M</td></tr>
         <tr><td>Founders</td><td>Soft circle + bootstrap</td><td id="fndResCell">unknown</td><td id="fndTargetCell">~$12M</td></tr>
       </table>
 
@@ -498,6 +598,23 @@
 <footer>laura/frontend — VibeCheck hackathon demo · data from sun/opportunity-card-example.md (Acme Robotics, fictional)</footer>
 
 <div id="tip"></div>
+
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+<div class="sheet" id="approvalSheet" role="dialog" aria-label="Decision ready">
+  <h3>Decision ready — Acme Robotics</h3>
+  <div class="rec">Recommend: <strong id="sheetRec">$100K SAFE at $9M cap, full pro-rata</strong></div>
+  <div class="axis-chips">
+    <span class="chip">Founder: Strong · 60</span>
+    <span class="chip">Market: Bullish · 55</span>
+    <span class="chip">Idea: Promising · 50</span>
+    <span class="chip">Model confidence · 62</span>
+  </div>
+  <div class="blockers">Open blocker: GAP-002 model IP assignment — terms are conditional until resolved.</div>
+  <div class="sheet-actions">
+    <button class="ctl primary" id="btnApprove">Approve &amp; draft term sheet</button>
+    <button class="ctl" id="btnSendBack">Send back to diligence</button>
+  </div>
+</div>
 
 <script>
   /* ---------- theme: follow OS until the user chooses, then persist ---------- */
@@ -554,11 +671,14 @@
     markers.inv.style.left = pct(m.invTarget) + "%";
     markers.fnd.style.left = pct(m.fndTarget) + "%";
     markers.inv.dataset.v = m.invTarget; markers.fnd.dataset.v = m.fndTarget;
+    document.getElementById("dragRes").style.left = pct(m.inv[1]) + "%";
   }
 
   /* initial model — investor $8–12M (target $9M); founders inferred $10–14M (target $12M) */
   const M0 = { inv: [8, 12], fnd: [10, 14], invTarget: 9, fndTarget: 12 };
-  setModel(M0);
+  let M = structuredClone(M0);
+  function applyModel(m) { M = structuredClone(m); setModel(M); }
+  setModel(M);
 
   /* ---------- tooltip ---------- */
   const tip = document.getElementById("tip");
@@ -580,10 +700,20 @@
     el.addEventListener("mouseleave", () => { tip.style.display = "none"; });
   }
 
-  /* ---------- meters & readouts ---------- */
+  /* ---------- meters & readouts (values tick, never jump) ---------- */
+  const meterAnims = new Map();
   function meter(id, v) {
     document.getElementById("m" + id).style.width = v + "%";
-    document.getElementById("v" + id).textContent = v;
+    const el = document.getElementById("v" + id);
+    const from = Number(el.textContent) || 0;
+    if (Math.abs(v - from) <= 2) { el.textContent = v; return; }
+    cancelAnimationFrame(meterAnims.get(id));
+    const t0 = performance.now(), dur = 450;
+    (function tick(now) {
+      const k = Math.min(1, (now - t0) / dur);
+      el.textContent = Math.round(from + (v - from) * (1 - Math.pow(1 - k, 3)));
+      if (k < 1) meterAnims.set(id, requestAnimationFrame(tick));
+    })(t0);
   }
   function readout(who, txt) { document.getElementById("read" + who).textContent = txt; }
   function fits(ff, fi, d1, d2) {
@@ -726,7 +856,7 @@
       fx: () => {
         meter("AdaSent", 84); meter("AdaTone", 86); meter("AdaConf", 85); readout("Ada", "Animated");
         document.querySelector('[data-l="speed"]').classList.add("hot");
-        setModel({ inv: [8, 12], fnd: [9, 13], invTarget: 9, fndTarget: 12 });
+        applyModel({ inv: [8, 12], fnd: [9, 13], invTarget: 9, fndTarget: 12 });
         document.getElementById("fndResCell").textContent = "≈$9M (est.)";
         document.getElementById("zopaNote").innerHTML = "Estimated ZOPA: <strong>$9M–$12M</strong> · confidence <strong>medium</strong> — closing speed is a high-value founder lever.";
         upd("02:04", "Speed > price signal — founder range re-estimated $9M–$13M; ZOPA widens to $9M–$12M.");
@@ -744,6 +874,7 @@
         setPipeline(3, -1);
         const p = document.getElementById("statusPill");
         p.textContent = "Decision ready"; p.classList.remove("live"); p.style.color = "var(--accent-warm-text)";
+        showSheet();
       } },
   ];
 
@@ -794,7 +925,9 @@
     });
     readout("Ada", "Neutral"); readout("Minh", "Neutral");
     fits("–", "–");
-    setModel(M0);
+    applyModel(M0);
+    hideSheet();
+    document.getElementById("invResCell").textContent = "$12M";
     document.getElementById("fndResCell").textContent = "unknown";
     document.getElementById("zopaNote").innerHTML = "Estimated ZOPA: <strong>$10M–$12M</strong> · confidence <strong>low</strong> — founder range inferred from deck ask, not yet tested.";
     document.querySelector('[data-l="speed"]').classList.remove("hot");
@@ -805,6 +938,144 @@
 
   document.getElementById("btnPlay").addEventListener("click", play);
   document.getElementById("btnReset").addEventListener("click", reset);
+
+  /* ---------- inbox ↔ studio views ---------- */
+  const inboxView = document.getElementById("inboxView");
+  const studioView = document.getElementById("studioView");
+  const btnBack = document.getElementById("btnBack");
+  function openStudio() {
+    inboxView.classList.add("view-hidden");
+    studioView.classList.remove("view-hidden");
+    btnBack.style.display = "";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  function openInbox() {
+    studioView.classList.add("view-hidden");
+    inboxView.classList.remove("view-hidden");
+    btnBack.style.display = "none";
+  }
+  document.getElementById("cardAcme").addEventListener("click", openStudio);
+  btnBack.addEventListener("click", openInbox);
+
+  /* ---------- draggable investor reservation point (the human sets the bounds) ---------- */
+  const dragRes = document.getElementById("dragRes");
+  const chartEl = document.getElementById("zopaChart");
+  let dragging = false;
+  dragRes.addEventListener("pointerdown", (e) => {
+    dragging = true;
+    dragRes.classList.add("dragging");
+    dragRes.setPointerCapture(e.pointerId);
+  });
+  dragRes.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    const rect = chartEl.getBoundingClientRect();
+    let v = AXIS.min + ((e.clientX - rect.left) / rect.width) * (AXIS.max - AXIS.min);
+    v = Math.min(AXIS.max, Math.max(M.inv[0] + 0.5, Math.round(v * 2) / 2));
+    if (v !== M.inv[1]) {
+      M.inv[1] = v;
+      setModel(M);
+      document.getElementById("invResCell").textContent = "$" + v + "M";
+    }
+  });
+  dragRes.addEventListener("pointerup", () => {
+    dragging = false;
+    dragRes.classList.remove("dragging");
+    upd("live", `Human adjusted the reservation point to $${M.inv[1]}M — ZOPA recomputed; agent may not cross it.`);
+  });
+
+  /* ---------- approval sheet (the human gate) ---------- */
+  const sheet = document.getElementById("approvalSheet");
+  const sheetBackdrop = document.getElementById("sheetBackdrop");
+  function showSheet() { sheet.classList.add("open"); sheetBackdrop.classList.add("open"); }
+  function hideSheet() { sheet.classList.remove("open"); sheetBackdrop.classList.remove("open"); }
+  sheetBackdrop.addEventListener("click", hideSheet);
+  document.getElementById("btnApprove").addEventListener("click", () => {
+    hideSheet();
+    const p = document.getElementById("statusPill");
+    p.textContent = "Terms drafting"; p.style.color = "var(--good)";
+    upd("live", "Human approved — drafting TS-001, conditional on GAP-002.");
+    if (LIVE) fetch("/approve", { method: "POST" });
+  });
+  document.getElementById("btnSendBack").addEventListener("click", () => {
+    hideSheet();
+    const p = document.getElementById("statusPill");
+    p.textContent = "Diligence"; p.style.color = "";
+    upd("live", "Human sent the card back to diligence — resolve blockers first.");
+  });
+
+  /* ---------- live mode: consume the pipeline server's SSE stream ---------- */
+  const LIVE = location.protocol.startsWith("http");
+  const WHO_TILE = { Agent: "agent", Ada: "ada", Minh: "minh" };
+
+  function addLine(who, text, isEvt, tile) {
+    const line = document.createElement("div");
+    line.className = "line" + (isEvt ? " evt" : "");
+    const t = new Date().toLocaleTimeString([], { minute: "2-digit", second: "2-digit" });
+    line.innerHTML = `<span class="t">${t}</span><span class="who">${who}</span><span class="txt">${text}</span>`;
+    trEl.appendChild(line);
+    requestAnimationFrame(() => requestAnimationFrame(() => line.classList.add("shown")));
+    trEl.scrollTop = trEl.scrollHeight;
+    if (tile !== undefined) speak(tile);
+  }
+
+  function applyEvent(e) {
+    switch (e.type) {
+      case "transcript.line":
+        addLine(e.who, e.text, false, e.tile ?? WHO_TILE[e.who] ?? null);
+        break;
+      case "signal.update": {
+        const cap = e.who === "ada" ? "Ada" : "Minh";
+        meter(cap + "Sent", e.sentiment); meter(cap + "Tone", e.tone); meter(cap + "Conf", e.confidence);
+        readout(cap, e.expression[0].toUpperCase() + e.expression.slice(1));
+        break;
+      }
+      case "card.update":
+        addLine("System", `${e.ref} → ${e.state}${typeof e.trust === "number" ? ` (trust ${e.trust}/100)` : ""} — ${e.evidence ?? ""}`, true);
+        break;
+      case "model.update":
+        if (e.party === "founder" && e.range) M.fnd = e.range.slice();
+        setModel(M);
+        if (e.zopa) {
+          document.getElementById("zopaNote").innerHTML =
+            `Estimated ZOPA: <strong>$${e.zopa[0]}M–$${e.zopa[1]}M</strong> · confidence <strong>${e.confidence}/100</strong> — ${e.note ?? ""}`;
+        }
+        if (e.lever) {
+          const l = [...document.querySelectorAll(".lever")].find(x => x.textContent.trim() === e.lever);
+          if (l) l.classList.add("hot");
+        }
+        upd("live", e.note ?? "negotiation model updated");
+        break;
+      case "approval.update":
+        upd("live", `Approval ${e.action} (${e.gate}) by ${e.by} — reservation $${e.bounds?.reservation}M, target $${e.bounds?.target}M`);
+        break;
+      case "status.change": {
+        const p = document.getElementById("statusPill");
+        p.textContent = e.status[0].toUpperCase() + e.status.slice(1);
+        if (e.status === "research") setPipeline(1, 1);
+        if (e.status === "interview") setPipeline(2, 2);
+        if (e.status === "decision") {
+          setPipeline(3, -1);
+          p.classList.remove("live"); p.style.color = "var(--accent-warm-text)";
+          if (e.requiresHuman) {
+            if (e.recommendation) document.getElementById("sheetRec").textContent = e.recommendation;
+            showSheet();
+          }
+        }
+        if (e.status === "closed") { p.textContent = "Closed — terms drafted"; p.style.color = "var(--good)"; }
+        break;
+      }
+      case "outcome.recorded":
+        upd("live", `Outcome recorded: ${e.result}${e.termSheetRef ? ` (${e.termSheetRef})` : ""}`);
+        break;
+    }
+  }
+
+  if (LIVE) {
+    document.getElementById("btnPlay").style.display = "none";
+    document.getElementById("ctlNote").textContent =
+      "Live mode — events streamed from the pipeline server (node serve.js). Click Cam for the webcam seat.";
+    new EventSource("/events").onmessage = (msg) => applyEvent(JSON.parse(msg.data));
+  }
 </script>
 </body>
 </html>

@@ -4,7 +4,18 @@ An Opportunity Card is the canonical, living record for one team pursuing one
 company or idea. Intake, research, interview, and diligence agents update the
 same file. Front matter supports indexing; the body stays readable and may grow
 as evidence arrives. Material claims cite a source and carry their own trust
-level. Unknown information is marked explicitly rather than inferred.
+score. Unknown information is marked explicitly rather than inferred.
+
+Confidence and trust are recorded as integers from 0 to 100, not as words, so
+they can be compared, sorted, and tracked over time. Use `unknown` only where no
+evidence exists at all; do not substitute a low number for a missing assessment.
+
+| Band   | Range  | Meaning                                                     |
+| ------ | ------ | ----------------------------------------------------------- |
+| 80-100 | High   | Independently verified by a primary source                  |
+| 55-79  | Medium | Corroborated, but by a single or partly interested source   |
+| 30-54  | Low    | Plausible and self-reported; no corroboration yet           |
+| 0-29   | Weak   | Contradicted, stale, or from a source with a clear interest |
 
 ### Format
 
@@ -28,7 +39,7 @@ thesis_id: THESIS-NNN
 
 **One-line pitch:** ...
 **Recommendation:** Proceed | Hold | Decline | Invest
-**Recommendation confidence:** Low | Medium | High
+**Recommendation confidence:** NN/100
 
 A short, decision-oriented summary with citations such as [CLM-001][SRC-001].
 
@@ -42,7 +53,7 @@ A short, decision-oriented summary with citations such as [CLM-001][SRC-001].
 
 ### FND-NNNN - Name, role
 
-- **Founder Score snapshot:** NN/100, confidence, trend
+- **Founder Score snapshot:** NN/100, confidence NN/100, trend
 - Relevant history, skills, commitment, and team dynamics [CLM-...][SRC-...]
 - Open questions or cold-start evidence still needed
 
@@ -57,9 +68,9 @@ A short, decision-oriented summary with citations such as [CLM-001][SRC-001].
 
 | Axis            | Rating                   | Trend                          | Confidence | Evidence-backed rationale |
 | --------------- | ------------------------ | ------------------------------ | ---------- | ------------------------- |
-| Founder         | ...                      | improving / stable / declining | ...        | ...                       |
-| Market          | bullish / neutral / bear | ...                            | ...        | ...                       |
-| Idea vs. market | ...                      | ...                            | ...        | ...                       |
+| Founder         | ...                      | improving / stable / declining | NN/100     | ...                       |
+| Market          | bullish / neutral / bear | ...                            | NN/100     | ...                       |
+| Idea vs. market | ...                      | ...                            | NN/100     | ...                       |
 
 ### Thesis fit
 
@@ -67,10 +78,10 @@ A short, decision-oriented summary with citations such as [CLM-001][SRC-001].
 
 ## Evidence and Gaps
 
-| ID      | Claim or gap | State                             | Trust               | Evidence / next action |
-| ------- | ------------ | --------------------------------- | ------------------- | ---------------------- |
-| CLM-001 | ...          | claimed / verified / contradicted | low / medium / high | SRC-001                |
-| GAP-001 | ...          | open                              | unknown             | Ask in interview       |
+| ID      | Claim or gap | State                             | Trust   | Evidence / next action |
+| ------- | ------------ | --------------------------------- | ------- | ---------------------- |
+| CLM-001 | ...          | claimed / verified / contradicted | NN/100  | SRC-001                |
+| GAP-001 | ...          | open                              | unknown | Ask in interview       |
 
 ### Sources
 
@@ -93,7 +104,9 @@ A short, decision-oriented summary with citations such as [CLM-001][SRC-001].
 The Founder Score is a dated snapshot of the founder's durable profile, not an
 opportunity score. The three assessment axes remain independent and are never
 averaged. The recommendation confidence describes confidence in the available
-evidence, not the probability that the company succeeds.
+evidence, not the probability that the company succeeds. A confidence or trust
+score is likewise a statement about evidence quality, so it must never be read
+as a percentage likelihood of any outcome.
 
 ### Example
 

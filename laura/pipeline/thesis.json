@@ -1,0 +1,51 @@
+{
+  "comment": "Single machine-readable fund thesis + evaluation criteria. Sources: sun/system-architecture.md (tech spec §8 preference model, §6 vibe check), sun/opportunity-card.md (axes, thesis fit), Martin's numeric-confidence-trust convention, laura/founder-axis-scoring.md (sub-scores). Do not duplicate these values elsewhere — pipeline and server read this file.",
+  "id": "THESIS-001",
+  "fund": {
+    "sectors": ["AI infrastructure", "robotics"],
+    "stages": ["Pre-seed", "Seed"],
+    "geographies": ["Europe"],
+    "checkSizeUsd": { "min": 50000, "max": 100000 },
+    "targetOwnership": 0.08,
+    "riskAppetite": "high",
+    "maxOpenGaps": 3
+  },
+  "negotiation": {
+    "compsMultiple": 7.5,
+    "founderAskMultiple": 10,
+    "batnaRef": "OPP-2026-0008",
+    "levers": ["valuation", "check size", "pro-rata", "closing speed", "board rights", "milestones"],
+    "noBluff": true,
+    "reservationRequiresHumanApproval": true
+  },
+  "founderCriteria": {
+    "comment": "Five sub-scores per laura/founder-axis-scoring.md; weights sum to 1. Floors are ceiling traits: below floor, the founder axis is capped regardless of other scores.",
+    "subScores": {
+      "resilience":       { "weight": 0.25, "floor": 30 },
+      "autonomy":         { "weight": 0.20, "floor": 35 },
+      "curiosity":        { "weight": 0.20, "floor": 35 },
+      "perseverance":     { "weight": 0.15, "floor": 0 },
+      "teamComplementarity": { "weight": 0.20, "floor": 0 }
+    },
+    "behavioralSignals": ["stageClarity", "responseToChallenge"],
+    "doNotScore": ["extraversion"],
+    "combinationRules": [
+      "conscientiousness is stage-dependent: never a standalone positive",
+      "high assertiveness + low emotional control reads as aggression, flag not score"
+    ]
+  },
+  "evidenceRules": {
+    "scale": "0-100 integers; 'unknown' only where no evidence exists",
+    "trustBands": { "high": [80, 100], "medium": [55, 79], "low": [30, 54], "weak": [0, 29] },
+    "selfReportedDefault": 40,
+    "contradictedDefault": 20,
+    "verifiedRequiresIndependentSource": true,
+    "modelConfidencePenaltyPerContradiction": 10
+  },
+  "assessment": {
+    "axes": ["Founder", "Market", "Idea vs. market"],
+    "neverAverageAxes": true,
+    "marketRatings": ["bullish", "neutral", "bear"],
+    "trends": ["improving", "stable", "declining"]
+  }
+}

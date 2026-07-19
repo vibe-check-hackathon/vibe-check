@@ -1,0 +1,431 @@
+<!DOCTYPE html><html lang="en" class="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#e5e2e1",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-primary-container": "#eeefff",
+                    "surface-container": "#201f1f",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "secondary-fixed-dim": "#4edea3",
+                    "surface-container-high": "#2a2a2a",
+                    "on-secondary-container": "#00311f",
+                    "tertiary": "#ffb95f",
+                    "outline-variant": "#434655",
+                    "surface-container-highest": "#353534",
+                    "on-secondary-fixed": "#002113",
+                    "on-error": "#690005",
+                    "tertiary-container": "#996100",
+                    "on-error-container": "#ffdad6",
+                    "secondary-container": "#00a572",
+                    "primary-container": "#2563eb",
+                    "on-tertiary-fixed": "#2a1700",
+                    "on-tertiary": "#472a00",
+                    "surface-dim": "#131313",
+                    "secondary": "#4edea3",
+                    "primary-fixed": "#dbe1ff",
+                    "surface-bright": "#3a3939",
+                    "background": "#131313",
+                    "error": "#ffb4ab",
+                    "tertiary-fixed": "#ffddb8",
+                    "on-primary-fixed": "#00174b",
+                    "secondary-fixed": "#6ffbbe",
+                    "outline": "#8d90a0",
+                    "surface": "#131313",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "on-tertiary-container": "#ffeedd",
+                    "error-container": "#93000a",
+                    "surface-variant": "#353534",
+                    "on-surface-variant": "#c3c6d7",
+                    "inverse-primary": "#0053db",
+                    "on-primary": "#002a78",
+                    "inverse-on-surface": "#313030",
+                    "on-secondary": "#003824",
+                    "primary": "#b4c5ff",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "surface-container-low": "#1c1b1b",
+                    "on-secondary-fixed-variant": "#005236",
+                    "surface-tint": "#b4c5ff",
+                    "on-surface": "#e5e2e1",
+                    "on-background": "#e5e2e1"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "container-max": "1440px",
+                    "unit": "4px",
+                    "margin": "40px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "display-lg-mobile": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    }catch(_e){}</script><meta charset="utf-8"></head><body class="font-body-md text-on-surface antialiased overflow-hidden flex flex-col h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter py-unit h-16 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/10 shadow-[0_-1px_0_rgba(255,255,255,0.1)_inset]">
+<div class="flex items-center gap-6">
+<span class="font-display-lg text-headline-md font-bold tracking-tighter text-primary-fixed-dim">VibeCheck Studio</span>
+<div class="h-6 w-px bg-outline-variant/30"></div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">OPP-2026-0001</span>
+<span class="text-outline-variant">•</span>
+<span class="font-label-sm text-label-sm text-on-surface">Acme Robotics</span>
+<span class="text-outline-variant">•</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Pre-seed</span>
+</div>
+<div class="flex items-center gap-2 bg-secondary-container/20 border border-secondary-container/50 px-3 py-1 rounded-full ml-4">
+<div class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse-fast"></div>
+<span class="font-label-sm text-label-sm text-secondary-fixed">INTERVIEWING</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-tertiary">
+<span class="material-symbols-outlined text-[18px]">timer</span>
+<span class="font-label-sm text-label-sm">Decision deadline in 14h 22m</span>
+</div>
+<button class="bg-primary-container text-white px-4 py-2 rounded-lg font-label-sm text-label-sm flex items-center gap-2 hover:bg-inverse-primary transition-colors">
+                Live Interview
+            </button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors flex items-center">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Layout -->
+<main class="flex-1 mt-16 flex gap-6 p-6 overflow-hidden h-[calc(100vh-64px)] max-w-container-max mx-auto w-full">
+<!-- Left Column (60%) -->
+<div class="w-[60%] flex flex-col gap-6 h-full">
+<!-- Video Stage -->
+<section class="flex flex-col gap-4 h-[60%]">
+<div class="flex gap-4 h-2/3">
+<!-- Ada Keller (Active) -->
+<div class="relative w-1/2 rounded-[18px] overflow-hidden border-2 border-primary-container shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="Cinematic, high-contrast medium shot of a professional female CEO in a dimly lit modern office, looking slightly right. Soft blue ambient lighting accents her features, conveying focus and confidence. Shot on 35mm lens, corporate keynote aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNXyheXewcO7ZjsCF9nZUkYYCnjsZkv9JbpL-kGkU4vb6_EtC-IDOulOzPSpHuHa91S6TvMw2xlYKO7aOBffH-kCqbzUdWlmC6mwxTEskoXuOpK_kWMuR3eNOTQERoGHPllFgxhMW5d1WrkxoeVzfi3VcVF_2eQq4CP04LpRMawxZbqyboK9teodYi5PtALsVmM3UA5nO23ncV1iIZTAvj9fvKksfHkx8p5TBJM78jyqOO1YlRywFk">
+<div class="absolute bottom-4 left-4 right-4 bg-surface-container/80 backdrop-blur-md rounded-lg p-3 flex justify-between items-center border border-white/10">
+<div>
+<h3 class="font-label-sm text-label-sm text-on-surface">Ada Keller — CEO</h3>
+<div class="flex items-center gap-1 mt-1">
+<div class="flex items-end gap-0.5 h-3">
+<div class="w-1 bg-secondary-fixed h-full animate-[bounce_1s_infinite]"></div>
+<div class="w-1 bg-secondary-fixed h-2/3 animate-[bounce_1.2s_infinite]"></div>
+<div class="w-1 bg-secondary-fixed h-full animate-[bounce_0.8s_infinite]"></div>
+</div>
+<span class="font-label-sm text-[10px] text-secondary-fixed ml-1">Speaking</span>
+</div>
+</div>
+<div class="bg-surface-dim/90 border border-white/10 px-2 py-1 rounded text-[10px] font-label-sm text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">psychology</span>
+                                Engaged
+                            </div>
+</div>
+</div>
+<!-- Minh Tran -->
+<div class="relative w-1/2 rounded-[18px] overflow-hidden border border-white/5">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="Cinematic, high-contrast medium shot of a professional male CTO in a dimly lit modern tech lab, looking forward. Warm amber ambient lighting accents his features, conveying analytical thought. Shot on 35mm lens, corporate keynote aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE9xV0Dq-2tG2h9N3NJYbziPnzZ4bOo99xIva_s06VV3Q55monRVExgUgCaVkw5hSaJF15mbID5D6P4gOeZpKwnZdajTQ2pO8_3O47xWYsFT6iKP--PbquKh-rf-JFdJuD7DpuUqN4TN0P-TsNaLimebXSx27vZ0hmikVK4difrAkinDW3dJh6y8lIn5SaagOKpRPgE6nBxzQLyaaXarqWvryAxqs9EYCm_ubGB91ooOnoP_0Vqsnk">
+<div class="absolute bottom-4 left-4 right-4 bg-surface-container/80 backdrop-blur-md rounded-lg p-3 flex justify-between items-center border border-white/10">
+<div>
+<h3 class="font-label-sm text-label-sm text-on-surface">Minh Tran — CTO</h3>
+</div>
+<div class="bg-surface-dim/90 border border-white/10 px-2 py-1 rounded text-[10px] font-label-sm text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">analytics</span>
+                                Analytical
+                            </div>
+</div>
+</div>
+</div>
+<!-- Interview Agent -->
+<div class="relative w-full h-1/3 rounded-[18px] overflow-hidden border border-white/5 bg-surface-container-lowest">
+<div class="absolute inset-0 flex items-center justify-center opacity-50">
+<div class="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background"></div>
+</div>
+<div class="absolute inset-0 flex flex-col items-center justify-center z-10">
+<div class="w-16 h-16 rounded-full bg-surface-container border border-primary/30 flex items-center justify-center mb-2 shadow-[0_0_20px_rgba(180,197,255,0.1)]">
+<span class="material-symbols-outlined text-[32px] text-primary">robot_2</span>
+</div>
+<h3 class="font-label-sm text-label-sm text-on-surface">Interview Agent</h3>
+</div>
+</div>
+</section>
+<!-- Transcript -->
+<section class="glass-panel flex-1 flex flex-col overflow-hidden">
+<div class="p-4 border-b border-white/5 flex justify-between items-center shrink-0">
+<h2 class="font-label-sm text-label-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">receipt_long</span>
+                        Live Transcript
+                    </h2>
+<div class="flex gap-2">
+<button class="bg-primary-container text-white px-3 py-1.5 rounded-full font-label-sm text-[11px] flex items-center gap-1 hover:bg-inverse-primary transition-colors">
+<span class="material-symbols-outlined text-[14px]">play_arrow</span> Play demo
+                        </button>
+<button class="bg-transparent border border-outline text-on-surface px-3 py-1.5 rounded-full font-label-sm text-[11px] flex items-center gap-1 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[14px]">restart_alt</span> Restart
+                        </button>
+</div>
+</div>
+<div class="p-4 overflow-y-auto flex-1 font-body-md text-[14px] flex flex-col gap-3">
+<div class="flex gap-3">
+<span class="text-outline-variant font-mono text-[12px] pt-1 w-12 shrink-0">14:02</span>
+<div>
+<span class="font-label-sm text-primary">Agent</span>
+<p class="text-on-surface mt-0.5">Could you elaborate on the scalability of the current robotics platform? Specifically regarding the manufacturing bottlenecks mentioned in the pre-seed deck.</p>
+</div>
+</div>
+<div class="flex gap-3">
+<span class="text-outline-variant font-mono text-[12px] pt-1 w-12 shrink-0">14:03</span>
+<div>
+<span class="font-label-sm text-on-surface">Ada Keller</span>
+<p class="text-on-surface-variant mt-0.5">Yes, absolutely. The main bottleneck right now is sourcing the specific actuators. We've identified two alternative suppliers in Taiwan.</p>
+</div>
+</div>
+<div class="flex gap-3 bg-tertiary/10 border border-tertiary/20 p-2 rounded-lg -mx-2">
+<span class="text-tertiary/70 font-mono text-[12px] pt-0.5 w-10 shrink-0">SYS</span>
+<div class="text-tertiary text-[13px]">
+                            Analyzing supply chain risk. Cross-referencing alternative suppliers.
+                        </div>
+</div>
+<div class="flex gap-3">
+<span class="text-outline-variant font-mono text-[12px] pt-1 w-12 shrink-0">14:04</span>
+<div>
+<span class="font-label-sm text-on-surface">Minh Tran</span>
+<p class="text-on-surface-variant mt-0.5">From a technical perspective, the new actuators will require a slight firmware adjustment, but we estimate that will only add a 2-week delay to the overall timeline.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column (40%) -->
+<div class="w-[40%] flex flex-col gap-6 h-full overflow-y-auto pb-6 pr-2">
+<!-- Vibe Check -->
+<section class="glass-panel p-5">
+<div class="flex justify-between items-center mb-4">
+<h2 class="font-headline-md text-[18px] text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">analytics</span>
+                        Vibe Check
+                    </h2>
+</div>
+<!-- Founder Stats -->
+<div class="flex gap-4 mb-6">
+<div class="flex-1 bg-surface-container-low rounded-xl p-3 border border-white/5">
+<div class="font-label-sm text-[11px] text-on-surface-variant mb-1">Founder–founder fit</div>
+<div class="flex items-end gap-2">
+<span class="font-display-lg text-[28px] text-on-surface leading-none">82</span>
+<span class="text-secondary-fixed text-[12px] font-label-sm mb-1 flex items-center"><span class="text-[14px]">▲</span> 4</span>
+</div>
+</div>
+<div class="flex-1 bg-surface-container-low rounded-xl p-3 border border-white/5">
+<div class="font-label-sm text-[11px] text-on-surface-variant mb-1">Founder–investor fit</div>
+<div class="flex items-end gap-2">
+<span class="font-display-lg text-[28px] text-on-surface leading-none">74</span>
+<span class="text-secondary-fixed text-[12px] font-label-sm mb-1 flex items-center"><span class="text-[14px]">▲</span> 4</span>
+</div>
+</div>
+</div>
+<!-- Individual Meters -->
+<div class="space-y-5">
+<div>
+<div class="font-label-sm text-label-sm text-on-surface mb-2">Ada Keller</div>
+<div class="space-y-2">
+<div class="flex items-center gap-3">
+<span class="w-16 font-label-sm text-[10px] text-on-surface-variant text-right">Sentiment</span>
+<div class="flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary-fixed w-[85%]"></div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-16 font-label-sm text-[10px] text-on-surface-variant text-right">Energy</span>
+<div class="flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[70%]"></div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-16 font-label-sm text-[10px] text-on-surface-variant text-right">Confidence</span>
+<div class="flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[90%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="h-px w-full bg-white/5"></div>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface mb-2">Minh Tran</div>
+<div class="space-y-2">
+<div class="flex items-center gap-3">
+<span class="w-16 font-label-sm text-[10px] text-on-surface-variant text-right">Sentiment</span>
+<div class="flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary-fixed w-[60%]"></div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-16 font-label-sm text-[10px] text-on-surface-variant text-right">Energy</span>
+<div class="flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[50%]"></div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-16 font-label-sm text-[10px] text-on-surface-variant text-right">Confidence</span>
+<div class="flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[80%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Negotiation -->
+<section class="glass-panel p-5 flex-1 flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<h2 class="font-headline-md text-[18px] text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary">payments</span>
+                        Negotiation
+                    </h2>
+</div>
+<!-- Range Chart -->
+<div class="mb-6 bg-surface-container-low p-6 rounded-xl border border-white/5 overflow-hidden">
+  <div class="relative h-64 w-full">
+    <!-- Axis Labels -->
+    <div class="absolute top-0 left-0 right-0 flex justify-between font-mono text-[10px] text-on-surface-variant/50">
+      <span class="">$6M</span>
+      <span class="">$8M</span>
+      <span class="">$10M</span>
+      <span class="">$12M</span>
+      <span class="">$14M</span>
+    </div>
+    
+    <!-- Vertical Gridlines -->
+    <div class="absolute inset-0 flex justify-between pointer-events-none">
+      <div class="w-px h-full bg-white/5"></div>
+      <div class="w-px h-full bg-white/5"></div>
+      <div class="w-px h-full bg-white/5"></div>
+      <div class="w-px h-full bg-white/5"></div>
+      <div class="w-px h-full bg-white/5"></div>
+    </div>
+
+    <!-- Seller (Founders) Section - Top -->
+    <div class="absolute top-8 left-0 right-0 h-20">
+      <!-- Seller Labels -->
+      <div class="absolute -top-6 left-[37.5%] -translate-x-1/2 flex flex-col items-center">
+        <span class="text-[9px] text-on-surface-variant uppercase tracking-wider">Seller's Worst Case</span>
+        <span class="material-symbols-outlined text-tertiary text-[14px]">arrow_downward</span>
+      </div>
+      <div class="absolute -top-6 left-[87.5%] -translate-x-1/2 flex flex-col items-center">
+        <span class="text-[9px] text-on-surface-variant uppercase tracking-wider">Seller's Desired Price</span>
+        <span class="material-symbols-outlined text-tertiary text-[14px]">arrow_downward</span>
+      </div>
+      
+      <!-- Seller BATNA Arrow -->
+      <div class="absolute top-1/2 right-[62.5%] left-0 border-t border-secondary-fixed flex items-center justify-end pr-2">
+        <span class="material-symbols-outlined text-secondary-fixed text-[14px] absolute left-0 -translate-y-1/2">arrow_back</span>
+        <div class="flex flex-col items-end -mt-8">
+          <span class="text-[8px] text-secondary-fixed font-bold">Seller's Alternatives</span>
+          <span class="text-[10px] text-secondary-fixed font-bold">SELLER'S BATNA</span>
+        </div>
+      </div>
+
+      <!-- Seller Settlement Range Bar -->
+      <div class="absolute top-0 left-[37.5%] right-[12.5%] h-full bg-surface-container-highest border border-white/10 flex items-center justify-center">
+        <span class="text-[10px] font-bold text-white uppercase tracking-widest">Seller's Settlement Range</span>
+      </div>
+    </div>
+
+    <!-- ZOPA - Middle Overlap -->
+    <div class="absolute top-28 left-[37.5%] right-[50%] h-12 bg-tertiary border-x border-tertiary-container flex items-center justify-center z-20 shadow-[0_0_15px_rgba(255,185,95,0.2)]">
+      <span class="text-[12px] font-bold text-on-tertiary-fixed tracking-widest">ZOPA</span>
+    </div>
+
+    <!-- Buyer (Investor) Section - Bottom -->
+    <div class="absolute top-40 left-0 right-0 h-20">
+      <!-- Buyer Settlement Range Bar -->
+      <div class="absolute top-0 left-[0%] right-[50%] h-full bg-surface-container-highest border border-white/10 flex items-center justify-center">
+        <span class="text-[10px] font-bold text-white uppercase tracking-widest">Buyer's Settlement Range</span>
+      </div>
+
+      <!-- Buyer BATNA Arrow -->
+      <div class="absolute top-1/2 left-[50%] right-0 border-t border-primary flex items-center">
+        <span class="material-symbols-outlined text-primary text-[14px] absolute right-0 -translate-y-1/2">arrow_forward</span>
+        <div class="flex flex-col items-start -mt-8 pl-2">
+          <span class="text-[8px] text-primary font-bold">Buyer's Alternatives</span>
+          <span class="text-[10px] text-primary font-bold">BUYER'S BATNA</span>
+        </div>
+      </div>
+
+      <!-- Buyer Labels -->
+      <div class="absolute top-[100%] left-[0%] flex flex-col items-center mt-1">
+        <span class="material-symbols-outlined text-tertiary text-[14px]">arrow_upward</span>
+        <span class="text-[9px] text-on-surface-variant uppercase tracking-wider">Buyer's Desired Price</span>
+      </div>
+      <div class="absolute top-[100%] left-[50%] -translate-x-1/2 flex flex-col items-center mt-1">
+        <span class="material-symbols-outlined text-tertiary text-[14px]">arrow_upward</span>
+        <span class="text-[9px] text-on-surface-variant uppercase tracking-wider">Buyer's Worst Case</span>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Table -->
+<div class="mb-6">
+<div class="grid grid-cols-4 font-label-sm text-[10px] text-on-surface-variant pb-2 border-b border-white/10">
+<div class="">Metric</div>
+<div class="">BATNA</div>
+<div class="">Reservation</div>
+<div class="">Target</div>
+</div>
+<div class="grid grid-cols-4 font-body-md text-[13px] text-on-surface py-2 border-b border-white/5">
+<div class="font-label-sm">Investor</div>
+<div class="">$6M</div>
+<div class="">$12M</div>
+<div class="text-primary">$10M</div>
+</div>
+<div class="grid grid-cols-4 font-body-md text-[13px] text-on-surface py-2">
+<div class="font-label-sm">Founders</div>
+<div class="">$14M</div>
+<div class="">$9M</div>
+<div class="text-secondary-fixed">$11M</div>
+</div>
+</div>
+<!-- Levers -->
+<div class="mb-4">
+<div class="font-label-sm text-[11px] text-on-surface-variant mb-2">Active Levers</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 rounded border border-tertiary bg-tertiary/10 text-tertiary font-label-sm text-[10px]">Valuation</span>
+<span class="px-2 py-1 rounded border border-white/10 bg-surface-container text-on-surface-variant font-label-sm text-[10px]">Check Size</span>
+<span class="px-2 py-1 rounded border border-white/10 bg-surface-container text-on-surface-variant font-label-sm text-[10px]">Board Seat</span>
+</div>
+</div>
+<!-- Live Updates Feed -->
+<div class="flex-1 bg-surface-container-lowest border border-white/5 rounded-xl p-3 overflow-y-auto">
+<div class="font-label-sm text-[10px] text-on-surface-variant mb-2 flex items-center gap-1 uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed animate-pulse"></span>
+                        Live Analysis
+                    </div>
+<div class="space-y-2 font-body-md text-[12px] text-on-surface-variant">
+<p class=""><span class="text-tertiary font-medium">Alert:</span> Founders signaling flexibility on valuation if check size increases.</p>
+<div class="h-px bg-white/5"></div>
+<p class=""><span class="text-primary font-medium">System:</span> Recalculating ZOPA based on recent statements...</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

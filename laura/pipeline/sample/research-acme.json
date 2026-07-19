@@ -1,0 +1,25 @@
+{
+  "comment": "Canned research results standing in for the AGENT HOOKs in developing.js — in production these come from Claude + web research per claim.",
+  "corroborations": [
+    { "match": "Ada led two warehouse deployments", "state": "partially_verified", "trust": 55, "source": "SRC-005", "sourceDescription": "Ada's public employment history and former colleague profile" },
+    { "match": "Minh authored relevant research", "state": "verified", "trust": 90, "source": "SRC-006", "sourceDescription": "Minh's robotics paper and product repository" },
+    { "match": "two paid pilots", "state": "partially_verified", "trust": 50, "source": "SRC-007", "sourceDescription": "One signed pilot contract; one founder-provided invoice" }
+  ],
+  "contradictions": [
+    { "text": "Deck states $120K ARR; application states $80K", "evidence": "SRC-001", "nextAction": "Request revenue export and contract schedule" }
+  ],
+  "gaps": [
+    { "text": "Model IP assignment", "nextAction": "Review university and company agreements" },
+    { "text": "Rights to customer-generated training data", "nextAction": "Review pilot contracts" },
+    { "text": "Repeatable deployment time and cost", "nextAction": "Obtain deployment logs from both pilots" }
+  ],
+  "hypotheses": [
+    { "text": "Demonstrates high learning velocity — test with a non-leading question about a failed launch", "evidenceFor": ["CLM-001"] },
+    { "text": "Commercial ownership may be unclear — ask who owns the pipeline and closed the last customer", "evidenceFor": ["CLM-003"] }
+  ],
+  "axes": {
+    "Founder": { "rating": "Strong", "trend": "Improving", "confidence": 60, "rationale": "Relevant execution and research history; commercial depth untested [CLM-001][CLM-002]" },
+    "Market": { "rating": "Bullish", "trend": "Stable", "confidence": 55, "rationale": "Labour pressure supports adoption; integrator competition is credible [SRC-007]" },
+    "Idea vs. market": { "rating": "Promising with changes", "trend": "Improving", "confidence": 50, "rationale": "Pilots validate urgency; repeatable integration path unproven [CLM-003][GAP-003]" }
+  }
+}
