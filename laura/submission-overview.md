@@ -128,3 +128,25 @@ about which was which.
 > with their consent, for demonstration purposes — the same disclosure
 > standard the platform applies to everything else: synthetic content is
 > always labeled as synthetic.
+
+## 8. Technologies / Tags
+
+**Core:** `autonomous-agents` · `rag` · `llm` · `evidence-grounded-ai` ·
+`multi-agent` · `voice-ai` · `structured-outputs`
+
+**What makes it ours:** `ethical-crawler` (robots.txt-respecting,
+consent-based, no hosted-media scraping) · `next-investment` (thesis-driven
+deal sourcing) · `founder-score` · `batna-negotiation-engine` ·
+`adaptive-term-sheets` · `explainable-by-default` (every score ships its
+reasons) · `unknown≠false` (confidence separated from score) ·
+`human-in-the-loop` (approval gates on everything founder-facing) ·
+`provider-agnostic-llm` (Claude / OpenAI / local, one key store) ·
+`synthetic-data-consent-tier` · `interview-intelligence` (SRT/VTT/audio →
+traceable claims)
+
+**Stack:** `typescript` · `react` · `tanstack-start` · `node-esm-zero-deps` ·
+`vite` · `claude-api` · `web-search-tool` · `elevenlabs` · `whisper` ·
+`markdown-as-database` · `golden-file-testing`
+
+**Categories:** FinTech / VC-Tech · Agentic AI · Responsible AI ·
+Future of Work
