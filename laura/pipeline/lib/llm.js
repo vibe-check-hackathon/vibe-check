@@ -126,6 +126,50 @@ export async function complete({ system, prompt, maxTokens = 1024 }) {
   return data.choices?.[0]?.message?.content ?? "";
 }
 
+/** Single-turn completion WITH live web search — Anthropic only (server-side
+ *  web_search tool; OpenAI chat completions has no browsing). Returns
+ *  { text, searched } where searched=false means the caller must label the
+ *  output as unverified model recall. Handles pause_turn continuation. */
+export async function completeWithWebSearch({ system, prompt, maxTokens = 4000 }) {
+  const cfg = loadConfig();
+  if (!cfg) throw new Error("no LLM key configured — run: node laura/pipeline/set-key.js");
+  if (cfg.provider !== "anthropic") {
+    return { text: await complete({ system, prompt, maxTokens }), searched: false };
+  }
+
+  const messages = [{ role: "user", content: prompt }];
+  for (let turn = 0; turn < 4; turn += 1) {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": cfg.key,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: cfg.model,
+        max_tokens: maxTokens,
+        system,
+        messages,
+        tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 6 }],
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message ?? `anthropic http ${res.status}`);
+    if (data.stop_reason === "refusal") throw new Error("model declined the request");
+    if (data.stop_reason === "pause_turn") {
+      // server-side tool loop paused — echo the turn back and let it resume
+      messages.push({ role: "assistant", content: data.content });
+      continue;
+    }
+    const text = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text).join("");
+    const searched = (data.content ?? []).some((b) => b.type === "server_tool_use" || b.type === "web_search_tool_result") ||
+      messages.length > 1; // searches may have happened in a paused earlier turn
+    return { text, searched };
+  }
+  throw new Error("web search did not settle after 4 turns");
+}
+
 /** MVP #3 LLM fallback: free-text query over deal records → matching ids.
  *  Deals arrive as compact objects; the model answers with strict JSON. */
 export async function filterDealsWithLLM(query, deals) {
