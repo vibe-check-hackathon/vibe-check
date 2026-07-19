@@ -1,0 +1,56 @@
+{
+  "opportunityId": "OPP-2026-0001",
+  "company": "Acme Robotics",
+  "thesisId": "THESIS-001",
+  "oneLiner": "Vision-guided picking software that lets warehouse robots learn new objects from a short operator demonstration.",
+  "stage": "Pre-seed",
+  "location": "Berlin, Germany",
+  "raiseUsd": 1200000,
+  "permissions": {
+    "public research": "granted",
+    "interview recording": "granted",
+    "reference calls": "pending"
+  },
+  "materials": [
+    { "description": "Founder application and deck", "origin": "founder" },
+    { "description": "Ada's CV", "origin": "founder" },
+    { "description": "Minh's CV", "origin": "founder" },
+    { "description": "Product demo video", "origin": "founder" }
+  ],
+  "founders": [
+    {
+      "id": "FND-0007",
+      "name": "Ada Keller",
+      "role": "CEO",
+      "priorScore": 76,
+      "priorTrend": "improving",
+      "background": [
+        "Former robotics research engineer; led deployment of a picking system at two distribution centres",
+        "Full-time since January 2026"
+      ]
+    },
+    {
+      "id": "FND-0008",
+      "name": "Minh Tran",
+      "role": "CTO",
+      "priorScore": 72,
+      "priorTrend": "stable",
+      "background": [
+        "Published relevant imitation-learning research and built the current product prototype"
+      ]
+    }
+  ],
+  "claims": [
+    { "text": "Ada led two warehouse deployments", "subject": "founder", "sourceIndex": 1 },
+    { "text": "Minh authored relevant research and prototype", "subject": "founder", "sourceIndex": 2 },
+    { "text": "Acme has two paid pilots", "subject": "company", "sourceIndex": 0 },
+    { "text": "Company has $120K ARR", "subject": "company", "sourceIndex": 0 }
+  ],
+  "companyProfile": {
+    "sector": "AI infrastructure / robotics",
+    "problem": "Warehouse automation vendors spend weeks programming new SKU handling",
+    "market": "Mid-market European fulfilment operators",
+    "businessModel": "Annual software licence plus deployment fee",
+    "technology": "Demonstration-based model adaptation in under one hour"
+  }
+}
