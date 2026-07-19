@@ -3,11 +3,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Section, Card, Badge } from "@/components/ui-kit";
 import {
+  ACME_FOUNDERS,
+  EVALUATION_CRITERIA,
   STARTUPS,
   STAGES,
   companyInitials,
   founderInitials,
   founderNames,
+  outcomeOf,
   stageColor,
   scoreTone,
   fmtScore,
@@ -201,7 +204,30 @@ function BoardPage() {
   );
 }
 
+/** The five founder-evaluation axes (laura/founder-axis-scoring.md). */
+const FOUNDER_AXES = ["Resilience", "Autonomy", "Curiosity", "Perseverance", "Co-founder fit"] as const;
+const SYNTHETIC_SCORE_KEYS: Record<(typeof FOUNDER_AXES)[number], string> = {
+  Resilience: "resilience",
+  Autonomy: "autonomy",
+  Curiosity: "curiosity",
+  Perseverance: "perseverance",
+  "Co-founder fit": "teamComplementarity",
+};
+
+/** Axis values for a founder: synthetic → generated scores, Acme demo → psychogram, real → null (never fabricated). */
+function axisValuesFor(s: Startup, f: FounderRef): Record<string, number> | null {
+  if (s.synthetic && f.scores) {
+    return Object.fromEntries(FOUNDER_AXES.map((a) => [a, f.scores![SYNTHETIC_SCORE_KEYS[a]] ?? 0]));
+  }
+  if (s.demo) {
+    const demo = ACME_FOUNDERS.find((d) => d.id === f.id);
+    if (demo) return Object.fromEntries(demo.axes.map((a) => [a.key === "Co-founder fit" ? "Co-founder fit" : a.key, a.v]));
+  }
+  return null;
+}
+
 function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => void }) {
+  const outcome = outcomeOf(s);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-label={`${s.company} details`}>
       <div className="absolute inset-0 bg-foreground/40" onClick={onClose} />
@@ -219,6 +245,7 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
             </div>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               <span className={`text-[11px] px-1.5 py-0.5 rounded ${stageColor(s.stage)}`}>{s.stage}</span>
+              {outcome && <Badge tone={outcome.tone}>{outcome.label}</Badge>}
               {s.synthetic && <Badge tone="positive">synthetic — nobody real</Badge>}
               {s.demo && <Badge tone="positive">live demo (fictional)</Badge>}
               {!s.assessed && <Badge tone="outline">not assessed</Badge>}
@@ -232,10 +259,37 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
           </DetailBlock>
         )}
 
-        <DetailBlock title={s.synthetic ? "Founders — full data & sub-scores (fictional people)" : "Founders"}>
+        {!s.demo && !s.synthetic && (
+          <DetailBlock title="Evaluation retrospective">
+            <div className="rounded-md border border-border bg-surface p-2.5">
+              <div className="text-[11.5px] text-muted-foreground">
+                Card retro-dated to <span className="font-mono text-foreground">{s.submitted}</span> — as if the
+                24-hour evaluation ran just before the publicly announced event. Criteria applied (THESIS-001):
+              </div>
+              <table className="mt-2 w-full text-[11.5px]">
+                <tbody className="divide-y divide-border/60">
+                  {EVALUATION_CRITERIA.map((c) => (
+                    <tr key={c.criterion}>
+                      <td className="py-1 pr-3 font-medium text-foreground whitespace-nowrap align-top">{c.criterion}</td>
+                      <td className="py-1 text-muted-foreground">{c.requirement}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {outcome && (
+                <div className="mt-2 flex items-center gap-2 border-t border-border/60 pt-2">
+                  <span className="text-[10.5px] uppercase tracking-wider text-muted-foreground">Real-life update</span>
+                  <Badge tone={outcome.tone}>{outcome.label}</Badge>
+                </div>
+              )}
+            </div>
+          </DetailBlock>
+        )}
+
+        <DetailBlock title={s.synthetic ? "Founders — full data & sub-scores (fictional people)" : "Founders — evaluation metrics"}>
           <div className="space-y-2">
             {s.founders.map((f) => (
-              <FounderRow key={f.id ?? f.name} founder={f} company={s.company} synthetic={!!s.synthetic} />
+              <FounderRow key={f.id ?? f.name} founder={f} company={s.company} synthetic={!!s.synthetic} axes={axisValuesFor(s, f)} />
             ))}
           </div>
         </DetailBlock>
@@ -290,7 +344,17 @@ function DetailBlock({ title, children }: { title: string; children: ReactNode }
   );
 }
 
-function FounderRow({ founder: f, company, synthetic }: { founder: FounderRef; company: string; synthetic: boolean }) {
+function FounderRow({
+  founder: f,
+  company,
+  synthetic,
+  axes,
+}: {
+  founder: FounderRef;
+  company: string;
+  synthetic: boolean;
+  axes: Record<string, number> | null;
+}) {
   const linkedinSearch = `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(`${f.name} ${company}`)}`;
   return (
     <div className="rounded-md border border-border bg-surface p-2.5">
@@ -314,35 +378,33 @@ function FounderRow({ founder: f, company, synthetic }: { founder: FounderRef; c
           </a>
         )}
       </div>
-      {synthetic && (
-        <>
-          {f.email && (
-            <div className="mt-2 text-[11px] text-muted-foreground">
-              {f.email}
-              {f.linkedin && (
-                <>
-                  {" · "}
-                  <span className="text-muted-foreground">{f.linkedin.replace("https://", "")}</span>
-                </>
-              )}
-            </div>
+      {synthetic && f.email && (
+        <div className="mt-2 text-[11px] text-muted-foreground">
+          {f.email}
+          {f.linkedin && (
+            <>
+              {" · "}
+              <span className="text-muted-foreground">{f.linkedin.replace("https://", "")}</span>
+            </>
           )}
-          {f.scores && (
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {Object.entries(f.scores).map(([k, v]) => (
-                <span key={k} className="rounded border border-border bg-background px-1.5 py-0.5 text-[10px] text-foreground">
-                  {k} <span className="font-mono">{v}</span>
-                </span>
-              ))}
-              {f.scoreConfidence != null && (
-                <span className="rounded border border-border bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                  conf <span className="font-mono">{f.scoreConfidence}/100</span>
-                </span>
-              )}
-            </div>
-          )}
-        </>
+        </div>
       )}
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {FOUNDER_AXES.map((axis) => (
+          <span
+            key={axis}
+            className={`rounded border border-border px-1.5 py-0.5 text-[10px] ${axes ? "bg-background text-foreground" : "bg-surface text-muted-foreground"}`}
+            title={axes ? undefined : "Not assessed — no fabricated scores for real people"}
+          >
+            {axis} <span className="font-mono">{axes ? axes[axis] : "—"}</span>
+          </span>
+        ))}
+        {axes && f.scoreConfidence != null && (
+          <span className="rounded border border-border bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground">
+            conf <span className="font-mono">{f.scoreConfidence}/100</span>
+          </span>
+        )}
+      </div>
     </div>
   );
 }
@@ -360,17 +422,27 @@ function MicroAxis({ label, v }: { label: string; v: number | null }) {
 
 function CompanyMark({ startup, compact = false }: { startup: Startup; compact?: boolean }) {
   const size = compact ? "h-8 w-8" : "h-9 w-9";
+  const outcome = outcomeOf(startup);
   return (
-    <div className={`${size} shrink-0 rounded-md border border-border bg-background grid place-items-center overflow-hidden text-[10px] font-medium text-muted-foreground`}>
+    <div
+      title={outcome?.label}
+      className={`${size} group shrink-0 rounded-md border border-border bg-background grid place-items-center overflow-hidden text-[10px] font-medium text-muted-foreground`}
+    >
       {startup.logoUrl ? (
-        <img
-          src={startup.logoUrl}
-          alt=""
-          className="h-full w-full object-contain p-1.5"
-          onError={(event) => {
-            event.currentTarget.style.display = "none";
-          }}
-        />
+        <>
+          {/* interactive mark: brand logo flips to the canvas letter-mark on hover */}
+          <img
+            src={startup.logoUrl}
+            alt=""
+            className="h-full w-full object-contain p-1.5 group-hover:hidden"
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+            }}
+          />
+          <span className="hidden h-full w-full place-items-center bg-primary/10 text-primary group-hover:grid">
+            {companyInitials(startup.company)}
+          </span>
+        </>
       ) : (
         companyInitials(startup.company)
       )}

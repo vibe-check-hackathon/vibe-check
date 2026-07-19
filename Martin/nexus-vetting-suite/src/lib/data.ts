@@ -374,6 +374,45 @@ export function stageColor(stage: Stage) {
 }
 */
 
+/* ------------------------------------------------------------------ */
+/*  Retrospective evaluation: what the card was judged against, and    */
+/*  how the company actually turned out (public record).               */
+/* ------------------------------------------------------------------ */
+
+/** The thesis criteria every card is evaluated against (THESIS-001). */
+export const EVALUATION_CRITERIA = [
+  { criterion: "Sector", requirement: "B2B software / enterprise technology" },
+  { criterion: "Stage", requirement: "Pre-seed to Series A entry" },
+  { criterion: "Geography", requirement: "Europe (ALSTIN) · US (MGV.VC)" },
+  { criterion: "Evidence", requirement: "Claims sourced, trust-scored 0-100; unknown ≠ false" },
+  { criterion: "Founder axes", requirement: "Resilience · Autonomy · Curiosity · Perseverance · Co-founder fit" },
+];
+
+export type Outcome = {
+  label: string;
+  tone: "positive" | "warning" | "negative" | "outline";
+};
+
+/** Real-life outcome derived from public status + follow-on funding record. */
+export function outcomeOf(s: Startup): Outcome | null {
+  if (s.demo || s.synthetic) return null;
+  switch (s.companyStatus) {
+    case "acquired":
+      return { label: "Success — acquired", tone: "positive" };
+    case "inactive":
+      return { label: "Inactive — no longer operating", tone: "negative" };
+    case "active_rebrand":
+      return { label: "Active — rebranded", tone: "outline" };
+    case "unclear":
+      return { label: "Outcome unclear", tone: "warning" };
+  }
+  const record = `${s.realEvent ?? ""} ${s.oneLiner}`.toLowerCase();
+  if (/series [bcd]/.test(record)) {
+    return { label: "Success signal — raised follow-on capital", tone: "positive" };
+  }
+  return { label: "Active portfolio company", tone: "outline" };
+}
+
 export function scoreTone(n: number | null) {
   if (n === null) return "text-muted-foreground";
   if (n >= 80) return "text-positive";
