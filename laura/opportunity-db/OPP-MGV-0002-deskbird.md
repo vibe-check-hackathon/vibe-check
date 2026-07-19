@@ -85,3 +85,15 @@ investor interview remains **🔒 confidential**.
 - **Real-world outcome:** ALSTIN co-led the $13M Series A (2023-09-06) —
   `outcome.recorded: term_sheet_signed`.
 - Internal negotiation model and diligence: **🔒 confidential**.
+
+## Interview evidence — INT-0002 (2026-07-19)
+
+Interview "Meet the founder: Ivan Cossu (AVP Capital interview)" processed by the interview pipeline. Founder Score contribution 22/100 at confidence 51/100 (interview-score-v1); self-report credit-capped per policy.
+
+- **CLM-001** (team_formation, self_reported): Ivan Cossu is identified as co-founder of deskbird. [INT-0002, paragraph 1]
+- **CLM-002** (pivot, self_reported): He describes the initial concept as a marketplace for coworking spaces and the current product as B2B workplace-management software for hybrid companies. [INT-0002, paragraph 3]
+- **CLM-003** (pivot, self_reported): He says the company was almost bankrupt during the pandemic and changed from B2C to B2B nearly overnight in a 2021 product pivot. [INT-0002, paragraph 4]
+- **CLM-004** (product_shipping, self_reported): He explains that employees use deskbird to book desks and plan hybrid weeks, while administrators use occupancy statistics to adjust workspace and operating costs. [INT-0002, paragraph 5]
+- **CLM-005** (team_formation, self_reported): He argues that the decisive success factor is selecting the right co-founders and employees. [INT-0002, paragraph 6]
+
+**Contradictions:** none detected.

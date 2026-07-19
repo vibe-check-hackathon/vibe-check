@@ -20,7 +20,7 @@ import {
 } from "@/lib/data";
 import { loadSyntheticStartups, invalidateSyntheticCache } from "@/lib/synthetic-opportunities";
 import { useSubmittedApplications, applicationToStartup } from "@/lib/applications";
-import { ArrowDownUp, FileText, Filter, Globe2, LayoutGrid, Lock, Mic, Rows, Plus, Search, Sparkles, X, Youtube } from "lucide-react";
+import { ArrowDownUp, FileText, Filter, Globe2, LayoutGrid, Lock, Mail, Mic, Rows, Plus, Search, Sparkles, X, Youtube } from "lucide-react";
 
 export const Route = createFileRoute("/board")({
   head: () => ({
@@ -820,6 +820,7 @@ function axisValuesFor(s: Startup, f: FounderRef): Record<string, number> | null
 
 function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
+  const invite = useInterviewInvite(s);
   const outcome = outcomeOf(s);
   const portfolioAlignments = s.stage === "Portfolio" ? [] : alignmentsFor(s, PORTFOLIO_POOL);
   const outreachDraft = [
@@ -841,6 +842,7 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
         <button onClick={onClose} className="absolute right-3 top-3 rounded p-1 text-muted-foreground hover:text-foreground" aria-label="Close">
           <X className="h-4 w-4" />
         </button>
+        <InviteBlock invite={invite} company={s.company} />
         <div className="flex items-start gap-3">
           <CompanyMark startup={s} />
           <div className="min-w-0">
@@ -1161,6 +1163,97 @@ function FounderStrip({ startup }: { startup: Startup }) {
       ))}
       {startup.founders.length > 3 && (
         <span className="shrink-0 text-[10.5px] text-muted-foreground">+{startup.founders.length - 3}</span>
+      )}
+    </div>
+  );
+}
+
+
+/**
+ * Interview invitation for an inbound application. Previews first and always —
+ * sending is a second, deliberate click, because the recipient is a real
+ * founder's real inbox.
+ */
+function useInterviewInvite(s: Startup) {
+  const [enabled, setEnabled] = useState(false);
+  const [preview, setPreview] = useState<{ to: string; subject: string; text: string } | null>(null);
+  const [result, setResult] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    fetch("/integrations")
+      .then((r) => (r.ok ? r.json() : { resend: false }))
+      .then((d) => setEnabled(Boolean(d.resend)))
+      .catch(() => setEnabled(false));
+  }, []);
+
+  const call = async (live: boolean) => {
+    setBusy(true);
+    setResult(null);
+    try {
+      const res = await fetch("/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicationId: s.id, live }),
+      });
+      const d = await res.json();
+      if (d.preview) setPreview(d.preview);
+      setResult(d.sent ? `Sent to ${d.preview.to}` : (d.reason ?? d.error ?? null));
+    } catch {
+      setResult("could not reach the invitation service");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // Only inbound applications have an inbox record to invite from.
+  return { applicable: Boolean(s.currentApplication), enabled, preview, result, busy, call };
+}
+
+function InviteBlock({ invite, company }: { invite: ReturnType<typeof useInterviewInvite>; company: string }) {
+  if (!invite.applicable) return null;
+
+  return (
+    <div className="mb-4 rounded-md border border-border bg-surface p-3">
+      <div className="flex items-center gap-2">
+        <Mail className="h-3.5 w-3.5 text-primary" />
+        <span className="text-[12.5px] font-medium">Interview invitation</span>
+        {!invite.enabled && (
+          <span className="text-[10.5px] uppercase tracking-wider text-muted-foreground">resend not configured</span>
+        )}
+        <span className="ml-auto flex gap-2">
+          <button
+            onClick={() => invite.call(false)}
+            disabled={invite.busy}
+            className="h-7 rounded border border-border bg-card px-2.5 text-[11.5px] disabled:opacity-60"
+          >
+            Preview
+          </button>
+          <button
+            onClick={() => invite.call(true)}
+            disabled={invite.busy || !invite.enabled || !invite.preview}
+            title={!invite.preview ? "Preview it first" : `Send to ${invite.preview.to}`}
+            className="h-7 rounded bg-primary px-2.5 text-[11.5px] font-medium text-primary-foreground disabled:opacity-40"
+          >
+            Send
+          </button>
+        </span>
+      </div>
+      {invite.preview && (
+        <div className="mt-2.5 rounded border border-border bg-card p-2.5">
+          <div className="text-[11px] text-muted-foreground">
+            To {invite.preview.to} · <span className="text-foreground/90">{invite.preview.subject}</span>
+          </div>
+          <pre className="mt-1.5 max-h-32 overflow-y-auto whitespace-pre-wrap text-[11.5px] leading-relaxed text-muted-foreground">
+            {invite.preview.text}
+          </pre>
+        </div>
+      )}
+      {invite.result && <div className="mt-2 text-[11.5px] text-muted-foreground">{invite.result}</div>}
+      {!invite.preview && (
+        <p className="mt-1.5 text-[11px] text-muted-foreground">
+          Preview renders the mail for {company} without sending. Send is a separate, deliberate click.
+        </p>
       )}
     </div>
   );

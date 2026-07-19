@@ -1,0 +1,61 @@
+{
+  "source_url": "https://avpcap.com/meet-the-founder-ivan-cossu-from-deskbird/",
+  "source_hash": "example-static-fixture-not-a-live-snapshot",
+  "retrieved_at": "2026-07-19T00:00:00Z",
+  "segments": [
+    {
+      "segment_id": "SEG-0001",
+      "speaker": "Ivan Cossu",
+      "start_seconds": null,
+      "end_seconds": null,
+      "paragraph": 1,
+      "text": "Ivan Cossu is identified as co-founder of deskbird.",
+      "source_url": "https://avpcap.com/meet-the-founder-ivan-cossu-from-deskbird/"
+    },
+    {
+      "segment_id": "SEG-0002",
+      "speaker": "Ivan Cossu",
+      "start_seconds": null,
+      "end_seconds": null,
+      "paragraph": 2,
+      "text": "Cossu says he and co-founder Jonas observed long-lasting changes in work patterns and conceived deskbird after a project day at BCG, where both had worked.",
+      "source_url": "https://avpcap.com/meet-the-founder-ivan-cossu-from-deskbird/"
+    },
+    {
+      "segment_id": "SEG-0003",
+      "speaker": "Ivan Cossu",
+      "start_seconds": null,
+      "end_seconds": null,
+      "paragraph": 3,
+      "text": "He describes the initial concept as a marketplace for coworking spaces and the current product as B2B workplace-management software for hybrid companies.",
+      "source_url": "https://avpcap.com/meet-the-founder-ivan-cossu-from-deskbird/"
+    },
+    {
+      "segment_id": "SEG-0004",
+      "speaker": "Ivan Cossu",
+      "start_seconds": null,
+      "end_seconds": null,
+      "paragraph": 4,
+      "text": "He says the company was almost bankrupt during the pandemic and changed from B2C to B2B nearly overnight in a 2021 product pivot.",
+      "source_url": "https://avpcap.com/meet-the-founder-ivan-cossu-from-deskbird/"
+    },
+    {
+      "segment_id": "SEG-0005",
+      "speaker": "Ivan Cossu",
+      "start_seconds": null,
+      "end_seconds": null,
+      "paragraph": 5,
+      "text": "He explains that employees use deskbird to book desks and plan hybrid weeks, while administrators use occupancy statistics to adjust workspace and operating costs.",
+      "source_url": "https://avpcap.com/meet-the-founder-ivan-cossu-from-deskbird/"
+    },
+    {
+      "segment_id": "SEG-0006",
+      "speaker": "Ivan Cossu",
+      "start_seconds": null,
+      "end_seconds": null,
+      "paragraph": 6,
+      "text": "He argues that the decisive success factor is selecting the right co-founders and employees.",
+      "source_url": "https://avpcap.com/meet-the-founder-ivan-cossu-from-deskbird/"
+    }
+  ]
+}

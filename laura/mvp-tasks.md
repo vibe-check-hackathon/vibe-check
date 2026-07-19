@@ -152,6 +152,24 @@ Sun's spec), `stitch-ai-prompt.md` §3 (event contract).
       reasons; every axis chip has the rationale as tooltip. Real people stay
       "not assessed" — no generated text, ever.
 
+## 6b. Interview-Ingestion Pipeline (vc-brain spec) ✅
+
+- [x] **Full flow implemented in the existing pipeline** (no parallel app):
+      source-policy gate (robots/SSRF/hosted-media blocks) → normalized
+      timestamped transcripts (.txt/.md/.srt/.vtt/.json + authorized
+      recordings via provider abstraction) → rule + validated-LLM claim
+      extraction → evidence states with thesis-configured credit caps →
+      corroboration against `Martin/seed-speed-portfolio-enriched.md` and the
+      opportunity-db (never overwrites; contradictions retained with
+      diligence questions) → Founder Score feature contributions with
+      SEPARATE confidence → mandatory human-review checklist → deterministic
+      `OPP-MGV-INT-*` cards + enrichment of existing cards with audit copies.
+      CLI: `interviews.js ingest/process/review/render`. 18 node:test tests
+      incl. golden-file render. Docs: `pipeline/INTERVIEWS.md`. Example:
+      `opportunity-db/interviews/OPP-MGV-INT-0001-deskbird.md` (public AVP
+      Capital interview, self-report capped at 65%, enriched the existing
+      deskbird card).
+
 ## 7. Evidence-Backed Memos & Trust Score ✅
 
 - [x] **Every claim traces to evidence with confidence** — evidence ledgers

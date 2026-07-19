@@ -2,10 +2,21 @@
   "comment": "Single machine-readable fund thesis + evaluation criteria. Sources: sun/system-architecture.md (tech spec §8 preference model, §6 vibe check), sun/opportunity-card.md (axes, thesis fit), Martin's numeric-confidence-trust convention, laura/founder-axis-scoring.md (sub-scores). Do not duplicate these values elsewhere — pipeline and server read this file.",
   "id": "THESIS-001",
   "fund": {
-    "sectors": ["AI infrastructure", "robotics"],
-    "stages": ["Pre-seed", "Seed"],
-    "geographies": ["Europe"],
-    "checkSizeUsd": { "min": 50000, "max": 100000 },
+    "sectors": [
+      "AI infrastructure",
+      "robotics"
+    ],
+    "stages": [
+      "Pre-seed",
+      "Seed"
+    ],
+    "geographies": [
+      "Europe"
+    ],
+    "checkSizeUsd": {
+      "min": 50000,
+      "max": 100000
+    },
     "targetOwnership": 0.08,
     "riskAppetite": "high",
     "maxOpenGaps": 3
@@ -14,21 +25,48 @@
     "compsMultiple": 7.5,
     "founderAskMultiple": 10,
     "batnaRef": "OPP-2026-0008",
-    "levers": ["valuation", "check size", "pro-rata", "closing speed", "board rights", "milestones"],
+    "levers": [
+      "valuation",
+      "check size",
+      "pro-rata",
+      "closing speed",
+      "board rights",
+      "milestones"
+    ],
     "noBluff": true,
     "reservationRequiresHumanApproval": true
   },
   "founderCriteria": {
     "comment": "Five sub-scores per laura/founder-axis-scoring.md; weights sum to 1. Floors are ceiling traits: below floor, the founder axis is capped regardless of other scores.",
     "subScores": {
-      "resilience":       { "weight": 0.25, "floor": 30 },
-      "autonomy":         { "weight": 0.20, "floor": 35 },
-      "curiosity":        { "weight": 0.20, "floor": 35 },
-      "perseverance":     { "weight": 0.15, "floor": 0 },
-      "teamComplementarity": { "weight": 0.20, "floor": 0 }
+      "resilience": {
+        "weight": 0.25,
+        "floor": 30
+      },
+      "autonomy": {
+        "weight": 0.2,
+        "floor": 35
+      },
+      "curiosity": {
+        "weight": 0.2,
+        "floor": 35
+      },
+      "perseverance": {
+        "weight": 0.15,
+        "floor": 0
+      },
+      "teamComplementarity": {
+        "weight": 0.2,
+        "floor": 0
+      }
     },
-    "behavioralSignals": ["stageClarity", "responseToChallenge"],
-    "doNotScore": ["extraversion"],
+    "behavioralSignals": [
+      "stageClarity",
+      "responseToChallenge"
+    ],
+    "doNotScore": [
+      "extraversion"
+    ],
     "combinationRules": [
       "conscientiousness is stage-dependent: never a standalone positive",
       "high assertiveness + low emotional control reads as aggression, flag not score"
@@ -36,16 +74,95 @@
   },
   "evidenceRules": {
     "scale": "0-100 integers; 'unknown' only where no evidence exists",
-    "trustBands": { "high": [80, 100], "medium": [55, 79], "low": [30, 54], "weak": [0, 29] },
+    "trustBands": {
+      "high": [
+        80,
+        100
+      ],
+      "medium": [
+        55,
+        79
+      ],
+      "low": [
+        30,
+        54
+      ],
+      "weak": [
+        0,
+        29
+      ]
+    },
     "selfReportedDefault": 40,
     "contradictedDefault": 20,
     "verifiedRequiresIndependentSource": true,
     "modelConfidencePenaltyPerContradiction": 10
   },
   "assessment": {
-    "axes": ["Founder", "Market", "Idea vs. market"],
+    "axes": [
+      "Founder",
+      "Market",
+      "Idea vs. market"
+    ],
     "neverAverageAxes": true,
-    "marketRatings": ["bullish", "neutral", "bear"],
-    "trends": ["improving", "stable", "declining"]
+    "marketRatings": [
+      "bullish",
+      "neutral",
+      "bear"
+    ],
+    "trends": [
+      "improving",
+      "stable",
+      "declining"
+    ]
+  },
+  "interviewScore": {
+    "comment": "Interview-evidence Founder Score (vc-brain-interview-pipeline): component points, evidence-state credit caps, and confidence weights. Configurable here, never hard-coded.",
+    "scoringVersion": "interview-score-v1",
+    "components": {
+      "product_shipping": {
+        "label": "Product and shipping evidence",
+        "maxPoints": 25
+      },
+      "domain_depth": {
+        "label": "Relevant technical or domain depth",
+        "maxPoints": 20
+      },
+      "prior_execution": {
+        "label": "Prior execution and milestones",
+        "maxPoints": 15
+      },
+      "team_complementarity": {
+        "label": "Team complementarity",
+        "maxPoints": 15
+      },
+      "customer_validation": {
+        "label": "Customer or market validation",
+        "maxPoints": 10
+      },
+      "momentum": {
+        "label": "Current momentum and velocity",
+        "maxPoints": 10
+      },
+      "evidence_quality": {
+        "label": "Evidence quality and independence",
+        "maxPoints": 5
+      }
+    },
+    "evidenceCreditCaps": {
+      "independent_verified": 1,
+      "first_party_documented": 0.85,
+      "self_reported": 0.65,
+      "inferred": 0.35,
+      "contradicted": 0,
+      "unsupported": 0,
+      "unknown": 0
+    },
+    "confidenceWeights": {
+      "identity": 0.25,
+      "speakerAttribution": 0.15,
+      "transcriptCompleteness": 0.15,
+      "independentEvidence": 0.3,
+      "contradictionPenalty": 0.15
+    }
   }
 }
