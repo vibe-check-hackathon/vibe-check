@@ -1,5 +1,6 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { isInvestor, logout } from "@/lib/auth";
 import {
   LayoutDashboard,
   Kanban,
@@ -21,7 +22,6 @@ const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: bo
   { to: "/", label: "Pipeline", icon: LayoutDashboard, exact: true },
   { to: "/board", label: "Board", icon: Kanban },
   { to: "/applications", label: "Opportunity", icon: FileText },
-  { to: "/apply", label: "Apply", icon: FileText },
   { to: "/interviews", label: "Live Interview", icon: Mic },
   { to: "/memo", label: "Decision Memo", icon: ScrollText },
   { to: "/settings", label: "Settings", icon: Settings },
@@ -30,6 +30,13 @@ const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: bo
 const SECTORS = Array.from(new Set(STARTUPS.map((s) => s.sector))).sort();
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  /* Investor gate: the app is investor-only; logged-out visitors get the
+   * public founder apply surface. Demo-grade (client flag), not security. */
+  const [authed, setAuthed] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (isInvestor()) setAuthed(true);
+    else window.location.href = "/apply";
+  }, []);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const search = useRouterState({ select: (s) => s.location.search as { sector?: string } });
   const navigate = useNavigate();
@@ -61,6 +68,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     setMenu(null);
     navigate({ to: "/board" as never, search: (sector ? { sector } : {}) as never });
   };
+
+  if (authed !== true) {
+    return <div className="min-h-screen bg-background" />;
+  }
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground">
@@ -243,6 +254,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         <div className="text-[11px] text-muted-foreground">Partner · Screening lead</div>
                       </div>
                       <MenuItem onClick={() => { setMenu(null); navigate({ to: "/settings" as never }); }}>Settings</MenuItem>
+                      <MenuItem onClick={() => { logout(); window.location.href = "/apply"; }}>Log out</MenuItem>
                       <MenuItem onClick={() => setMenu(null)}>Sign out</MenuItem>
                     </div>
                   )}
