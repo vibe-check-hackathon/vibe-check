@@ -19,7 +19,7 @@ thesis_id: THESIS-001
 learn new objects from a short operator demonstration.
 
 **Recommendation:** Proceed
-**Recommendation confidence:** Medium
+**Recommendation confidence:** 55/100
 
 Acme has two paid pilots and a technically credible team [CLM-003][CLM-006].
 The opportunity fits the fund's European AI-infrastructure thesis, but ARR and
@@ -37,7 +37,7 @@ ownership of a university-trained model must be resolved before investment
 
 ### FND-0007 - Ada Keller, CEO
 
-- **Founder Score snapshot:** 76/100, medium confidence, improving
+- **Founder Score snapshot:** 76/100, confidence 60/100, improving
 - Former robotics research engineer; led deployment of a picking system at two
   distribution centres [CLM-001][SRC-002].
 - Full-time since January 2026 [CLM-002][SRC-001].
@@ -45,7 +45,7 @@ ownership of a university-trained model must be resolved before investment
 
 ### FND-0008 - Minh Tran, CTO
 
-- **Founder Score snapshot:** 72/100, medium confidence, stable
+- **Founder Score snapshot:** 72/100, confidence 62/100, stable
 - Published relevant imitation-learning research and built the current product
   prototype [CLM-003][SRC-003][SRC-004].
 - Model IP ownership is not yet documented [GAP-002].
@@ -71,9 +71,9 @@ decision process; conflict handling has not been observed under pressure
 
 | Axis            | Rating                 | Trend     | Confidence | Evidence-backed rationale                                                                 |
 | --------------- | ---------------------- | --------- | ---------- | ----------------------------------------------------------------------------------------- |
-| Founder         | Strong                 | Improving | Medium     | Relevant execution and research history; commercial depth untested [CLM-001][CLM-003]     |
-| Market          | Bullish                | Stable    | Medium     | Labour pressure supports adoption; integrator competition is credible [SRC-006]           |
-| Idea vs. market | Promising with changes | Improving | Medium     | Pilots validate urgency, but a repeatable integration path is unproven [CLM-006][GAP-004] |
+| Founder         | Strong                 | Improving | 60/100     | Relevant execution and research history; commercial depth untested [CLM-001][CLM-003]     |
+| Market          | Bullish                | Stable    | 55/100     | Labour pressure supports adoption; integrator competition is credible [SRC-006]           |
+| Idea vs. market | Promising with changes | Improving | 50/100     | Pilots validate urgency, but a repeatable integration path is unproven [CLM-006][GAP-004] |
 
 ### Thesis fit
 
@@ -86,10 +86,10 @@ decision process; conflict handling has not been observed under pressure
 
 | ID      | Claim or gap                                   | State              | Trust   | Evidence / next action                                   |
 | ------- | ---------------------------------------------- | ------------------ | ------- | -------------------------------------------------------- |
-| CLM-001 | Ada led two warehouse deployments              | Partially verified | Medium  | CV and former colleague profile [SRC-002]                |
-| CLM-003 | Minh authored relevant research and prototype  | Verified           | High    | Paper and repository [SRC-003][SRC-004]                  |
-| CLM-006 | Acme has two paid pilots                       | Partially verified | Medium  | One signed pilot; one founder-provided invoice [SRC-007] |
-| CON-001 | Deck states $120K ARR; application states $80K | Contradicted       | Low     | Request revenue export and contract schedule             |
+| CLM-001 | Ada led two warehouse deployments              | Partially verified | 55/100  | CV and former colleague profile [SRC-002]                |
+| CLM-003 | Minh authored relevant research and prototype  | Verified           | 90/100  | Paper and repository [SRC-003][SRC-004]                  |
+| CLM-006 | Acme has two paid pilots                       | Partially verified | 50/100  | One signed pilot; one founder-provided invoice [SRC-007] |
+| CON-001 | Deck states $120K ARR; application states $80K | Contradicted       | 20/100  | Request revenue export and contract schedule             |
 | GAP-002 | Model IP assignment                            | Open               | Unknown | Review university and company agreements                 |
 | GAP-003 | Rights to customer-generated training data     | Open               | Unknown | Review pilot contracts                                   |
 | GAP-004 | Repeatable deployment time and cost            | Open               | Unknown | Obtain deployment logs from both pilots                  |
