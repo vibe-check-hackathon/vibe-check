@@ -48,8 +48,10 @@ function printMarkdown(title: string, markdown: string) {
 }
 
 export function TermSheetStudio({ company = "FirstCheck", askUsd = 1200000 }: { company?: string; askUsd?: number }) {
-  const [founderScore, setFounderScore] = useState(76);
-  const [confidence, setConfidence] = useState(55);
+  /* Defaults mirror the post-meeting analysis of record (TS-001, staged):
+   * team 70 = mean(Martin 84, Sun 82, Laura 74, Mehdi 38 — scripted). */
+  const [founderScore, setFounderScore] = useState(70);
+  const [confidence, setConfidence] = useState(58);
   const [trust, setTrust] = useState(92);
   const [withContradiction, setWithContradiction] = useState(true);
   const [result, setResult] = useState<TermSheetResult | null>(null);
@@ -70,6 +72,7 @@ export function TermSheetStudio({ company = "FirstCheck", askUsd = 1200000 }: { 
           trustScore: trust,
           contradictions: withContradiction ? ["ARR stated as both $120K and $80K (CON-001)"] : [],
           gaps: ["model-IP assignment (GAP-002)", "customer data rights (GAP-003)"],
+          axisCappedBy: founderScore < 72 ? "engagement (one founder below thesis floor — staged)" : null,
           founders: FOUNDERS,
         }),
       });
@@ -174,7 +177,10 @@ export function TermSheetStudio({ company = "FirstCheck", askUsd = 1200000 }: { 
           )}
           <p className="border-t border-border pt-2 text-[10.5px] text-muted-foreground">
             Deterministic: same analysis, same terms. Human investor + counsel approval is mandatory before anything
-            goes founder-facing.
+            goes founder-facing.{" "}
+            <a href="/opportunity-db/term-sheets/TS-001-firstcheck-meeting-analysis.md" target="_blank" rel="noreferrer" className="text-primary hover:underline">
+              Full meeting analysis & term basis →
+            </a>
           </p>
         </div>
       </div>
