@@ -1,4 +1,5 @@
 import type { Startup, Stage } from "./data";
+import syntheticDb from "../../../../laura/opportunity-db/synthetic/index.json";
 
 /*
  * Loads current application demos plus outbound-selected public records from
@@ -79,11 +80,7 @@ function mapCurrentApplication(o: SyntheticOpp): Startup {
       name: f.name,
       role: f.role,
       assessed: true,
-      avatar: {
-        type: "image" as const,
-        value: `/opportunity-db/synthetic/${f.avatar}`,
-        basis: "AI-generated portrait; fictional person",
-      },
+      avatar: { type: "initials" as const, value: f.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2) },
       email: f.email,
       linkedin: f.linkedin,
       scores: f.scores,
@@ -104,8 +101,8 @@ function mapCurrentApplication(o: SyntheticOpp): Startup {
     submitted: "2026-07-19",
     thesisFit: null,
     website: o.website,
-    logoUrl: o.logo ? `/opportunity-db/synthetic/${o.logo}` : null,
-    sourceCardUrl: `/opportunity-db/synthetic/${o.card}`,
+    logoUrl: null,
+    sourceCardUrl: null,
     synthetic: true,
     currentApplication: true,
     sourceChannel: "current_application",
@@ -146,8 +143,8 @@ function mapOutboundSelected(o: OutboundOpp): Startup {
     thesisFit: null,
     realEvent: o.latestRound,
     website: o.website,
-    logoUrl: o.logo ? `/opportunity-db/synthetic/${o.logo}` : null,
-    sourceCardUrl: `/opportunity-db/synthetic/${o.card}`,
+    logoUrl: null,
+    sourceCardUrl: null,
     outboundSelected: true,
     sourceChannel: "outbound_selected",
     activitySignal: o.activitySignal,
@@ -170,6 +167,7 @@ function offThesis(o: OutboundOpp): boolean {
  * board and back must not make the synthetic/outbound deals flicker out and
  * refetch — they should already be there. */
 let cache: Promise<Startup[]> | null = null;
+const SCANNED_KEY = "vibecheck-demo-outbound-scans";
 
 /** Force the next load to refetch — call after the live outbound scan adds records. */
 export function invalidateSyntheticCache() {
@@ -185,17 +183,52 @@ export function loadSyntheticStartups(): Promise<Startup[]> {
 }
 
 async function fetchSyntheticStartups(): Promise<Startup[]> {
-  const res = await fetch("/opportunity-db/synthetic/index.json");
-  if (!res.ok) return [];
-  const db = (await res.json()) as {
+  const db = syntheticDb as {
     opportunities?: SyntheticOpp[];
     currentApplications?: SyntheticOpp[];
     outboundSelected?: OutboundOpp[];
   };
   const currentApplications = db.currentApplications ?? db.opportunities ?? [];
-  const outboundSelected = (db.outboundSelected ?? []).filter((o) => !offThesis(o));
+  const scanned = JSON.parse(localStorage.getItem(SCANNED_KEY) ?? "[]") as OutboundOpp[];
+  const outboundSelected = [...scanned, ...(db.outboundSelected ?? [])].filter((o) => !offThesis(o));
   return [
     ...currentApplications.map(mapCurrentApplication),
     ...outboundSelected.map(mapOutboundSelected),
   ];
+}
+
+const DEMO_SCANS: Record<string, OutboundOpp> = {
+  europe: {
+    id: "OPP-DEMO-SCAN-EU", company: "VectorForge", sector: "AI infrastructure", location: "Paris, FR",
+    card: "", status: "research", oneLiner: "Evaluation infrastructure for production AI agents", stage: "Seed",
+    raiseUsd: 2500000, website: "https://vectorforge.example",
+    founders: [{ id: "FND-DEMO-EU", name: "Demo Founder", role: "CEO" }],
+    outboundSelected: true, realCompany: false, currentAsOf: "2026-07-20", freshScan: true,
+    verification: "demo-simulation", outboundRationale: "Bundled fictional lead matching the browser demo thesis.",
+  },
+  us: {
+    id: "OPP-DEMO-SCAN-US", company: "CircuitPilot", sector: "robotics", location: "Boston, US",
+    card: "", status: "research", oneLiner: "Adaptive controls for small industrial robot fleets", stage: "Pre-seed",
+    raiseUsd: 1400000, website: "https://circuitpilot.example",
+    founders: [{ id: "FND-DEMO-US", name: "Demo Founder", role: "CEO" }],
+    outboundSelected: true, realCompany: false, currentAsOf: "2026-07-20", freshScan: true,
+    verification: "demo-simulation", outboundRationale: "Bundled fictional lead for the static scan interaction.",
+  },
+  china: {
+    id: "OPP-DEMO-SCAN-CN", company: "MotionLayer", sector: "robotics", location: "Shenzhen, CN",
+    card: "", status: "research", oneLiner: "Machine-vision calibration for flexible manufacturing cells", stage: "Seed",
+    raiseUsd: 3000000, website: "https://motionlayer.example",
+    founders: [{ id: "FND-DEMO-CN", name: "Demo Founder", role: "CEO" }],
+    outboundSelected: true, realCompany: false, currentAsOf: "2026-07-20", freshScan: true,
+    verification: "demo-simulation", outboundRationale: "Bundled fictional lead for the static scan interaction.",
+  },
+};
+
+export async function runDemoOutboundScan(region: "europe" | "us" | "china") {
+  const stored = JSON.parse(localStorage.getItem(SCANNED_KEY) ?? "[]") as OutboundOpp[];
+  const candidate = DEMO_SCANS[region];
+  const added = stored.some((item) => item.id === candidate.id) ? 0 : 1;
+  if (added) localStorage.setItem(SCANNED_KEY, JSON.stringify([candidate, ...stored]));
+  invalidateSyntheticCache();
+  return { added, mode: "demo-simulation", companies: added ? [candidate.company] : [] };
 }

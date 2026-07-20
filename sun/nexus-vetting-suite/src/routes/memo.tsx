@@ -186,7 +186,7 @@ export function MemoPage() {
           <section>
             <SectionTitle n="07" title="Diligence log" />
             <Card className="p-4 text-[12.5px] text-muted-foreground leading-relaxed">
-              48 evidence items · 14 sources · 4 references · 1 founder interview · 6 lanes · 82% People, 68% Product, 74% Market, 55% Traction, 40% Legal, 48% Financials. Full log available at <a href="/diligence" className="text-primary hover:underline">/diligence</a>.
+              48 evidence items · 14 sources · 4 references · 1 founder interview · 6 lanes · 82% People, 68% Product, 74% Market, 55% Traction, 40% Legal, 48% Financials. Full log available at <a href="#/diligence" className="text-primary hover:underline">/diligence</a>.
             </Card>
           </section>
 

@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, Badge } from "@/components/ui-kit";
 import { FirstCheckLogo } from "@/components/FirstCheckLogo";
 import { AlertTriangle, CheckCircle2, ExternalLink, Plus, Send, Trash2 } from "lucide-react";
+import { getThesis, submitApplication } from "@/lib/browser-api";
 
 export const Route = createFileRoute("/apply")({
   head: () => ({ meta: [{ title: "Apply · FirstCheck" }] }),
@@ -68,7 +69,7 @@ function ApplyPage() {
   const [thesis, setThesis] = useState<ThesisDoc | null>(null);
 
   useEffect(() => {
-    fetch("/thesis").then((r) => r.json()).then(setThesis).catch(() => {});
+    getThesis().then(setThesis).catch(() => {});
   }, []);
 
   async function submit() {
@@ -95,22 +96,16 @@ function ApplyPage() {
     setError(null);
     setVerdict(null);
     try {
-      const res = await fetch("/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          founders: cleanFounders,
-          round,
-          stage: round,
-          permissions: { "public research": "granted", "interview recording": "pending", "reference calls": "pending" },
-        }),
+      const data = await submitApplication({
+        ...form,
+        founders: cleanFounders,
+        round,
+        stage: round,
+        permissions: { "public research": "granted", "interview recording": "pending", "reference calls": "pending" },
       });
-      const data = await res.json();
-      if (!res.ok) setError(data.error ?? "submission failed");
-      else setVerdict(data as Verdict);
+      setVerdict(data as Verdict);
     } catch {
-      setError("could not reach the screening service");
+      setError("could not save the application in this browser");
     } finally {
       setBusy(false);
     }

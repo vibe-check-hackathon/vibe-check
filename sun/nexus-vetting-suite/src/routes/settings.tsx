@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge } from "@/components/ui-kit";
 import { INVESTOR } from "@/lib/data";
+import { getThesis, saveThesis, type ThesisDoc } from "@/lib/browser-api";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -11,19 +12,7 @@ export const Route = createFileRoute("/settings")({
   component: SettingsPage,
 });
 
-/* The fund thesis is live data (laura/pipeline/thesis.json) served and
- * updated via GET/POST /thesis — the Thesis Engine, not decoration. */
-type ThesisDoc = {
-  fund: {
-    sectors: string[];
-    stages: string[];
-    geographies: string[];
-    checkSizeUsd: { min: number; max: number };
-    targetOwnership: number;
-    riskAppetite: string;
-    maxOpenGaps: number;
-  };
-} & Record<string, unknown>;
+/* The fund thesis is persisted per browser for the static interactive demo. */
 
 const money = (n: number) => (n >= 1e6 ? `$${n / 1e6}M` : `$${Math.round(n / 1e3)}K`);
 
@@ -47,7 +36,7 @@ export function SettingsPage() {
   const [saved, setSaved] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/thesis").then((r) => r.json()).then(setThesis).catch(() => {});
+    getThesis().then(setThesis).catch(() => {});
   }, []);
 
   function startEdit() {
@@ -80,18 +69,14 @@ export function SettingsPage() {
         maxOpenGaps: Number(draft.maxGaps) || 0,
       },
     };
-    const res = await fetch("/thesis", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(next, null, 2),
-    });
-    if (res.ok) {
-      setThesis(next);
+    try {
+      const savedThesis = await saveThesis(next);
+      setThesis(savedThesis);
       setEditing(false);
-      setSaved("Saved — screening and scoring now use the updated lens.");
+      setSaved("Saved in this browser — screening now uses the updated lens.");
       setTimeout(() => setSaved(null), 4000);
-    } else {
-      setSaved("Save failed — is the dev server running?");
+    } catch {
+      setSaved("Save failed — browser storage is unavailable.");
     }
   }
 
@@ -103,7 +88,7 @@ export function SettingsPage() {
         { k: "Ownership", v: `${Math.round(thesis.fund.targetOwnership * 100)}% target` },
         { k: "Risk appetite", v: `${thesis.fund.riskAppetite} · max ${thesis.fund.maxOpenGaps} open gaps at decision` },
       ]
-    : [{ k: "Loading", v: "reading thesis.json via /thesis…" }];
+    : [{ k: "Loading", v: "reading the browser demo thesis…" }];
 
   return (
     <AppShell>

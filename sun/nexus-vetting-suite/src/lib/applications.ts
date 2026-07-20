@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Startup, Stage } from "@/lib/data";
+import { getApplications } from "@/lib/browser-api";
 
 /** One founder profile generated at submit time by the pipeline. */
 export type SubmittedFounder = {
@@ -73,10 +74,9 @@ export function useSubmittedApplications() {
 
   useEffect(() => {
     let live = true;
-    fetch("/applications")
-      .then((r) => (r.ok ? r.json() : []))
+    getApplications()
       .then((d: SubmittedApplication[]) => live && setRecords(Array.isArray(d) ? d : []))
-      .catch(() => {}); // dev-only endpoint; the board still renders without it
+      .catch(() => {});
     return () => {
       live = false;
     };

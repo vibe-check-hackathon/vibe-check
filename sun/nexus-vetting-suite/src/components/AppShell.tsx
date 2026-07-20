@@ -50,7 +50,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     if (isInvestor()) setAuthed(true);
     else {
       setAuthed(false);
-      window.location.href = "/login"; // the login page links founders onward to /apply
+      window.location.hash = "/login";
     }
   }, []);
   /* The gate decides who you are; this toggle lets an authenticated investor
@@ -107,7 +107,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen bg-background text-foreground grid place-items-center px-4">
         <div className="text-center text-[13px] text-muted-foreground">
           <div>{authed === false ? "Investor login required — redirecting…" : "Checking access…"}</div>
-          <a href="/login" className="mt-2 inline-block text-primary hover:underline">
+          <a href="#/login" className="mt-2 inline-block text-primary hover:underline">
             Go to investor login
           </a>
         </div>
@@ -316,7 +316,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       })}
                       <div className="mt-1 border-t border-border pt-1">
                         <MenuItem onClick={() => { setMenu(null); navigate({ to: "/settings" as never }); }}>Settings</MenuItem>
-                        <MenuItem onClick={() => { void logout().then(() => { window.location.href = "/apply"; }); }}>Log out</MenuItem>
+                        <MenuItem onClick={() => { void logout().then(() => { window.location.hash = "/apply"; }); }}>Log out</MenuItem>
                       </div>
                     </div>
                   )}

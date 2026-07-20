@@ -90,7 +90,22 @@ carry hypotheses with a stated basis and are marked unassessed until the
 interview supplies evidence. This follows the existing guardrail that real
 founders are never given fabricated psychometric judgments.
 
-## Backend
+## Frontend-only runtime
+
+The app is now a static Vite SPA. `src/lib/browser-api.ts` owns browser-local
+thesis, application, demo-account, and feedback state. The synthetic fixture
+index is bundled at build time by `src/lib/synthetic-opportunities.ts`.
+
+There are no runtime endpoints. Features that previously required trusted
+credentials or external side effects are unavailable in the static build:
+live ElevenLabs calls, email delivery, provider-key storage, and web research.
+The scripted interview, invitation preview, fictional outbound scan, local
+Checky lookup, screening, and term-sheet preview remain interactive.
+
+See `FRONTEND_ONLY_MIGRATION.md` for build, deployment, and trust-boundary
+details.
+
+## Previous backend reference
 
 `laura/pipeline/` is unchanged and still drives the data. It is now **API-only**:
 the standalone HTML site it used to serve (`laura/frontend/`) was removed in

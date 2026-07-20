@@ -11,7 +11,7 @@ export const Route = createFileRoute("/applications")({
 });
 
 function ApplicationsPage() {
-  const s = STARTUPS.find((x) => x.id === "acme")!;
+  const s = STARTUPS.find((x) => x.id === "firstcheck")!;
 
   return (
     <AppShell>
@@ -44,7 +44,7 @@ function ApplicationsPage() {
               <Field label="Stage" value={s.stage} icon={<Layers className="h-3 w-3" />} />
             </div>
             <div className="border-t border-border p-5 grid md:grid-cols-2 gap-3">
-              <Ref href="/sun-deck/code-hike-02.html" popup icon={<FileText className="h-3.5 w-3.5" />} title="Pitch deck v3" hint="SRC-001 · opens in viewer" />
+              <Ref href="https://github.com/vibe-check-hackathon/vibe-check" icon={<FileText className="h-3.5 w-3.5" />} title="Product repository" hint="Static demo source" />
               <Ref href="acme.example" icon={<Globe className="h-3.5 w-3.5" />} title="acme-robotics.example" hint="Website · scraped" />
               <Ref href="https://github.com/vibe-check-hackathon/vibe-check" icon={<Github className="h-3.5 w-3.5" />} title="github.com/vibe-check-hackathon" hint="Product repository (SRC-004)" />
               <Ref href="data-room" icon={<Users className="h-3.5 w-3.5" />} title="Pilot contracts" hint="SRC-007 · access granted" />

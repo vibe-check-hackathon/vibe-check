@@ -18,7 +18,7 @@ import {
   type Stage,
   type Startup,
 } from "@/lib/data";
-import { loadSyntheticStartups, invalidateSyntheticCache } from "@/lib/synthetic-opportunities";
+import { loadSyntheticStartups, invalidateSyntheticCache, runDemoOutboundScan } from "@/lib/synthetic-opportunities";
 import { useSubmittedApplications, applicationToStartup } from "@/lib/applications";
 import { ArrowDownUp, FileText, Filter, Globe2, LayoutGrid, Lock, Mail, Mic, Rows, Plus, Search, Sparkles, X, Youtube } from "lucide-react";
 
@@ -173,16 +173,14 @@ function BoardPage() {
       founders: s.founders.map((f) => ({ name: f.name, role: f.role })),
     }));
     try {
-      const res = await fetch("/nl-query", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: t, deals: compact }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setFeedback(data.error ?? "LLM fallback unavailable — try a structured command like \"sort by money\" or \"only outbound\".");
-        return;
-      }
+      const terms = t.toLowerCase().split(/\W+/).filter((term) => term.length > 2);
+      const data = {
+        ids: compact
+          .filter((deal) => terms.every((term) => JSON.stringify(deal).toLowerCase().includes(term)))
+          .map((deal) => deal.id),
+        provider: "browser keyword matcher",
+        reason: "all query terms matched locally",
+      };
       if (!data.ids?.length) {
         setFeedback(`LLM found no matching deals${data.reason ? ` — ${data.reason}` : ""}. "reset" to clear.`);
         return;
@@ -202,16 +200,7 @@ function BoardPage() {
     setScanning(true);
     setFeedback(`Scanning ${scanRegion === "us" ? "the US" : scanRegion === "china" ? "China" : "Europe"} for new on-thesis startups…`);
     try {
-      const res = await fetch("/outbound-scan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ region: scanRegion }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setFeedback(data.error ?? "Scan failed.");
-        return;
-      }
+      const data = await runDemoOutboundScan(scanRegion);
       invalidateSyntheticCache();
       setSynthetic(await loadSyntheticStartups());
       if (data.added === 0) {
@@ -221,7 +210,7 @@ function BoardPage() {
       setFilters({ ...NO_FILTERS, outboundOnly: true });
       setView("table");
       setFeedback(
-        `Scan added ${data.added} new lead${data.added === 1 ? "" : "s"} (${data.mode === "web-searched" ? "web-sourced" : "UNVERIFIED model recall — verify before use"}): ${data.companies.join(", ")} — showing outbound, "reset" to clear`,
+        `Demo scan added ${data.added} fictional lead${data.added === 1 ? "" : "s"}: ${data.companies.join(", ")} — showing outbound, "reset" to clear`,
       );
     } catch {
       setFeedback("Could not reach the scan endpoint — is the dev server running?");
@@ -1180,23 +1169,22 @@ function useInterviewInvite(s: Startup) {
   const [result, setResult] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    fetch("/integrations")
-      .then((r) => (r.ok ? r.json() : { resend: false }))
-      .then((d) => setEnabled(Boolean(d.resend)))
-      .catch(() => setEnabled(false));
-  }, []);
+  useEffect(() => setEnabled(false), []);
 
   const call = async (live: boolean) => {
     setBusy(true);
     setResult(null);
     try {
-      const res = await fetch("/invite", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ applicationId: s.id, live }),
-      });
-      const d = await res.json();
+      const recipient = s.founders.find((founder) => founder.email)?.email ?? "founder@example.com";
+      const d = {
+        preview: {
+          to: recipient,
+          subject: `${s.company} - FirstCheck interview`,
+          text: `Invitation preview for ${s.company}. Human approval is required before sending.`,
+        },
+        sent: false,
+        reason: live ? "Static demo cannot send external email." : "Preview generated locally.",
+      };
       if (d.preview) setPreview(d.preview);
       setResult(d.sent ? `Sent to ${d.preview.to}` : (d.reason ?? d.error ?? null));
     } catch {

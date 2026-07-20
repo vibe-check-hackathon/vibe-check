@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, Badge } from "@/components/ui-kit";
 import { FirstCheckLogo } from "@/components/FirstCheckLogo";
 import { LogIn, CheckCircle2, AlertTriangle, HelpCircle } from "lucide-react";
 import { login, logout, founderInfo } from "@/lib/auth";
+import { getFounderFeedback } from "@/lib/browser-api";
 
 export const Route = createFileRoute("/founder-portal")({
   head: () => ({ meta: [{ title: "Your feedback · FirstCheck" }] }),
@@ -35,8 +36,10 @@ function FounderPortalPage() {
   const [feedback, setFeedback] = useState<Feedback | null>(null);
 
   async function loadFeedback() {
-    const res = await fetch("/my-feedback", { credentials: "include" });
-    if (res.ok) setFeedback((await res.json()) as Feedback);
+    const session = founderInfo();
+    if (!session?.opportunityId) return;
+    const nextFeedback = await getFounderFeedback(session.opportunityId);
+    if (nextFeedback) setFeedback(nextFeedback as Feedback);
   }
 
   async function submit() {
@@ -52,7 +55,9 @@ function FounderPortalPage() {
     await loadFeedback();
   }
 
-  if (authed && !feedback) void loadFeedback();
+  useEffect(() => {
+    if (authed && !feedback) void loadFeedback();
+  }, [authed, feedback]);
 
   if (!authed) {
     return (

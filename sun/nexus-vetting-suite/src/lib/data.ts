@@ -122,14 +122,14 @@ const ACME_STARTUP: Startup = {
       name: "Sun Chuanqi",
       role: "CTO",
       assessed: true,
-      avatar: { type: "image", value: "/sun-chuanqi.jpg", basis: "team demo founder" },
+      avatar: { type: "image", value: `${import.meta.env.BASE_URL}sun-chuanqi.jpg`, basis: "team demo founder" },
     },
     {
       id: "FND-0009",
       name: "Laura Spies",
       role: "COO",
       assessed: true,
-      avatar: { type: "image", value: "/laura-spies.png", basis: "team demo founder" },
+      avatar: { type: "image", value: `${import.meta.env.BASE_URL}laura-spies.png`, basis: "team demo founder" },
     },
   ],
   stage: "Interview",
@@ -151,7 +151,7 @@ const ACME_STARTUP: Startup = {
 
 export const STARTUPS: Startup[] = [
   ACME_STARTUP,
-  ...OFFICIAL_STARTUPS,
+  ...OFFICIAL_STARTUPS.map((startup) => ({ ...startup, logoUrl: null, sourceCardUrl: null })),
 ];
 
 export const METRICS = {

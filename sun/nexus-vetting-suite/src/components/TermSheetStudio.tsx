@@ -49,6 +49,55 @@ function printMarkdown(title: string, markdown: string) {
 
 type DataSource = "loading" | "real" | "staged-default";
 
+function generateDemoTermSheet({
+  company,
+  askUsd,
+  founderScore,
+  confidence,
+  trust,
+  withContradiction,
+}: {
+  company: string;
+  askUsd: number;
+  founderScore: number;
+  confidence: number;
+  trust: number;
+  withContradiction: boolean;
+}): TermSheetResult {
+  const base = { instrument: "SAFE", checkSizeUsd: 100000, valuationCapUsd: 8000000, proRata: true };
+  const valuationCapUsd = founderScore < 72 || withContradiction ? 7000000 : 8000000;
+  const terms = { ...base, valuationCapUsd, diligenceHoldback: withContradiction ? "ARR reconciliation required" : "none" };
+  const adjustments: Adjustment[] = [];
+  if (valuationCapUsd !== base.valuationCapUsd) {
+    adjustments.push({
+      term: "valuationCapUsd",
+      from: base.valuationCapUsd,
+      to: valuationCapUsd,
+      because: "Founder evidence is below the staged confidence threshold or a contradiction remains open.",
+      evidence: `Founder score ${founderScore}, confidence ${confidence}, trust ${trust}.`,
+    });
+  }
+  if (withContradiction) {
+    adjustments.push({
+      term: "diligenceHoldback",
+      from: "none",
+      to: terms.diligenceHoldback,
+      because: "The ARR figures must be reconciled before approval.",
+      evidence: "CON-001 in the staged meeting analysis.",
+    });
+  }
+  const markdown = `# Term sheet - ${company}\n\n- **Instrument:** ${terms.instrument}\n- **Investment:** $${terms.checkSizeUsd.toLocaleString()}\n- **Valuation cap:** $${terms.valuationCapUsd.toLocaleString()}\n- **Pro rata:** ${terms.proRata ? "yes" : "no"}\n- **Diligence condition:** ${terms.diligenceHoldback}\n\nFounder ask: $${askUsd.toLocaleString()}. Human investor and counsel approval required before sharing.`;
+  return {
+    status: "browser preview",
+    summary: "Deterministic static-demo terms",
+    markdown,
+    legalText: `MEMORANDUM OF TERMS\n\nCompany: ${company}\n\n${markdown}\n\nThis non-binding browser preview is not legal advice or an offer.`,
+    adjustments,
+    base,
+    terms,
+  };
+}
+
 export function TermSheetStudio({
   company = "FirstCheck",
   askUsd = 1200000,
@@ -75,46 +124,17 @@ export function TermSheetStudio({
   const [dataSource, setDataSource] = useState<DataSource>(opportunityId ? "loading" : "staged-default");
 
   useEffect(() => {
-    if (!opportunityId) {
-      setDataSource("staged-default");
-      return;
-    }
-    setDataSource("loading");
-    fetch(`/interview-score?opportunityId=${encodeURIComponent(opportunityId)}&company=${encodeURIComponent(company)}`)
-      .then((r) => r.json())
-      .then((data: { interviewFeedback: { founderScore: number | null; founderScoreConfidence: number | null } | null }) => {
-        const fb = data.interviewFeedback;
-        if (fb?.founderScore != null) setFounderScore(fb.founderScore);
-        if (fb?.founderScoreConfidence != null) setConfidence(fb.founderScoreConfidence);
-        setDataSource(fb ? "real" : "staged-default");
-      })
-      .catch(() => setDataSource("staged-default"));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setDataSource("staged-default");
   }, [opportunityId, company]);
 
   async function regenerate() {
     setBusy(true);
     try {
-      const res = await fetch("/term-sheet", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          company,
-          askUsd,
-          founderScore,
-          founderScoreConfidence: confidence,
-          trustScore: trust,
-          contradictions: withContradiction ? ["ARR stated as both $120K and $80K (CON-001)"] : [],
-          gaps: ["model-IP assignment (GAP-002)", "customer data rights (GAP-003)"],
-          axisCappedBy: founderScore < 72 ? "engagement (one founder below thesis floor — staged)" : null,
-          founders: FOUNDERS,
-        }),
-      });
-      const data = (await res.json()) as TermSheetResult;
+      const data = generateDemoTermSheet({ company, askUsd, founderScore, confidence, trust, withContradiction });
       setResult(data);
       setMd(data.markdown);
     } catch {
-      setMd("Could not reach /term-sheet — is the dev server running?");
+      setMd("Could not generate the browser preview.");
     } finally {
       setBusy(false);
     }
@@ -214,10 +234,7 @@ export function TermSheetStudio({
           )}
           <p className="border-t border-border pt-2 text-[10.5px] text-muted-foreground">
             Deterministic: same analysis, same terms. Human investor + counsel approval is mandatory before anything
-            goes founder-facing.{" "}
-            <a href="/opportunity-db/term-sheets/TS-001-firstcheck-meeting-analysis.md" target="_blank" rel="noreferrer" className="text-primary hover:underline">
-              Full meeting analysis & term basis →
-            </a>
+            goes founder-facing. The generated preview remains in this browser only.
           </p>
         </div>
       </div>

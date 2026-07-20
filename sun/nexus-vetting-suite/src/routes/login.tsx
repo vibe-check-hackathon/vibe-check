@@ -20,7 +20,7 @@ function LoginPage() {
     setError(null);
     const result = await login(email, pw);
     setBusy(false);
-    if (result.ok) window.location.href = "/board"; // straight to the deal board, no extra hops
+    if (result.ok) window.location.hash = "/board";
     else setError(result.error ?? "sign-in failed");
   }
 
@@ -69,8 +69,7 @@ function LoginPage() {
           <LogIn className="h-3.5 w-3.5" /> Sign in
         </button>
         <p className="mt-3 text-[10.5px] text-muted-foreground">
-          Server-verified session (laura/pipeline/lib/accounts.js) — demo-stage: in-memory sessions, no
-          password reset yet.
+          Frontend-only demo session stored in this browser. This is not authentication and must not protect real data.
         </p>
       </Card>
     </div>
