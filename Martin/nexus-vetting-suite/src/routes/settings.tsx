@@ -27,12 +27,17 @@ type ThesisDoc = {
 
 const money = (n: number) => (n >= 1e6 ? `$${n / 1e6}M` : `$${Math.round(n / 1e3)}K`);
 
+/* Honest status only — AGENTS.md §26/§34 prohibit claiming a capability
+ * that isn't actually implemented. "Built" means real code runs today;
+ * "Planned" means it's discussed (e.g. sun/system-architecture.md) but no
+ * code exists yet. Verified against the repo 2026-07-20 — update this list
+ * in the same change as the code, not after. */
 const AGENTS = [
-  { n: "Kestrel v3", r: "Founder interviews", status: "Active", model: "GPT-5.2 + ElevenLabs" },
-  { n: "Harrier v2", r: "Reference calls (warm)", status: "Active", model: "Claude 4.5 + ElevenLabs" },
-  { n: "Osprey v1", r: "Reference calls (cold outreach)", status: "Beta", model: "GPT-5.2 + Twilio" },
-  { n: "Sable", r: "Deck & data-room extraction", status: "Active", model: "GPT-5.2-vision" },
-  { n: "Corvus", r: "Diligence orchestrator", status: "Active", model: "In-house router" },
+  { n: "Kestrel", r: "Founder interviews", status: "Built", note: "laura/pipeline/lib/interview-agent.js — ElevenLabs, gated by /integrations" },
+  { n: "Checky", r: "Evidence-grounded Q&A", status: "Built", note: "laura/pipeline/lib/assistant.js — retrieval over the opportunity DB" },
+  { n: "Screening + diligence checks", r: "Thesis screen, corroboration, floors", status: "Built", note: "deterministic — laura/pipeline/lib/screening.js, corroborate.js (not an LLM \"agent\")" },
+  { n: "Reference calls (warm or cold)", r: "Reference & background checks", status: "Planned", note: "no code yet — see sun/system-architecture.md §7" },
+  { n: "Deck & data-room extraction", r: "OCR / document parsing", status: "Planned", note: "no code yet — see sun/tech-video-staging/tech-spec.md §3.5" },
 ];
 
 export function SettingsPage() {
@@ -190,28 +195,26 @@ export function SettingsPage() {
         <Card className="p-0 lg:col-span-2">
           <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
             <div className="text-[13px] font-medium">AI agent roster</div>
-            <Badge tone="teal">5 active · 1 beta</Badge>
+            <Badge tone="teal">{AGENTS.filter((a) => a.status === "Built").length} built · {AGENTS.filter((a) => a.status === "Planned").length} planned</Badge>
           </div>
           <table className="w-full text-[12.5px]">
             <thead className="bg-surface border-b border-border text-muted-foreground">
               <tr className="text-left">
-                <th className="px-5 py-2.5 font-medium">Agent</th>
+                <th className="px-5 py-2.5 font-medium">Agent / capability</th>
                 <th className="px-3 py-2.5 font-medium">Role</th>
-                <th className="px-3 py-2.5 font-medium">Model stack</th>
                 <th className="px-3 py-2.5 font-medium">Status</th>
-                <th className="px-3 py-2.5 font-medium text-right">Calls · 7d</th>
+                <th className="px-3 py-2.5 font-medium">Backed by</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {AGENTS.map((a, i) => (
+              {AGENTS.map((a) => (
                 <tr key={a.n}>
                   <td className="px-5 py-2.5 font-medium">{a.n}</td>
                   <td className="px-3 py-2.5 text-muted-foreground">{a.r}</td>
-                  <td className="px-3 py-2.5 font-mono text-[11.5px] text-muted-foreground">{a.model}</td>
                   <td className="px-3 py-2.5">
-                    <Badge tone={a.status === "Active" ? "positive" : "teal"}>{a.status}</Badge>
+                    <Badge tone={a.status === "Built" ? "positive" : "teal"}>{a.status}</Badge>
                   </td>
-                  <td className="px-3 py-2.5 text-right font-mono tabular-nums">{[142, 96, 34, 218, 47][i]}</td>
+                  <td className="px-3 py-2.5 font-mono text-[11px] text-muted-foreground">{a.note}</td>
                 </tr>
               ))}
             </tbody>
