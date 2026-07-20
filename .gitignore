@@ -1,11 +1,13 @@
 # Ignore raw design-tool exports; extracted files live in stitch-export/
 *.zip
 # Generated pipeline artifacts
-pipeline/output/
-pipeline/inbox/
+laura/pipeline/output/
+laura/pipeline/inbox/
 # LLM API key (24h cache written by set-key.js) — never push
-pipeline/.llm-key.json
+laura/pipeline/.llm-key.json
 # Resend / ElevenLabs keys written by set-service-key.js — never push
-pipeline/.service-keys.json
+laura/pipeline/.service-keys.json
 # Person-level link collections stay local by policy — never push
-opportunity-db/founder-profiles/
+laura/opportunity-db/founder-profiles/
+# Account credentials (password hashes + salts) — never push
+laura/pipeline/accounts.json
