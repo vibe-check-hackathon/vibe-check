@@ -1441,7 +1441,7 @@ function useInterviewInvite(s: Startup) {
         reason: live ? "Static demo cannot send external email." : "Preview generated locally.",
       };
       if (d.preview) setPreview(d.preview);
-      setResult(d.sent ? `Sent to ${d.preview.to}` : (d.reason ?? d.error ?? null));
+      setResult(d.sent ? `Sent to ${d.preview.to}` : d.reason);
     } catch {
       setResult("could not reach the invitation service");
     } finally {
