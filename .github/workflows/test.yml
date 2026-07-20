@@ -1,0 +1,29 @@
+name: Test
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  pipeline-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Pipeline test suite
+        run: node --test laura/pipeline/test/*.test.js
+
+  verify-deploy:
+    runs-on: ubuntu-latest
+    needs: pipeline-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Prove this commit deploys cleanly (same build+start Render runs)
+        run: node laura/pipeline/verify-deploy.js

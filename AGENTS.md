@@ -262,6 +262,7 @@ cd Martin/nexus-vetting-suite && npm run lint    # eslint over the web app
 cd Martin/nexus-vetting-suite && npm run build   # production build must succeed
 NITRO_PRESET=node-server npm run build           # …and the deployable variant
 node laura/pipeline/app-server.js                # boot check for the production server
+node laura/pipeline/verify-deploy.js             # fresh-clone build+boot+HTTP proof — run before every push (CI runs it too)
 ```
 
 When a listed command does not exist in a subproject, inspect the repository configuration and run the closest established equivalents. Do not invent successful results.

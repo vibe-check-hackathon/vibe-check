@@ -52,10 +52,23 @@ node laura/pipeline/app-server.js        # → http://localhost:8080 (API + SSR)
 ```
 
 Free hosting: [`render.yaml`](render.yaml) deploys this on Render's free plan
-(sleeps when idle, ephemeral disk — demo-grade; see the file's comments). Set
-`ANTHROPIC_API_KEY` in the dashboard for LLM features. GitHub Pages cannot
-host this app (it is SSR + backend, not static) — the Pages workflow in
-`.github/workflows/` should be considered deprecated.
+(sleeps when idle, ephemeral disk — demo-grade; see the file's comments). Its
+Blueprint setup prompts for every optional key (see
+[`.env.example`](.env.example) for the full list — `ANTHROPIC_API_KEY` or
+`OPENAI_API_KEY` for LLM features, `RESEND_API_KEY` for interview-invite
+email, `ELEVENLABS_API_KEY`/`ELEVENLABS_AGENT_ID` for live interviews). None
+are required — the app runs and degrades legibly without any of them. GitHub
+Pages cannot host this app (it is SSR + backend, not static); that workflow
+was removed.
+
+Before pushing, prove the commit actually deploys — this is also what CI
+([`.github/workflows/test.yml`](.github/workflows/test.yml)) runs on every
+push and PR:
+
+```bash
+node --test laura/pipeline/test/*.test.js   # 48 tests: pipeline + backend + security
+node laura/pipeline/verify-deploy.js        # clones HEAD fresh, builds, boots, checks over real HTTP
+```
 
 ## The two surfaces
 

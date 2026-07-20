@@ -7,8 +7,11 @@
 # applications, and outbound-scan results reset on every restart/redeploy.
 # Fine for a demo; a persistent database is the next step (AGENTS.md §25).
 #
-# Set ANTHROPIC_API_KEY (or OPENAI_API_KEY) in the Render dashboard to enable
-# LLM features — env vars override the local key file, which is not deployed.
+# All API keys below are optional and sync: false — Render prompts for them
+# once during Blueprint setup (nothing secret is ever committed here) and the
+# app degrades legibly without any of them (see /integrations). See
+# AGENTS.md §33/§34 and SECURITY.md for what "deployable" does and doesn't
+# mean at this stage.
 services:
   - type: web
     name: firstcheck
@@ -17,3 +20,22 @@ services:
     buildCommand: cd Martin/nexus-vetting-suite && npm install && NITRO_PRESET=node-server npm run build
     startCommand: node laura/pipeline/app-server.js
     healthCheckPath: /integrations
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # LLM features: Checky, outbound scan, command-bar fallback. Set one.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      # Interview-invite email (laura/pipeline/lib/email.js). Optional.
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
+      # Live interview voice sessions (laura/pipeline/lib/interview-agent.js). Optional.
+      - key: ELEVENLABS_API_KEY
+        sync: false
+      - key: ELEVENLABS_AGENT_ID
+        sync: false
