@@ -35,12 +35,17 @@ import {
   sessionCookieHeader,
   verifyLogin,
 } from "./lib/accounts.js";
+import { checkRateLimit, clientIp } from "./lib/rate-limit.js";
 
 const PIPELINE_DIR = dirname(fileURLToPath(import.meta.url));
 const DB_ROOT = join(PIPELINE_DIR, "..", "opportunity-db");
 // Env overrides exist so tests can point writes at a temp dir — production
 // and dev never set them.
 const INTERVIEWS_DIR = process.env.FIRSTCHECK_INTERVIEWS_DIR ?? join(DB_ROOT, "interviews");
+// Real limits by default; tests raise these via env so legitimate test
+// traffic (many requests from one IP, 127.0.0.1) never trips them.
+const LOGIN_RATE_MAX = Number(process.env.FIRSTCHECK_LOGIN_RATE_MAX ?? 10);
+const APPLY_RATE_MAX = Number(process.env.FIRSTCHECK_APPLY_RATE_MAX ?? 5);
 const THESIS_PATH = process.env.FIRSTCHECK_THESIS_PATH ?? join(PIPELINE_DIR, "thesis.json");
 // Regenerated alongside thesis.json on every write — see renderThesisMarkdown.
 const THESIS_MD_PATH = process.env.FIRSTCHECK_THESIS_MD_PATH ?? join(PIPELINE_DIR, "thesis.md");
@@ -288,6 +293,7 @@ export function registerAppEndpoints(use) {
   // minimum bar; the canonical first-pass screen runs immediately.
   use("/apply", (req, res, next) => {
     if (req.method !== "POST") return next();
+    if (tooManyRequests(req, res, "apply", { max: APPLY_RATE_MAX, windowMs: 60 * 60_000 })) return;
     let body = "";
     req.on("data", (c) => (body += c));
     req.on("end", async () => {
@@ -581,6 +587,19 @@ export function registerAppEndpoints(use) {
   // check, default deny. Returns the account on success; on failure it
   // writes the 401 itself and returns null — callers just do
   // `const account = requireInvestor(req, res); if (!account) return;`.
+  // Returns true and writes a 429 when the caller has exceeded `max`
+  // requests in `windowMs` under `routeKey`. Callers do:
+  // `if (tooManyRequests(req, res, "login", { max: 10, windowMs: 15*60_000 })) return;`
+  function tooManyRequests(req, res, routeKey, { max, windowMs }) {
+    const { allowed, retryAfterSeconds } = checkRateLimit(`${routeKey}:${clientIp(req)}`, { max, windowMs });
+    if (allowed) return false;
+    res.statusCode = 429;
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Retry-After", String(retryAfterSeconds));
+    res.end(JSON.stringify({ error: "too many requests, try again later" }));
+    return true;
+  }
+
   function requireInvestor(req, res) {
     const account = currentAccount(req);
     if (!account || account.role !== "investor") {
@@ -594,6 +613,7 @@ export function registerAppEndpoints(use) {
 
   use("/auth/login", (req, res, next) => {
     if (req.method !== "POST") return next();
+    if (tooManyRequests(req, res, "login", { max: LOGIN_RATE_MAX, windowMs: 15 * 60_000 })) return;
     let body = "";
     req.on("data", (c) => (body += c));
     req.on("end", () => {

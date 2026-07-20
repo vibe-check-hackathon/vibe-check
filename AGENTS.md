@@ -701,7 +701,7 @@ Baseline: OWASP ASVS 5.0 for web security, NIST SP 800-63B-4 for authentication/
 
 | Route | Anonymous | Founder | Investor | Ownership rule |
 |---|---:|---:|---:|---|
-| `POST /apply` | Create | Create | Create | Public by design; rate-limited (not yet implemented) |
+| `POST /apply` | Create | Create | Create | Public by design; rate-limited (5/hour/IP) |
 | `GET /thesis` | Yes | Yes | Yes | Public by design — the apply page shows live fund criteria |
 | `GET /integrations` | Yes | Yes | Yes | Public by design (§32 read-only public) — service-configured booleans only, no business data |
 | `GET /my-feedback` | No | Own only | No | Founder from session — **enforced** |
@@ -709,7 +709,7 @@ Baseline: OWASP ASVS 5.0 for web security, NIST SP 800-63B-4 for authentication/
 | `GET /applications`, `GET /opportunity-db` | No | No | Yes | **Enforced** |
 | `POST /thesis`, `/nl-query`, `/outbound-scan`, `/assistant`, `/invite`, `/interview-session`, `/term-sheet` | No | No | Yes | **Enforced** |
 | `POST`/`DELETE /llm-key` | No | No | Yes | **Enforced** (`GET /llm-key` status stays public — no secret in the response) |
-| `POST /auth/login`, `/auth/logout` | Yes | Yes | Yes | Public by design — this is how a session starts/ends |
+| `POST /auth/login`, `/auth/logout` | Yes | Yes | Yes | Public by design — this is how a session starts/ends; login is rate-limited (10/15min/IP) |
 
 Every new private route gets a row here before it ships. Required tests per route: anonymous, wrong-role, correct-role/wrong-owner, and stale/expired-session — see `laura/pipeline/test/app-endpoints.test.js`'s `security:`-prefixed tests for the pattern (one anonymous-rejection test per enforced route, plus the founder/investor cross-role tests).
 

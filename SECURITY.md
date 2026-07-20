@@ -40,6 +40,12 @@ committed anywhere, treat it as burned: rotate it first, clean up second.
   refusal (private/loopback/metadata addresses), robots.txt compliance, and
   no hosted-media downloading (AGENTS.md §9). Any change there is a
   heightened-review change (AGENTS.md §15).
+- **Rate limiting.** `POST /auth/login` (10 attempts / 15 min / IP) and
+  `POST /apply` (5 / hour / IP) via `laura/pipeline/lib/rate-limit.js` —
+  fixed-window, keyed by `X-Forwarded-For` (falls back to the raw socket
+  address). Exceeding it returns `429` with `Retry-After`. Verified by a
+  dedicated low-limit test instance in `app-endpoints.test.js`, not just
+  reading the code.
 
 ## Untrusted input
 
@@ -54,14 +60,18 @@ traversal-checked and covered by security tests
 - Sessions are **in-memory** — a server restart logs everyone out — and
   there is **no password-reset flow** yet for either role. A founder's
   one-time password is shown once, at application time, with no recovery
-  path if lost.
-- **Sessions are still in-memory** — a server restart logs everyone out —
-  and there is still no password-reset flow. Enforcing authorization on
-  every route (above) does not fix session durability; those are separate
-  gaps, both still open.
-- The free-tier deploy (render.yaml) has an ephemeral disk (accounts.json
-  included — see `laura/repo-restructure-guide.md` for the path to a real
-  database) and no WAF/rate limiting beyond what the code enforces.
+  path if lost. Enforcing authorization on every route (above) does not fix
+  session durability; these are separate gaps, both still open.
+- The free-tier deploy (`render.yaml`) has an **ephemeral disk** —
+  `accounts.json`, submitted applications, and rate-limit counters all reset
+  on every restart or redeploy (Render's free tier also sleeps after ~15 min
+  idle, which is itself a restart). See `laura/repo-restructure-guide.md`
+  for the path to a real database when this starts to hurt.
+- Rate limiting (below) is **in-memory and per-process** — same caveat as
+  sessions: it resets on restart and does not coordinate across multiple
+  instances. Real protection against a determined attacker still needs a
+  proper WAF/edge rate limiter; this only stops casual abuse and accidental
+  loops.
 
 ## Next security work, in priority order
 
@@ -75,8 +85,11 @@ instead of forgotten:
    2026-07-20** — see the route matrix in AGENTS.md §33.
 2. Keep the AGENTS.md §33 route/role/ownership matrix current as routes
    change.
-3. Add login rate limiting and complete the session lifecycle (rotation on
-   auth, idle/absolute timeout, durable cross-process storage).
+3. ~~Add login rate limiting.~~ **Done 2026-07-20** (`/auth/login`, `/apply`
+   — see above). Session lifecycle otherwise: rotation on auth is already
+   true (`createSession` mints a fresh token every login); still open —
+   idle timeout distinct from the 7-day absolute TTL, and durable
+   cross-process session storage.
 4. Replace the shared seeded investor account with individual accounts
    before anyone outside the team uses this.
 5. Replace the response-delivered founder password with an activation/reset

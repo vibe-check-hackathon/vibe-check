@@ -63,6 +63,11 @@ test.before(async () => {
       FIRSTCHECK_INTERVIEWS_DIR: interviewsDir,
       FIRSTCHECK_THESIS_PATH: thesisPath,
       FIRSTCHECK_THESIS_MD_PATH: thesisMdPath,
+      // High enough that this suite's own traffic (all from 127.0.0.1)
+      // never trips the limiter — the limiter's actual behavior is tested
+      // separately below against a dedicated low-limit server instance.
+      FIRSTCHECK_LOGIN_RATE_MAX: "1000",
+      FIRSTCHECK_APPLY_RATE_MAX: "1000",
     },
     stdio: "ignore",
   });
@@ -456,4 +461,36 @@ test("security: a wrong password for an existing founder email is rejected", asy
     body: JSON.stringify({ email: founderAccounts[0].email, password: "guessed-wrong" }),
   });
   assert.equal(res.status, 401);
+});
+
+test("security: rate limiting actually blocks excess requests and reports Retry-After", async () => {
+  // Dedicated low-limit instance — the shared suite server above runs with
+  // FIRSTCHECK_LOGIN_RATE_MAX raised so the rest of this file's traffic
+  // doesn't trip it; this test proves the real, tight limit actually works.
+  const port = PORT + 1;
+  const base = `http://127.0.0.1:${port}`;
+  const rlChild = spawn(process.execPath, [join(PIPELINE_DIR, "app-server.js")], {
+    env: { ...process.env, PORT: String(port), NO_SSR: "1", FIRSTCHECK_LOGIN_RATE_MAX: "3" },
+    stdio: "ignore",
+  });
+  try {
+    const deadline = Date.now() + 15000;
+    while (Date.now() < deadline) {
+      try {
+        if ((await fetch(`${base}/integrations`)).ok) break;
+      } catch {
+        /* not up yet */
+      }
+      await new Promise((r) => setTimeout(r, 200));
+    }
+    for (let i = 0; i < 3; i++) {
+      const res = await fetch(`${base}/auth/login`, { method: "POST", body: JSON.stringify({ email: "x", password: "x" }) });
+      assert.equal(res.status, 401, `attempt ${i + 1} should reach the real login check, not be rate-limited yet`);
+    }
+    const blocked = await fetch(`${base}/auth/login`, { method: "POST", body: JSON.stringify({ email: "x", password: "x" }) });
+    assert.equal(blocked.status, 429);
+    assert.ok(Number(blocked.headers.get("retry-after")) > 0);
+  } finally {
+    rlChild.kill();
+  }
 });
