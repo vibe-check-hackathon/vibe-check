@@ -1,0 +1,1 @@
+const {performance}=require('perf_hooks'); const xs=[]; let z=0; for(let r=0;r<5;r++){let s=0; const t=performance.now(); for(let i=0;i<10000000;i++){s=(s+((i*31)%97))|0;} xs.push(performance.now()-t); z^=s;} xs.sort((a,b)=>a-b); console.log(JSON.stringify({language:'node',cpu_loop_ms:xs[2],guard:z}));

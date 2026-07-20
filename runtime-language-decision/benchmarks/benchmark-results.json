@@ -1,0 +1,54 @@
+{
+  "environment": {
+    "date": "2026-07-20",
+    "node": "v22.16.0",
+    "python": "3.13.5",
+    "go": "go1.23.2",
+    "note": "Single local container; medians of five runs for most workloads. Synthetic microbenchmark, not a production load test."
+  },
+  "workloads": {
+    "json_roundtrip_2_78_mb_ms": {
+      "node": 37.454451,
+      "python": 88.051915,
+      "go": 88.064
+    },
+    "sha256_64_mb_total_ms": {
+      "node": 176.975717,
+      "python": 177.447834,
+      "go": 211.719
+    },
+    "text_scan_ms": {
+      "node": 18.071059,
+      "python": 167.929481,
+      "go": 750.416,
+      "caveat": "The Go implementation used regexp.FindAllStringIndex, which allocates a complete result set; this is not an optimized production scanner."
+    },
+    "async_2000_tasks_sleep_2ms_ms": {
+      "node": 5.209005,
+      "python": 22.429436,
+      "go": 5.837
+    },
+    "integer_loop_10_million_ms": {
+      "node": 34.750498,
+      "python": 1825.267656,
+      "go": 20.572
+    }
+  },
+  "process_observations": {
+    "total_wall_seconds": {
+      "node": 1.41,
+      "python": 4.7,
+      "go": 5.49
+    },
+    "maximum_rss_kb": {
+      "node": 203880,
+      "python": 344380,
+      "go": 81184
+    },
+    "go_warm_build": {
+      "seconds": 1.03,
+      "maximum_rss_kb": 87464,
+      "caveat": "Cold standard-library cache initialization in this container was abnormally slow and excluded from the warm-build figure."
+    }
+  }
+}
