@@ -67,6 +67,9 @@ try {
   log("npm install (Martin/nexus-vetting-suite)");
   run("npm", ["install", "--silent"], { cwd: join(tempDir, "Martin", "nexus-vetting-suite") });
 
+  log("npm install (laura/pipeline — app-server.js's own dependencies, e.g. pg)");
+  run("npm", ["install", "--omit=dev", "--silent"], { cwd: join(tempDir, "laura", "pipeline") });
+
   log("build (NITRO_PRESET=node-server)");
   run("npm", ["run", "build"], {
     cwd: join(tempDir, "Martin", "nexus-vetting-suite"),
@@ -82,6 +85,12 @@ try {
 
   if (!(await waitFor(`${BASE}/integrations`, 20000))) {
     throw new Error("server never became healthy — see render.yaml's healthCheckPath");
+  }
+  // /integrations answers directly from app-server.js and doesn't prove the
+  // spawned SSR child (proxied at /) has finished starting yet — wait for
+  // that too, or the page checks below can race a 502 from the proxy.
+  if (!(await waitFor(BASE, 20000))) {
+    throw new Error("backend is healthy but the SSR proxy never came up");
   }
   log("server is up — running checks");
 
