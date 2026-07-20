@@ -173,7 +173,10 @@ function InterviewsPage() {
     });
   }, [reset]);
 
-  useEffect(() => () => timers.current.forEach(clearTimeout), []);
+  useEffect(() => {
+    play();
+    return () => timers.current.forEach(clearTimeout);
+  }, [play]);
 
   const toggleLever = (id: string) =>
     setLevers((s) => {
@@ -433,39 +436,18 @@ function InterviewsPage() {
 }
 
 function Tile({ name, role, initials, photo, video, readout, speaking, agent }: { name: string; role: string; initials: string; photo?: string | null; video?: string | null; readout?: string; speaking?: boolean; agent?: boolean }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
-
   return (
     <div className={"relative rounded-lg border overflow-hidden bg-surface-2 " + (agent ? "aspect-[32/7]" : "aspect-[16/10]") + " " + (speaking ? "ring-2 ring-primary" : "border-border")}>
       {video && (
-        <>
-          <video
-            ref={videoRef}
-            src={video}
-            loop
-            muted
-            playsInline
-            aria-label={name}
-            className="absolute inset-0 h-full w-full object-cover"
-            onEnded={() => setPlaying(false)}
-          />
-          {!playing && (
-            <button
-              type="button"
-              aria-label={`Play ${name}'s video`}
-              onClick={() => {
-                videoRef.current?.play();
-                setPlaying(true);
-              }}
-              className="absolute inset-0 grid place-items-center bg-background/40 hover:bg-background/50 transition-colors"
-            >
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-background/80 text-foreground shadow">
-                <Play className="h-4 w-4 translate-x-0.5" fill="currentColor" />
-              </span>
-            </button>
-          )}
-        </>
+        <video
+          src={video}
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-label={name}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
       )}
       <div className={"absolute inset-0 grid place-items-center " + (video ? "hidden" : "")}>
         {photo ? (
