@@ -1,6 +1,8 @@
 {
   "comment": "Single machine-readable fund thesis + evaluation criteria. Sources: sun/system-architecture.md (tech spec §8 preference model, §6 vibe check), sun/opportunity-card.md (axes, thesis fit), Martin's numeric-confidence-trust convention, laura/founder-axis-scoring.md (sub-scores). Do not duplicate these values elsewhere — pipeline and server read this file.",
   "id": "THESIS-001",
+  "version": 1,
+  "updatedAt": "2026-07-20T00:00:00.000Z",
   "fund": {
     "sectors": [
       "AI infrastructure",
