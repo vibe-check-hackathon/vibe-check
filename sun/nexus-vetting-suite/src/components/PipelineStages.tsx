@@ -15,7 +15,12 @@ export const PIPELINE_STAGES: {
   { to: "/memo", label: "Company snapshot", hint: "Decision memo", icon: FileText },
   { to: "/founder", label: "Founder profiles", hint: "Psychogram · per founder", icon: Users },
   { to: "/interviews", label: "Agent interview", hint: "Hypothesis testing", icon: Mic },
-  { to: "/diligence", label: "Due diligence", hint: "Approval gate · term sheet", icon: ShieldCheck },
+  {
+    to: "/diligence",
+    label: "Due diligence",
+    hint: "Approval gate · term sheet",
+    icon: ShieldCheck,
+  },
 ];
 
 export function isPipelineRoute(pathname: string) {
@@ -55,10 +60,16 @@ export function PipelineStages() {
                         : "border-border bg-surface text-muted-foreground")
                   }
                 >
-                  {done ? <Check className="h-3 w-3" strokeWidth={2.5} /> : <Icon className="h-3 w-3" strokeWidth={1.75} />}
+                  {done ? (
+                    <Check className="h-3 w-3" strokeWidth={2.5} />
+                  ) : (
+                    <Icon className="h-3 w-3" strokeWidth={1.75} />
+                  )}
                 </span>
                 <span className="flex flex-col leading-tight">
-                  <span className={"text-[12.5px] " + (active ? "font-medium" : "")}>{stage.label}</span>
+                  <span className={"text-[12.5px] " + (active ? "font-medium" : "")}>
+                    {stage.label}
+                  </span>
                   <span className="text-[10px] text-muted-foreground/70">{stage.hint}</span>
                 </span>
               </Link>

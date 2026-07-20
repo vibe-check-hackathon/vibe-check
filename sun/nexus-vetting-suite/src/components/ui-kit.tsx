@@ -110,18 +110,12 @@ export function Stat({
 }) {
   return (
     <Card className="p-4">
-      <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-        {label}
-      </div>
+      <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">{label}</div>
       <div className="mt-1.5 flex items-baseline gap-2">
-        <div className="font-serif text-[28px] leading-none tracking-tight">
-          {value}
-        </div>
+        <div className="font-serif text-[28px] leading-none tracking-tight">{value}</div>
         {trend && <div className="text-[11px] text-positive">{trend}</div>}
       </div>
-      {hint && (
-        <div className="mt-1.5 text-[11px] text-muted-foreground">{hint}</div>
-      )}
+      {hint && <div className="mt-1.5 text-[11px] text-muted-foreground">{hint}</div>}
     </Card>
   );
 }
@@ -179,21 +173,10 @@ export function Badge({
   );
 }
 
-export function EvidencePill({
-  label,
-  verified,
-}: {
-  label: string;
-  verified?: boolean;
-}) {
+export function EvidencePill({ label, verified }: { label: string; verified?: boolean }) {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2 py-1 text-[11px] text-foreground">
-      <span
-        className={
-          "h-1.5 w-1.5 rounded-full " +
-          (verified ? "bg-positive" : "bg-warning")
-        }
-      />
+      <span className={"h-1.5 w-1.5 rounded-full " + (verified ? "bg-positive" : "bg-warning")} />
       {label}
     </span>
   );

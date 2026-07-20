@@ -74,8 +74,12 @@ export function ReferencesPage() {
         actions={
           <>
             <Badge tone="warning">1 contradiction</Badge>
-            <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]">Add reference</button>
-            <button className="h-8 rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground">Trigger 3 more calls</button>
+            <button className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]">
+              Add reference
+            </button>
+            <button className="h-8 rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground">
+              Trigger 3 more calls
+            </button>
           </>
         }
       />
@@ -90,10 +94,14 @@ export function ReferencesPage() {
                 Live call · Kestrel agent
               </div>
               <div className="mt-3 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-teal-soft grid place-items-center text-[12px] font-medium text-primary">AF</div>
+                <div className="h-10 w-10 rounded-full bg-teal-soft grid place-items-center text-[12px] font-medium text-primary">
+                  AF
+                </div>
                 <div>
                   <div className="text-[13.5px] font-medium">Ana Fischer</div>
-                  <div className="text-[11px] text-muted-foreground">Ex-cofounder · Sirona Bio · in progress</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    Ex-cofounder · Sirona Bio · in progress
+                  </div>
                 </div>
               </div>
               <div className="mt-4 flex items-center justify-between text-[11px] font-mono text-muted-foreground">
@@ -103,23 +111,36 @@ export function ReferencesPage() {
               <div className="mt-2 flex items-center gap-[2px] h-10">
                 {Array.from({ length: 60 }).map((_, i) => {
                   const h = 15 + Math.abs(Math.sin(i * 0.4 + Date.now() * 0.0001) * 55);
-                  return <div key={i} className="w-[3px] rounded-full bg-primary/80" style={{ height: `${h}%` }} />;
+                  return (
+                    <div
+                      key={i}
+                      className="w-[3px] rounded-full bg-primary/80"
+                      style={{ height: `${h}%` }}
+                    />
+                  );
                 })}
               </div>
               <div className="mt-4 flex items-center gap-2">
                 <button className="h-9 flex-1 rounded-md bg-primary text-primary-foreground text-[12px] font-medium flex items-center justify-center gap-1.5">
                   <Play className="h-3.5 w-3.5" /> Listen live
                 </button>
-                <button className="h-9 w-9 rounded-md border border-border grid place-items-center"><PhoneCall className="h-3.5 w-3.5" /></button>
+                <button className="h-9 w-9 rounded-md border border-border grid place-items-center">
+                  <PhoneCall className="h-3.5 w-3.5" />
+                </button>
               </div>
             </div>
             <div className="p-5 space-y-3">
-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Current line of inquiry</div>
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                Current line of inquiry
+              </div>
               <div className="rounded-md bg-surface border border-border p-3 text-[12.5px] leading-snug">
-                "During Sirona, how did Amina handle disagreement inside the founding team, and was there ever a decision she made you disagreed with?"
+                "During Sirona, how did Amina handle disagreement inside the founding team, and was
+                there ever a decision she made you disagreed with?"
               </div>
               <div className="pt-2 border-t border-border">
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Auto-generated next</div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">
+                  Auto-generated next
+                </div>
                 <ol className="space-y-1.5 text-[12px] text-muted-foreground">
                   <li>· Why did Sirona wind down in 2023?</li>
                   <li>· Would you invest in her next company personally?</li>
@@ -136,7 +157,11 @@ export function ReferencesPage() {
             <Card key={r.who} className="p-0">
               <div className="px-5 py-3.5 border-b border-border flex items-center gap-3">
                 <div className="h-9 w-9 rounded-full bg-surface-2 grid place-items-center text-[12px] font-medium">
-                  {r.who.split(" ").map((x) => x[0]).slice(0, 2).join("")}
+                  {r.who
+                    .split(" ")
+                    .map((x) => x[0])
+                    .slice(0, 2)
+                    .join("")}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -146,7 +171,13 @@ export function ReferencesPage() {
                   <div className="text-[11.5px] text-muted-foreground truncate">{r.role}</div>
                 </div>
                 <Badge tone={r.status === "Completed" ? "positive" : "teal"}>
-                  {r.status === "In progress" ? <><PhoneIncoming className="h-3 w-3" /> Live</> : r.status}
+                  {r.status === "In progress" ? (
+                    <>
+                      <PhoneIncoming className="h-3 w-3" /> Live
+                    </>
+                  ) : (
+                    r.status
+                  )}
                 </Badge>
               </div>
               <div className="p-5 grid md:grid-cols-[1fr_180px] gap-5">
@@ -155,7 +186,10 @@ export function ReferencesPage() {
                   {r.quotes.length > 0 && (
                     <div className="mt-3 space-y-2">
                       {r.quotes.map((q, i) => (
-                        <blockquote key={i} className="border-l-2 border-primary/60 pl-3 text-[12.5px] italic text-foreground/80">
+                        <blockquote
+                          key={i}
+                          className="border-l-2 border-primary/60 pl-3 text-[12.5px] italic text-foreground/80"
+                        >
                           "{q}"
                         </blockquote>
                       ))}
@@ -165,7 +199,8 @@ export function ReferencesPage() {
                     <div className="mt-3 rounded-md border border-warning/30 bg-warning/5 p-2.5 flex items-start gap-2">
                       <AlertTriangle className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
                       <div className="text-[12px] text-foreground/90">
-                        <span className="font-medium">Red flag · </span>{r.flags[0]}
+                        <span className="font-medium">Red flag · </span>
+                        {r.flags[0]}
                       </div>
                     </div>
                   )}

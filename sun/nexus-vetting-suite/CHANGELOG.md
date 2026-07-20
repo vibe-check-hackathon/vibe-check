@@ -20,12 +20,12 @@ appear on the founder profile pages.
 described robotics deployments and enzyme research. Each line is now drawn from
 the repo's own commit history, which is verifiable:
 
-| Founder | Commits | Owns |
-| --- | --- | --- |
-| Laura Spies | 48 | sourcing/developing pipeline, screening, opportunity DB, LLM adapter, login gate |
-| Sun Chuanqi | 43 | system architecture, deck, talk track |
-| Martin Auer | 23 | board, pipeline navigation, profile model, inbound flow |
-| Mehdi Gouasmi | 5 | demo requirements and screenplay |
+| Founder       | Commits | Owns                                                                             |
+| ------------- | ------- | -------------------------------------------------------------------------------- |
+| Laura Spies   | 48      | sourcing/developing pipeline, screening, opportunity DB, LLM adapter, login gate |
+| Sun Chuanqi   | 43      | system architecture, deck, talk track                                            |
+| Martin Auer   | 23      | board, pipeline navigation, profile model, inbound flow                          |
+| Mehdi Gouasmi | 5       | demo requirements and screenplay                                                 |
 
 **LinkedIn could not be used as a source.** Three of the four URLs return HTTP
 999 (LinkedIn's bot block); the fourth returned only fragments that the response
@@ -94,8 +94,8 @@ third-party founders stay unscored.
 
 **Merge with a teammate's parallel work.** A login gate (`src/lib/auth.ts`,
 `/login`) landed upstream doing the same job as the switcher. Both were kept:
-the gate decides *who you are*, the switcher lets an authenticated investor
-*preview* the other side. The apply flows turned out complementary — theirs
+the gate decides _who you are_, the switcher lets an authenticated investor
+_preview_ the other side. The apply flows turned out complementary — theirs
 normalizes intake into the pipeline shape, mine adds hypotheses and the board
 wiring — so they were combined rather than one replacing the other.
 
