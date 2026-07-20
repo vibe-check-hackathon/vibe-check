@@ -1,4 +1,4 @@
-# VibeCheck — Opportunity OS
+# FirstCheck
 
 AI-driven VC deal-flow platform built for the Maschmeyer Group **VC Brain**
 challenge: 24-hour founder evaluation, evidence-backed memos, thesis-driven
