@@ -3,9 +3,12 @@
 # and proxies everything else to the built TanStack Start SSR app.
 #
 # Free-tier honesty: the instance sleeps after ~15 min idle (first request
-# then takes ~1 min), and the disk is ephemeral — thesis edits, inbox
-# applications, and outbound-scan results reset on every restart/redeploy.
-# Fine for a demo; a persistent database is the next step (AGENTS.md §25).
+# then takes ~1 min). The disk itself is still ephemeral — but accounts and
+# sessions now persist through that via Postgres (set DATABASE_URL to a free
+# Neon database below; without it, falls back to the old ephemeral files —
+# see laura/pipeline/lib/accounts.js). Submitted applications and outbound-
+# scan results still reset on restart; that migration is the next step
+# (AGENTS.md §25).
 #
 # All API keys below are optional and sync: false — Render prompts for them
 # once during Blueprint setup (nothing secret is ever committed here) and the
@@ -17,13 +20,19 @@ services:
     name: firstcheck
     runtime: node
     plan: free
-    buildCommand: cd Martin/nexus-vetting-suite && npm install && NITRO_PRESET=node-server npm run build
+    buildCommand: cd Martin/nexus-vetting-suite && npm install && NITRO_PRESET=node-server npm run build && cd ../../laura/pipeline && npm install --omit=dev
     startCommand: node laura/pipeline/app-server.js
     healthCheckPath: /integrations
     autoDeploy: true
     envVars:
       - key: NODE_VERSION
         value: "22"
+      # Free Postgres (e.g. Neon: https://neon.tech, free tier doesn't
+      # expire — unlike Render's own free Postgres, which is deleted after
+      # 30 days). Without this, accounts/sessions fall back to files that
+      # reset on every restart. Format: postgresql://user:pass@host/dbname
+      - key: DATABASE_URL
+        sync: false
       # LLM features: Checky, outbound scan, command-bar fallback. Set one.
       - key: ANTHROPIC_API_KEY
         sync: false
