@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Sourcing and Developing stages of the Opportunity OS pipeline (sun/system-architecture.md), zero dependencies",
+  "description": "Sourcing and Developing stages of the Opportunity OS pipeline (sun/system-architecture.md); zero-dependency except pg, added on measured need for Postgres persistence (AGENTS.md §25/§29)",
   "scripts": {
     "demo": "node run-demo.js",
     "test": "node --test test/*.test.js",
@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.5.0"
+  },
+  "dependencies": {
+    "pg": "^8.22.0"
   }
 }
