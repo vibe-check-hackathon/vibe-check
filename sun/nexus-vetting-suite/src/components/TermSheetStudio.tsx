@@ -1,6 +1,6 @@
+import { Badge, Card } from "@/components/ui-kit";
+import { FileText, RefreshCw, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Card, Badge } from "@/components/ui-kit";
-import { FileText, Sparkles, RefreshCw } from "lucide-react";
 
 /*
  * Annotated term sheet (Due Diligence stage): the thesis base terms adapted
@@ -64,16 +64,26 @@ function generateDemoTermSheet({
   trust: number;
   withContradiction: boolean;
 }): TermSheetResult {
-  const base = { instrument: "SAFE", checkSizeUsd: 100000, valuationCapUsd: 8000000, proRata: true };
+  const base = {
+    instrument: "SAFE",
+    checkSizeUsd: 100000,
+    valuationCapUsd: 8000000,
+    proRata: true,
+  };
   const valuationCapUsd = founderScore < 72 || withContradiction ? 7000000 : 8000000;
-  const terms = { ...base, valuationCapUsd, diligenceHoldback: withContradiction ? "ARR reconciliation required" : "none" };
+  const terms = {
+    ...base,
+    valuationCapUsd,
+    diligenceHoldback: withContradiction ? "ARR reconciliation required" : "none",
+  };
   const adjustments: Adjustment[] = [];
   if (valuationCapUsd !== base.valuationCapUsd) {
     adjustments.push({
       term: "valuationCapUsd",
       from: base.valuationCapUsd,
       to: valuationCapUsd,
-      because: "Founder evidence is below the staged confidence threshold or a contradiction remains open.",
+      because:
+        "Founder evidence is below the staged confidence threshold or a contradiction remains open.",
       evidence: `Founder score ${founderScore}, confidence ${confidence}, trust ${trust}.`,
     });
   }
@@ -121,7 +131,9 @@ export function TermSheetStudio({
   const [result, setResult] = useState<TermSheetResult | null>(null);
   const [md, setMd] = useState("");
   const [busy, setBusy] = useState(false);
-  const [dataSource, setDataSource] = useState<DataSource>(opportunityId ? "loading" : "staged-default");
+  const [dataSource, setDataSource] = useState<DataSource>(
+    opportunityId ? "loading" : "staged-default",
+  );
 
   useEffect(() => {
     setDataSource("staged-default");
@@ -130,7 +142,14 @@ export function TermSheetStudio({
   async function regenerate() {
     setBusy(true);
     try {
-      const data = generateDemoTermSheet({ company, askUsd, founderScore, confidence, trust, withContradiction });
+      const data = generateDemoTermSheet({
+        company,
+        askUsd,
+        founderScore,
+        confidence,
+        trust,
+        withContradiction,
+      });
       setResult(data);
       setMd(data.markdown);
     } catch {
@@ -156,14 +175,22 @@ export function TermSheetStudio({
     <Card className="p-0 overflow-hidden">
       <div className="px-5 py-3.5 border-b border-border flex flex-wrap items-center gap-2">
         <FileText className="h-3.5 w-3.5 text-primary" />
-        <div className="text-[13px] font-medium">Annotated term sheet — adapts live to the team analysis</div>
+        <div className="text-[13px] font-medium">
+          Annotated term sheet — adapts live to the team analysis
+        </div>
         <Badge tone="teal">{result?.status ?? "…"}</Badge>
         <Badge tone={dataSource === "real" ? "positive" : "outline"}>
-          {dataSource === "loading" ? "loading score…" : dataSource === "real" ? "real interview score" : "staged demo default"}
+          {dataSource === "loading"
+            ? "loading score…"
+            : dataSource === "real"
+              ? "real interview score"
+              : "staged demo default"}
         </Badge>
         <div className="ml-auto flex items-center gap-1.5">
           <button
-            onClick={() => beforeMd && printMarkdown(`${company} term sheet — before negotiation`, beforeMd)}
+            onClick={() =>
+              beforeMd && printMarkdown(`${company} term sheet — before negotiation`, beforeMd)
+            }
             className="h-7 rounded-md border border-border bg-surface px-2.5 text-[11.5px]"
           >
             Export PDF · before
@@ -175,7 +202,10 @@ export function TermSheetStudio({
             Export PDF · after
           </button>
           <button
-            onClick={() => result?.legalText && printMarkdown(`${company} — memorandum of terms (long form)`, result.legalText)}
+            onClick={() =>
+              result?.legalText &&
+              printMarkdown(`${company} — memorandum of terms (long form)`, result.legalText)
+            }
             className="h-7 rounded-md border border-border bg-surface px-2.5 text-[11.5px]"
             title="Lawyer-form memorandum of terms addressed to the founders, with the analytical basis disclosed"
           >
@@ -195,11 +225,22 @@ export function TermSheetStudio({
         ).map(([label, value, set]) => (
           <label key={label} className="text-[11px] uppercase tracking-wider text-muted-foreground">
             {label} · <span className="font-mono text-foreground">{value}</span>
-            <input type="range" min={0} max={100} value={value} onChange={(e) => set(Number(e.target.value))} className="mt-1 w-full accent-[var(--primary)]" />
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={value}
+              onChange={(e) => set(Number(e.target.value))}
+              className="mt-1 w-full accent-[var(--primary)]"
+            />
           </label>
         ))}
         <label className="flex items-center gap-2 text-[12px] text-muted-foreground">
-          <input type="checkbox" checked={withContradiction} onChange={(e) => setWithContradiction(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={withContradiction}
+            onChange={(e) => setWithContradiction(e.target.checked)}
+          />
           ARR contradiction open (CON-001)
         </label>
       </div>
@@ -216,12 +257,17 @@ export function TermSheetStudio({
         <div className="max-h-[420px] space-y-2.5 overflow-y-auto p-4">
           <div className="flex items-center gap-1.5 text-[12.5px] font-medium">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
-            Why the terms changed {busy && <RefreshCw className="h-3 w-3 animate-spin text-muted-foreground" />}
+            Why the terms changed{" "}
+            {busy && <RefreshCw className="h-3 w-3 animate-spin text-muted-foreground" />}
           </div>
           {(result?.adjustments ?? []).map((a, i) => (
-            <div key={i} className="rounded-md border border-border p-2.5 text-[11.5px] leading-relaxed">
+            <div
+              key={i}
+              className="rounded-md border border-border p-2.5 text-[11.5px] leading-relaxed"
+            >
               <div className="font-medium">
-                {a.term}: <span className="font-mono">{fmt(a.from)}</span> → <span className="font-mono text-primary">{fmt(a.to)}</span>
+                {a.term}: <span className="font-mono">{fmt(a.from)}</span> →{" "}
+                <span className="font-mono text-primary">{fmt(a.to)}</span>
               </div>
               <div className="mt-1 text-muted-foreground">{a.because}</div>
               <div className="mt-1 text-[10.5px] text-muted-foreground">
@@ -230,11 +276,13 @@ export function TermSheetStudio({
             </div>
           ))}
           {result && !result.adjustments.length && (
-            <div className="text-[12px] text-muted-foreground">No adjustments — the base thesis terms stand.</div>
+            <div className="text-[12px] text-muted-foreground">
+              No adjustments — the base thesis terms stand.
+            </div>
           )}
           <p className="border-t border-border pt-2 text-[10.5px] text-muted-foreground">
-            Deterministic: same analysis, same terms. Human investor + counsel approval is mandatory before anything
-            goes founder-facing. The generated preview remains in this browser only.
+            Deterministic: same analysis, same terms. Human investor + counsel approval is mandatory
+            before anything goes founder-facing. The generated preview remains in this browser only.
           </p>
         </div>
       </div>

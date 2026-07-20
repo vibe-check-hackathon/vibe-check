@@ -74,12 +74,17 @@ export async function getApplications(): Promise<SubmittedApplication[]> {
   return readLocal<SubmittedApplication[]>(APPLICATIONS_KEY, []);
 }
 
-export async function authenticateDemo(email: string, password: string): Promise<DemoSession | null> {
+export async function authenticateDemo(
+  email: string,
+  password: string,
+): Promise<DemoSession | null> {
   if (email.trim().toLowerCase() === "investor@firstcheck.demo" && password === "growth-signal") {
     return { role: "investor", name: "Demo Investor", opportunityId: null };
   }
   const account = readLocal<FounderAccount[]>(ACCOUNTS_KEY, []).find(
-    (candidate) => candidate.email.toLowerCase() === email.trim().toLowerCase() && candidate.password === password,
+    (candidate) =>
+      candidate.email.toLowerCase() === email.trim().toLowerCase() &&
+      candidate.password === password,
   );
   return account
     ? { role: "founder", name: account.name, opportunityId: account.opportunityId }
@@ -94,17 +99,25 @@ function screenApplication(application: Record<string, unknown>) {
   const hardFails: string[] = [];
   const softFlags: string[] = [];
 
-  if (/series\s+[b-z]|later/i.test(round)) hardFails.push(`${round} is later than the fund's Pre-seed/Seed entry stage.`);
+  if (/series\s+[b-z]|later/i.test(round))
+    hardFails.push(`${round} is later than the fund's Pre-seed/Seed entry stage.`);
   if (sector && !thesis.fund.sectors.some((value) => sector.includes(value.toLowerCase()))) {
     softFlags.push(`${application.sector} is outside the current sector focus.`);
   }
-  if (geography && !thesis.fund.geographies.some((value) => geography.includes(value.toLowerCase()))) {
+  if (
+    geography &&
+    !thesis.fund.geographies.some((value) => geography.includes(value.toLowerCase()))
+  ) {
     softFlags.push(`${application.geography} is outside the current geography focus.`);
   }
   return { pass: hardFails.length === 0, hardFails, softFlags };
 }
 
-function founderProfile(founder: Record<string, string>, index: number, opportunityId: string): SubmittedFounder {
+function founderProfile(
+  founder: Record<string, string>,
+  index: number,
+  opportunityId: string,
+): SubmittedFounder {
   const initials = founder.name
     .split(/\s+/)
     .map((part) => part[0])
@@ -117,7 +130,11 @@ function founderProfile(founder: Record<string, string>, index: number, opportun
     role: founder.role || null,
     email: founder.email || null,
     avatar: { type: "initials", value: initials },
-    public: { linkedin: founder.linkedin || null, status: "founder-provided", fetchedAt: new Date().toISOString() },
+    public: {
+      linkedin: founder.linkedin || null,
+      status: "founder-provided",
+      fetchedAt: new Date().toISOString(),
+    },
     hypotheses: [
       {
         id: `${opportunityId}-H${index + 1}-1`,
@@ -153,7 +170,10 @@ export async function submitApplication(application: Record<string, unknown>) {
     ) as Record<string, string>,
     founders: profiles,
   };
-  writeLocal(APPLICATIONS_KEY, [record, ...readLocal<SubmittedApplication[]>(APPLICATIONS_KEY, [])]);
+  writeLocal(APPLICATIONS_KEY, [
+    record,
+    ...readLocal<SubmittedApplication[]>(APPLICATIONS_KEY, []),
+  ]);
 
   const founderAccounts = founders
     .filter((founder) => founder.email)
@@ -169,7 +189,9 @@ export async function submitApplication(application: Record<string, unknown>) {
 }
 
 export async function getFounderFeedback(opportunityId: string) {
-  const record = readLocal<SubmittedApplication[]>(APPLICATIONS_KEY, []).find((item) => item.id === opportunityId);
+  const record = readLocal<SubmittedApplication[]>(APPLICATIONS_KEY, []).find(
+    (item) => item.id === opportunityId,
+  );
   if (!record) return null;
   return {
     opportunityId,

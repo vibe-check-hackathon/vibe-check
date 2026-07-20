@@ -1,26 +1,44 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { PageHeader, Section, Card, Badge } from "@/components/ui-kit";
+import { Badge, Card, PageHeader, Section } from "@/components/ui-kit";
+import { applicationToStartup, useSubmittedApplications } from "@/lib/applications";
 import {
   ACME_FOUNDERS,
   EVALUATION_CRITERIA,
-  STARTUPS,
   STAGES,
+  STARTUPS,
   companyInitials,
+  fmtScore,
   founderInitials,
   founderNames,
   outcomeOf,
-  stageColor,
   scoreTone,
-  fmtScore,
+  stageColor,
   type FounderRef,
   type Stage,
   type Startup,
 } from "@/lib/data";
-import { loadSyntheticStartups, invalidateSyntheticCache, runDemoOutboundScan } from "@/lib/synthetic-opportunities";
-import { useSubmittedApplications, applicationToStartup } from "@/lib/applications";
-import { ArrowDownUp, FileText, Filter, Globe2, LayoutGrid, Lock, Mail, Mic, Rows, Plus, Search, Sparkles, X, Youtube } from "lucide-react";
+import {
+  invalidateSyntheticCache,
+  loadSyntheticStartups,
+  runDemoOutboundScan,
+} from "@/lib/synthetic-opportunities";
+import { createFileRoute } from "@tanstack/react-router";
+import {
+  ArrowDownUp,
+  FileText,
+  Globe2,
+  LayoutGrid,
+  Lock,
+  Mail,
+  Mic,
+  Plus,
+  Rows,
+  Search,
+  Sparkles,
+  X,
+  Youtube,
+} from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 
 export const Route = createFileRoute("/board")({
   head: () => ({
@@ -113,7 +131,9 @@ function BoardPage() {
       next.syntheticOnly = false;
       notes.push("excluding current applications");
     }
-    if (/only synthetic|synthetic only|only current app|current app only|current applications/.test(t)) {
+    if (
+      /only synthetic|synthetic only|only current app|current app only|current applications/.test(t)
+    ) {
       next.syntheticOnly = true;
       next.realOnly = false;
       next.outboundOnly = false;
@@ -137,7 +157,9 @@ function BoardPage() {
       if (attrs.length) {
         setAttrQuery(t);
         setView("table");
-        setFeedback(`attribute search: ${attrs.map((a) => a.label).join(" + ")} (all must match) — "reset" to clear`);
+        setFeedback(
+          `attribute search: ${attrs.map((a) => a.label).join(" + ")} (all must match) — "reset" to clear`,
+        );
         return;
       }
       // Rule parser found nothing — hand the query to the LLM fallback (MVP #3).
@@ -173,21 +195,30 @@ function BoardPage() {
       founders: s.founders.map((f) => ({ name: f.name, role: f.role })),
     }));
     try {
-      const terms = t.toLowerCase().split(/\W+/).filter((term) => term.length > 2);
+      const terms = t
+        .toLowerCase()
+        .split(/\W+/)
+        .filter((term) => term.length > 2);
       const data = {
         ids: compact
-          .filter((deal) => terms.every((term) => JSON.stringify(deal).toLowerCase().includes(term)))
+          .filter((deal) =>
+            terms.every((term) => JSON.stringify(deal).toLowerCase().includes(term)),
+          )
           .map((deal) => deal.id),
         provider: "browser keyword matcher",
         reason: "all query terms matched locally",
       };
       if (!data.ids?.length) {
-        setFeedback(`LLM found no matching deals${data.reason ? ` — ${data.reason}` : ""}. "reset" to clear.`);
+        setFeedback(
+          `LLM found no matching deals${data.reason ? ` — ${data.reason}` : ""}. "reset" to clear.`,
+        );
         return;
       }
       setLlmIds(data.ids);
       setView("table");
-      setFeedback(`LLM (${data.provider}) matched ${data.ids.length} deal${data.ids.length === 1 ? "" : "s"}${data.reason ? `: ${data.reason}` : ""} — "reset" to clear`);
+      setFeedback(
+        `LLM (${data.provider}) matched ${data.ids.length} deal${data.ids.length === 1 ? "" : "s"}${data.reason ? `: ${data.reason}` : ""} — "reset" to clear`,
+      );
     } catch {
       setFeedback("Could not reach the LLM fallback — is the dev server running?");
     }
@@ -198,7 +229,9 @@ function BoardPage() {
    *  and the board reloads so the new deals pop in — and stay. */
   async function runScan() {
     setScanning(true);
-    setFeedback(`Scanning ${scanRegion === "us" ? "the US" : scanRegion === "china" ? "China" : "Europe"} for new on-thesis startups…`);
+    setFeedback(
+      `Scanning ${scanRegion === "us" ? "the US" : scanRegion === "china" ? "China" : "Europe"} for new on-thesis startups…`,
+    );
     try {
       const data = await runDemoOutboundScan(scanRegion);
       invalidateSyntheticCache();
@@ -220,7 +253,9 @@ function BoardPage() {
   }
 
   function startVoice() {
-    const SR = (window as unknown as Record<string, any>).SpeechRecognition ?? (window as unknown as Record<string, any>).webkitSpeechRecognition;
+    const SR =
+      (window as unknown as Record<string, any>).SpeechRecognition ??
+      (window as unknown as Record<string, any>).webkitSpeechRecognition;
     if (!SR) {
       setFeedback("Voice input is not supported in this browser — type the command instead.");
       return;
@@ -240,7 +275,9 @@ function BoardPage() {
   }
 
   useEffect(() => {
-    loadSyntheticStartups().then(setSynthetic).catch(() => {});
+    loadSyntheticStartups()
+      .then(setSynthetic)
+      .catch(() => {});
   }, []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setSelected(null);
@@ -295,8 +332,18 @@ function BoardPage() {
   if (sortKey) {
     tableRows = [...tableRows].sort((a, b) => {
       if (sortKey === "name") return a.company.localeCompare(b.company) * sortDir;
-      const av = sortKey === "date" ? parseDateKey(a.submitted) : sortKey === "money" ? parseMoney(a.ask) : (a.founderScore ?? -1);
-      const bv = sortKey === "date" ? parseDateKey(b.submitted) : sortKey === "money" ? parseMoney(b.ask) : (b.founderScore ?? -1);
+      const av =
+        sortKey === "date"
+          ? parseDateKey(a.submitted)
+          : sortKey === "money"
+            ? parseMoney(a.ask)
+            : (a.founderScore ?? -1);
+      const bv =
+        sortKey === "date"
+          ? parseDateKey(b.submitted)
+          : sortKey === "money"
+            ? parseMoney(b.ask)
+            : (b.founderScore ?? -1);
       return (av - bv) * sortDir;
     });
   }
@@ -344,8 +391,18 @@ function BoardPage() {
             label="Official only"
             onClick={() => {
               const next = !filters.realOnly;
-              setFilters({ ...filters, realOnly: next, syntheticOnly: false, outboundOnly: false, synthetic: false });
-              setFeedback(next ? "Official cards only." : "Showing official, current application, outbound, and demo deals.");
+              setFilters({
+                ...filters,
+                realOnly: next,
+                syntheticOnly: false,
+                outboundOnly: false,
+                synthetic: false,
+              });
+              setFeedback(
+                next
+                  ? "Official cards only."
+                  : "Showing official, current application, outbound, and demo deals.",
+              );
             }}
           />
           <ToolbarToggle
@@ -353,7 +410,13 @@ function BoardPage() {
             label="Current apps"
             onClick={() => {
               const next = !filters.syntheticOnly;
-              setFilters({ ...filters, syntheticOnly: next, realOnly: false, outboundOnly: false, synthetic: false });
+              setFilters({
+                ...filters,
+                syntheticOnly: next,
+                realOnly: false,
+                outboundOnly: false,
+                synthetic: false,
+              });
               setFeedback(next ? "Current applications only." : "Showing all deal types.");
             }}
           />
@@ -411,7 +474,10 @@ function BoardPage() {
               placeholder='Command: "sort by money", "current apps", "outbound", "hide portfolio", "reset"'
               className="w-full bg-transparent text-[12.5px] outline-none placeholder:text-muted-foreground/70"
             />
-            <button onClick={() => applyCommand(command)} className="h-6 rounded border border-border bg-surface px-2 text-[11px]">
+            <button
+              onClick={() => applyCommand(command)}
+              className="h-6 rounded border border-border bg-surface px-2 text-[11px]"
+            >
               Apply
             </button>
             <button
@@ -464,196 +530,268 @@ function BoardPage() {
         <div className="mt-2 flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
           <span>
             Showing {visibleDeals.length} of {all.length} deals
-            {sortKey ? ` - sorted by ${sortKey} (${sortDir === -1 ? "descending" : "ascending"})` : ""}
+            {sortKey
+              ? ` - sorted by ${sortKey} (${sortDir === -1 ? "descending" : "ascending"})`
+              : ""}
           </span>
           {feedback && <span>{feedback}</span>}
         </div>
       </div>
 
-      {view === "kanban" && (<>
-      <div className="px-6 py-5 overflow-x-auto">
-        <div className="flex gap-3 min-w-max">
-          {pipelineStages.map((stage) => (
-            <div key={stage} className="w-[280px] shrink-0">
-              <div className="flex items-center justify-between mb-2 px-1">
-                <div className="flex items-center gap-2">
-                  <span className={`text-[11px] px-1.5 py-0.5 rounded ${stageColor(stage)}`}>
-                    {stage}
-                  </span>
-                  <span className="text-[11px] text-muted-foreground font-mono">
-                    {byStage[stage].length}
-                  </span>
-                </div>
-                <button className="text-muted-foreground hover:text-foreground">
-                  <Plus className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <div className="space-y-2">
-                {byStage[stage].map((s) => (
-                  <Card key={s.id} onClick={() => setSelected(s)} className="p-3 hover:border-primary/40 transition-colors cursor-pointer">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex min-w-0 items-start gap-2.5">
-                        <CompanyMark startup={s} />
-                        <div className="min-w-0">
-                          <div className="text-[13px] font-medium truncate">{s.company}</div>
-                          <div className="text-[11px] text-muted-foreground truncate mt-0.5">
-                            {s.geography}
+      {view === "kanban" && (
+        <>
+          <div className="px-6 py-5 overflow-x-auto">
+            <div className="flex gap-3 min-w-max">
+              {pipelineStages.map((stage) => (
+                <div key={stage} className="w-[280px] shrink-0">
+                  <div className="flex items-center justify-between mb-2 px-1">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[11px] px-1.5 py-0.5 rounded ${stageColor(stage)}`}>
+                        {stage}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground font-mono">
+                        {byStage[stage].length}
+                      </span>
+                    </div>
+                    <button className="text-muted-foreground hover:text-foreground">
+                      <Plus className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    {byStage[stage].map((s) => (
+                      <Card
+                        key={s.id}
+                        onClick={() => setSelected(s)}
+                        className="p-3 hover:border-primary/40 transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex min-w-0 items-start gap-2.5">
+                            <CompanyMark startup={s} />
+                            <div className="min-w-0">
+                              <div className="text-[13px] font-medium truncate">{s.company}</div>
+                              <div className="text-[11px] text-muted-foreground truncate mt-0.5">
+                                {s.geography}
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            className={`text-[11px] font-mono tabular-nums ${scoreTone(s.founderScore)}`}
+                          >
+                            {fmtScore(s.founderScore)}
                           </div>
                         </div>
-                      </div>
-                      <div className={`text-[11px] font-mono tabular-nums ${scoreTone(s.founderScore)}`}>
-                        {fmtScore(s.founderScore)}
-                      </div>
-                    </div>
-                    <FounderStrip startup={s} />
-                    <p className="mt-2 text-[11.5px] text-muted-foreground leading-snug line-clamp-2">
-                      {s.oneLiner}
-                    </p>
-                    <div className="mt-3 grid grid-cols-3 gap-2">
-                      <MicroAxis label="F" v={s.founderScore} />
-                      <MicroAxis label="M" v={s.marketScore} />
-                      <MicroAxis label="I/M" v={s.ideaMarketScore} />
-                    </div>
-                    <div className="mt-3 flex items-center justify-between">
-                      <div className="flex min-w-0 items-center gap-1.5">
-                        <Badge tone="outline">{s.sector.split(" / ")[0]}</Badge>
-                        <span className="text-[10.5px] text-muted-foreground">{s.ask}</span>
-                      </div>
-                      {s.urgency === "High" && <Badge tone="warning">Urgent</Badge>}
-                      {s.trustScore != null && s.trustScore >= 85 && <Badge tone="positive">Trust {s.trustScore}</Badge>}
-                      {s.currentApplication && <Badge tone="positive">current app</Badge>}
-                      {s.outboundSelected && <Badge tone="teal">outbound</Badge>}
-                      {!s.assessed && <Badge tone="outline">not assessed</Badge>}
-                    </div>
-                    {(s.website || s.sourceCardUrl) && (
-                      <div className="mt-3 flex items-center gap-2 border-t border-border pt-2">
-                        {s.website && (
-                          <a href={s.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[10.5px] text-muted-foreground hover:text-foreground">
-                            <Globe2 className="h-3 w-3" /> Website
-                          </a>
+                        <FounderStrip startup={s} />
+                        <p className="mt-2 text-[11.5px] text-muted-foreground leading-snug line-clamp-2">
+                          {s.oneLiner}
+                        </p>
+                        <div className="mt-3 grid grid-cols-3 gap-2">
+                          <MicroAxis label="F" v={s.founderScore} />
+                          <MicroAxis label="M" v={s.marketScore} />
+                          <MicroAxis label="I/M" v={s.ideaMarketScore} />
+                        </div>
+                        <div className="mt-3 flex items-center justify-between">
+                          <div className="flex min-w-0 items-center gap-1.5">
+                            <Badge tone="outline">{s.sector.split(" / ")[0]}</Badge>
+                            <span className="text-[10.5px] text-muted-foreground">{s.ask}</span>
+                          </div>
+                          {s.urgency === "High" && <Badge tone="warning">Urgent</Badge>}
+                          {s.trustScore != null && s.trustScore >= 85 && (
+                            <Badge tone="positive">Trust {s.trustScore}</Badge>
+                          )}
+                          {s.currentApplication && <Badge tone="positive">current app</Badge>}
+                          {s.outboundSelected && <Badge tone="teal">outbound</Badge>}
+                          {!s.assessed && <Badge tone="outline">not assessed</Badge>}
+                        </div>
+                        {(s.website || s.sourceCardUrl) && (
+                          <div className="mt-3 flex items-center gap-2 border-t border-border pt-2">
+                            {s.website && (
+                              <a
+                                href={s.website}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1 text-[10.5px] text-muted-foreground hover:text-foreground"
+                              >
+                                <Globe2 className="h-3 w-3" /> Website
+                              </a>
+                            )}
+                            {s.sourceCardUrl && (
+                              <a
+                                href={s.sourceCardUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1 text-[10.5px] text-muted-foreground hover:text-foreground"
+                              >
+                                <FileText className="h-3 w-3" /> Card
+                              </a>
+                            )}
+                          </div>
                         )}
-                        {s.sourceCardUrl && (
-                          <a href={s.sourceCardUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[10.5px] text-muted-foreground hover:text-foreground">
-                            <FileText className="h-3 w-3" /> Card
-                          </a>
-                        )}
-                      </div>
-                    )}
-                  </Card>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Portfolio overview — existing contacts + alignments with new deals */}
-      <Section title="Portfolio · existing contacts & potential alignments">
-        <p className="mb-3 -mt-1 text-[11.5px] text-muted-foreground">
-          Companies the group already backed. Shared domains with pipeline deals are shown as
-          alignment chips — an existing contact is an intro path, a reference source, or a synergy check.
-        </p>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {portfolio.map((p) => {
-            const aligned = alignmentsFor(p, pipelineDeals);
-            const outcome = outcomeOf(p);
-            return (
-              <Card key={p.id} onClick={() => setSelected(p)} className="p-3 hover:border-primary/40 transition-colors cursor-pointer">
-                <div className="flex items-start gap-2.5">
-                  <CompanyMark startup={p} />
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[13px] font-medium truncate">{p.company}</div>
-                    <div className="text-[11px] text-muted-foreground truncate">{p.sector}</div>
+                      </Card>
+                    ))}
                   </div>
-                  {outcome && <Badge tone={outcome.tone}>{outcome.label.split(" — ")[0]}</Badge>}
                 </div>
-                <div className="mt-2 text-[10.5px] text-muted-foreground truncate">
-                  Contacts: {founderNames(p.founders)}
-                </div>
-                <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-border pt-2">
-                  {aligned.length ? (
-                    <>
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Aligns</span>
-                      {aligned.slice(0, 3).map(({ co, shared }) => (
-                        <span key={co.id} title={`shared: ${shared.join(", ")}`} className="rounded border border-border bg-secondary px-1.5 py-0.5 text-[10px] text-secondary-foreground">
-                          {co.company}
+              ))}
+            </div>
+          </div>
+
+          {/* Portfolio overview — existing contacts + alignments with new deals */}
+          <Section title="Portfolio · existing contacts & potential alignments">
+            <p className="mb-3 -mt-1 text-[11.5px] text-muted-foreground">
+              Companies the group already backed. Shared domains with pipeline deals are shown as
+              alignment chips — an existing contact is an intro path, a reference source, or a
+              synergy check.
+            </p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {portfolio.map((p) => {
+                const aligned = alignmentsFor(p, pipelineDeals);
+                const outcome = outcomeOf(p);
+                return (
+                  <Card
+                    key={p.id}
+                    onClick={() => setSelected(p)}
+                    className="p-3 hover:border-primary/40 transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <CompanyMark startup={p} />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[13px] font-medium truncate">{p.company}</div>
+                        <div className="text-[11px] text-muted-foreground truncate">{p.sector}</div>
+                      </div>
+                      {outcome && (
+                        <Badge tone={outcome.tone}>{outcome.label.split(" — ")[0]}</Badge>
+                      )}
+                    </div>
+                    <div className="mt-2 text-[10.5px] text-muted-foreground truncate">
+                      Contacts: {founderNames(p.founders)}
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-border pt-2">
+                      {aligned.length ? (
+                        <>
+                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                            Aligns
+                          </span>
+                          {aligned.slice(0, 3).map(({ co, shared }) => (
+                            <span
+                              key={co.id}
+                              title={`shared: ${shared.join(", ")}`}
+                              className="rounded border border-border bg-secondary px-1.5 py-0.5 text-[10px] text-secondary-foreground"
+                            >
+                              {co.company}
+                            </span>
+                          ))}
+                          {aligned.length > 3 && (
+                            <span className="text-[10px] text-muted-foreground">
+                              +{aligned.length - 3}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground">
+                          No pipeline alignment yet
                         </span>
-                      ))}
-                      {aligned.length > 3 && <span className="text-[10px] text-muted-foreground">+{aligned.length - 3}</span>}
-                    </>
-                  ) : (
-                    <span className="text-[10px] text-muted-foreground">No pipeline alignment yet</span>
-                  )}
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      </Section>
-      </>)}
+                      )}
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </Section>
+        </>
+      )}
 
       {/* Table view */}
       {view === "table" && (
-      <Section title="All deals · table">
-        <Card className="p-0 overflow-hidden">
-          <table className="w-full text-[12.5px]">
-            <thead className="bg-surface border-b border-border text-muted-foreground">
-              <tr className="text-left">
-                <th className="px-4 py-2.5 font-medium">Company</th>
-                <th className="px-3 py-2.5 font-medium">Stage</th>
-                <th className="px-3 py-2.5 font-medium">Sector</th>
-                <th className="px-3 py-2.5 font-medium text-right">Founder</th>
-                <th className="px-3 py-2.5 font-medium text-right">Market</th>
-                <th className="px-3 py-2.5 font-medium text-right">Idea/Mkt</th>
-                <th className="px-3 py-2.5 font-medium text-right">Trust</th>
-                <th className="px-3 py-2.5 font-medium">Urgency</th>
-                <th className="px-3 py-2.5 font-medium text-right">Ask</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {tableRows.length === 0 && (
-                <tr>
-                  <td colSpan={9} className="px-4 py-8 text-center text-[12px] text-muted-foreground">
-                    No deals match the current search and filters.
-                  </td>
+        <Section title="All deals · table">
+          <Card className="p-0 overflow-hidden">
+            <table className="w-full text-[12.5px]">
+              <thead className="bg-surface border-b border-border text-muted-foreground">
+                <tr className="text-left">
+                  <th className="px-4 py-2.5 font-medium">Company</th>
+                  <th className="px-3 py-2.5 font-medium">Stage</th>
+                  <th className="px-3 py-2.5 font-medium">Sector</th>
+                  <th className="px-3 py-2.5 font-medium text-right">Founder</th>
+                  <th className="px-3 py-2.5 font-medium text-right">Market</th>
+                  <th className="px-3 py-2.5 font-medium text-right">Idea/Mkt</th>
+                  <th className="px-3 py-2.5 font-medium text-right">Trust</th>
+                  <th className="px-3 py-2.5 font-medium">Urgency</th>
+                  <th className="px-3 py-2.5 font-medium text-right">Ask</th>
                 </tr>
-              )}
-              {tableRows.map((s) => (
-                <tr key={s.id} onClick={() => setSelected(s)} className="hover:bg-surface/60 cursor-pointer">
-                  <td className="px-4 py-2.5">
-                    <div className="flex items-center gap-2.5">
-                      <CompanyMark startup={s} compact />
-                      <div className="min-w-0">
-                        <div className="font-medium truncate">{s.company}</div>
-                        <div className="text-[11px] text-muted-foreground truncate">{founderNames(s.founders)}</div>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {tableRows.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={9}
+                      className="px-4 py-8 text-center text-[12px] text-muted-foreground"
+                    >
+                      No deals match the current search and filters.
+                    </td>
+                  </tr>
+                )}
+                {tableRows.map((s) => (
+                  <tr
+                    key={s.id}
+                    onClick={() => setSelected(s)}
+                    className="hover:bg-surface/60 cursor-pointer"
+                  >
+                    <td className="px-4 py-2.5">
+                      <div className="flex items-center gap-2.5">
+                        <CompanyMark startup={s} compact />
+                        <div className="min-w-0">
+                          <div className="font-medium truncate">{s.company}</div>
+                          <div className="text-[11px] text-muted-foreground truncate">
+                            {founderNames(s.founders)}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <span className={`text-[11px] px-1.5 py-0.5 rounded ${stageColor(s.stage)}`}>{s.stage}</span>
-                  </td>
-                  <td className="px-3 py-2.5 text-muted-foreground">
-                    <div>{s.sector}</div>
-                    {(s.vehicle || s.companyStatus) && (
-                      <div className="text-[10.5px] text-muted-foreground/80">
-                        {[s.vehicle, s.companyStatus].filter(Boolean).join(" / ")}
-                      </div>
-                    )}
-                  </td>
-                  <td className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.founderScore)}`}>{fmtScore(s.founderScore)}</td>
-                  <td className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.marketScore)}`}>{fmtScore(s.marketScore)}</td>
-                  <td className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.ideaMarketScore)}`}>{fmtScore(s.ideaMarketScore)}</td>
-                  <td className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.trustScore)}`}>{fmtScore(s.trustScore)}</td>
-                  <td className="px-3 py-2.5">
-                    {s.urgency === "High" ? <Badge tone="warning">High</Badge> : <Badge tone="outline">{s.urgency}</Badge>}
-                  </td>
-                  <td className="px-3 py-2.5 text-right font-mono tabular-nums">{s.ask}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
-      </Section>
+                    </td>
+                    <td className="px-3 py-2.5">
+                      <span className={`text-[11px] px-1.5 py-0.5 rounded ${stageColor(s.stage)}`}>
+                        {s.stage}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2.5 text-muted-foreground">
+                      <div>{s.sector}</div>
+                      {(s.vehicle || s.companyStatus) && (
+                        <div className="text-[10.5px] text-muted-foreground/80">
+                          {[s.vehicle, s.companyStatus].filter(Boolean).join(" / ")}
+                        </div>
+                      )}
+                    </td>
+                    <td
+                      className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.founderScore)}`}
+                    >
+                      {fmtScore(s.founderScore)}
+                    </td>
+                    <td
+                      className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.marketScore)}`}
+                    >
+                      {fmtScore(s.marketScore)}
+                    </td>
+                    <td
+                      className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.ideaMarketScore)}`}
+                    >
+                      {fmtScore(s.ideaMarketScore)}
+                    </td>
+                    <td
+                      className={`px-3 py-2.5 text-right font-mono tabular-nums ${scoreTone(s.trustScore)}`}
+                    >
+                      {fmtScore(s.trustScore)}
+                    </td>
+                    <td className="px-3 py-2.5">
+                      {s.urgency === "High" ? (
+                        <Badge tone="warning">High</Badge>
+                      ) : (
+                        <Badge tone="outline">{s.urgency}</Badge>
+                      )}
+                    </td>
+                    <td className="px-3 py-2.5 text-right font-mono tabular-nums">{s.ask}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        </Section>
       )}
 
       {selected && <DealDetail startup={selected} onClose={() => setSelected(null)} />}
@@ -696,7 +834,10 @@ const DOMAIN_MAP: [RegExp, string][] = [
   [/sales|marketing|revenue|crm/, "go-to-market"],
   [/complian|security|kyc|aml/, "security & compliance"],
   [/climate|carbon|emission|heat-pump|energy/, "climate"],
-  [/finance|insurance|fintech|card|payment|spend|lending|reconcil|collections/, "finance & insurance"],
+  [
+    /finance|insurance|fintech|card|payment|spend|lending|reconcil|collections/,
+    "finance & insurance",
+  ],
   [/health|clinic|prior-auth|care\b/, "health"],
   [/workplace|desk booking|hybrid work|human resources|office/, "workplace & HR"],
   [/developer|dev tool|ci flake|tooling/, "developer tools"],
@@ -762,7 +903,10 @@ function parseAttributeQuery(t: string): AttrPredicate[] {
     if (re.test(t)) preds.push({ label: domain, ok: (s) => domainsOf(s).includes(domain) });
   }
   if (/ai infra|ai infrastructure|\bai\b/.test(t)) {
-    preds.push({ label: "AI", ok: (s) => /\bai\b|artificial intelligence/i.test(`${s.sector} ${s.oneLiner}`) });
+    preds.push({
+      label: "AI",
+      ok: (s) => /\bai\b|artificial intelligence/i.test(`${s.sector} ${s.oneLiner}`),
+    });
   }
   for (const [re, label, ok] of GEO_QUERIES) {
     if (re.test(t)) {
@@ -771,22 +915,41 @@ function parseAttributeQuery(t: string): AttrPredicate[] {
     }
   }
   if (/technical (co-?)?founder|cto/.test(t)) {
-    preds.push({ label: "technical founder", ok: (s) => s.founders.some((f) => /cto|technical|engineer/i.test(f.role ?? "")) });
+    preds.push({
+      label: "technical founder",
+      ok: (s) => s.founders.some((f) => /cto|technical|engineer/i.test(f.role ?? "")),
+    });
   }
   if (/no (prior )?(vc|venture|backing|funding)|unbacked|first[- ]time raise/.test(t)) {
-    preds.push({ label: "no prior VC backing", ok: (s) => /pre/i.test(s.round) || (!s.realEvent && s.stage !== "Portfolio") });
+    preds.push({
+      label: "no prior VC backing",
+      ok: (s) => /pre/i.test(s.round) || (!s.realEvent && s.stage !== "Portfolio"),
+    });
   }
   if (/traction|revenue|enterprise customers|paying customers/.test(t)) {
-    preds.push({ label: "traction signal", ok: (s) => Boolean(s.realEvent) || /arr|customer|traction|pilot|enterprise/i.test(s.oneLiner) });
+    preds.push({
+      label: "traction signal",
+      ok: (s) => Boolean(s.realEvent) || /arr|customer|traction|pilot|enterprise/i.test(s.oneLiner),
+    });
   }
   if (/accelerator|y ?combinator|\byc\b/.test(t)) {
-    preds.push({ label: "accelerator", ok: (s) => /combinator|accelerator/i.test(`${s.website ?? ""} ${s.oneLiner} ${s.realEvent ?? ""}`) });
+    preds.push({
+      label: "accelerator",
+      ok: (s) =>
+        /combinator|accelerator/i.test(`${s.website ?? ""} ${s.oneLiner} ${s.realEvent ?? ""}`),
+    });
   }
   return preds;
 }
 
 /** The five founder-evaluation axes (laura/founder-axis-scoring.md). */
-const FOUNDER_AXES = ["Resilience", "Autonomy", "Curiosity", "Perseverance", "Co-founder fit"] as const;
+const FOUNDER_AXES = [
+  "Resilience",
+  "Autonomy",
+  "Curiosity",
+  "Perseverance",
+  "Co-founder fit",
+] as const;
 const SYNTHETIC_SCORE_KEYS: Record<(typeof FOUNDER_AXES)[number], string> = {
   Resilience: "resilience",
   Autonomy: "autonomy",
@@ -798,11 +961,16 @@ const SYNTHETIC_SCORE_KEYS: Record<(typeof FOUNDER_AXES)[number], string> = {
 /** Axis values for a founder: synthetic → generated scores, FirstCheck demo → psychogram, real → null (never fabricated). */
 function axisValuesFor(s: Startup, f: FounderRef): Record<string, number> | null {
   if (s.synthetic && f.scores) {
-    return Object.fromEntries(FOUNDER_AXES.map((a) => [a, f.scores![SYNTHETIC_SCORE_KEYS[a]] ?? 0]));
+    return Object.fromEntries(
+      FOUNDER_AXES.map((a) => [a, f.scores![SYNTHETIC_SCORE_KEYS[a]] ?? 0]),
+    );
   }
   if (s.demo) {
     const demo = ACME_FOUNDERS.find((d) => d.id === f.id);
-    if (demo) return Object.fromEntries(demo.axes.map((a) => [a.key === "Co-founder fit" ? "Co-founder fit" : a.key, a.v]));
+    if (demo)
+      return Object.fromEntries(
+        demo.axes.map((a) => [a.key === "Co-founder fit" ? "Co-founder fit" : a.key, a.v]),
+      );
   }
   return null;
 }
@@ -825,10 +993,18 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
     "The fund team",
   ].join("\n");
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-label={`${s.company} details`}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-label={`${s.company} details`}
+    >
       <div className="absolute inset-0 bg-foreground/40" onClick={onClose} />
       <Card className="relative w-full max-w-xl max-h-[85vh] overflow-y-auto p-5">
-        <button onClick={onClose} className="absolute right-3 top-3 rounded p-1 text-muted-foreground hover:text-foreground" aria-label="Close">
+        <button
+          onClick={onClose}
+          className="absolute right-3 top-3 rounded p-1 text-muted-foreground hover:text-foreground"
+          aria-label="Close"
+        >
           <X className="h-4 w-4" />
         </button>
         <InviteBlock invite={invite} company={s.company} />
@@ -841,7 +1017,9 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
               {s.vehicle ? ` · ${s.vehicle} ${s.portfolioYear ?? ""}` : ""}
             </div>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
-              <span className={`text-[11px] px-1.5 py-0.5 rounded ${stageColor(s.stage)}`}>{s.stage}</span>
+              <span className={`text-[11px] px-1.5 py-0.5 rounded ${stageColor(s.stage)}`}>
+                {s.stage}
+              </span>
               {outcome && <Badge tone={outcome.tone}>{outcome.label}</Badge>}
               {s.currentApplication && <Badge tone="positive">current app - fictional</Badge>}
               {s.outboundSelected && <Badge tone="teal">outbound selected</Badge>}
@@ -859,7 +1037,9 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
 
         {s.outboundRationale && (
           <DetailBlock title="Why selected">
-            <p className="text-[12.5px] leading-relaxed text-foreground/90">{s.outboundRationale}</p>
+            <p className="text-[12.5px] leading-relaxed text-foreground/90">
+              {s.outboundRationale}
+            </p>
           </DetailBlock>
         )}
 
@@ -873,14 +1053,17 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
           <DetailBlock title="Evaluation retrospective">
             <div className="rounded-md border border-border bg-surface p-2.5">
               <div className="text-[11.5px] text-muted-foreground">
-                Card retro-dated to <span className="font-mono text-foreground">{s.submitted}</span> — as if the
-                24-hour evaluation ran just before the publicly announced event. Criteria applied (THESIS-001):
+                Card retro-dated to <span className="font-mono text-foreground">{s.submitted}</span>{" "}
+                — as if the 24-hour evaluation ran just before the publicly announced event.
+                Criteria applied (THESIS-001):
               </div>
               <table className="mt-2 w-full text-[11.5px]">
                 <tbody className="divide-y divide-border/60">
                   {EVALUATION_CRITERIA.map((c) => (
                     <tr key={c.criterion}>
-                      <td className="py-1 pr-3 font-medium text-foreground whitespace-nowrap align-top">{c.criterion}</td>
+                      <td className="py-1 pr-3 font-medium text-foreground whitespace-nowrap align-top">
+                        {c.criterion}
+                      </td>
                       <td className="py-1 text-muted-foreground">{c.requirement}</td>
                     </tr>
                   ))}
@@ -888,7 +1071,9 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
               </table>
               {outcome && (
                 <div className="mt-2 flex items-center gap-2 border-t border-border/60 pt-2">
-                  <span className="text-[10.5px] uppercase tracking-wider text-muted-foreground">Real-life update</span>
+                  <span className="text-[10.5px] uppercase tracking-wider text-muted-foreground">
+                    Real-life update
+                  </span>
                   <Badge tone={outcome.tone}>{outcome.label}</Badge>
                 </div>
               )}
@@ -896,10 +1081,22 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
           </DetailBlock>
         )}
 
-        <DetailBlock title={s.synthetic ? "Founders - full data & sub-scores (fictional people)" : "Founders - public records, not scored"}>
+        <DetailBlock
+          title={
+            s.synthetic
+              ? "Founders - full data & sub-scores (fictional people)"
+              : "Founders - public records, not scored"
+          }
+        >
           <div className="space-y-2">
             {s.founders.map((f) => (
-              <FounderRow key={f.id ?? f.name} founder={f} company={s.company} synthetic={!!s.synthetic} axes={axisValuesFor(s, f)} />
+              <FounderRow
+                key={f.id ?? f.name}
+                founder={f}
+                company={s.company}
+                synthetic={!!s.synthetic}
+                axes={axisValuesFor(s, f)}
+              />
             ))}
           </div>
         </DetailBlock>
@@ -908,9 +1105,14 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
           <DetailBlock title="Portfolio alignments — existing contacts">
             <div className="space-y-1.5">
               {portfolioAlignments.map(({ co, shared }) => (
-                <div key={co.id} className="flex items-center gap-2 rounded-md border border-border bg-surface px-2.5 py-1.5">
+                <div
+                  key={co.id}
+                  className="flex items-center gap-2 rounded-md border border-border bg-surface px-2.5 py-1.5"
+                >
                   <span className="text-[12px] font-medium">{co.company}</span>
-                  <span className="text-[10.5px] text-muted-foreground">shared: {shared.join(", ")}</span>
+                  <span className="text-[10.5px] text-muted-foreground">
+                    shared: {shared.join(", ")}
+                  </span>
                   <span className="ml-auto text-[10.5px] text-muted-foreground truncate max-w-[180px]">
                     contact: {founderNames(co.founders)}
                   </span>
@@ -918,8 +1120,8 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
               ))}
             </div>
             <p className="mt-1.5 text-[10.5px] text-muted-foreground">
-              An existing portfolio relationship in the same domain = warm intro path, reference source,
-              or competitive-overlap check before term sheet.
+              An existing portfolio relationship in the same domain = warm intro path, reference
+              source, or competitive-overlap check before term sheet.
             </p>
           </DetailBlock>
         )}
@@ -935,19 +1137,30 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
               }}
               className="h-8 rounded-md border border-border bg-surface px-3 text-[12px]"
             >
-              {copied ? "✓ Copied — paste into your mail client" : "Copy outreach draft (cites the activity signal)"}
+              {copied
+                ? "✓ Copied — paste into your mail client"
+                : "Copy outreach draft (cites the activity signal)"}
             </button>
           </DetailBlock>
         )}
 
         <DetailBlock title="Interview">
           {s.interviewUrl ? (
-            <a href={s.interviewUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12.5px] text-primary hover:underline">
-              <Youtube className="h-3.5 w-3.5" /> Public founder interview — studied by the Matching stage
+            <a
+              href={s.interviewUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 text-[12.5px] text-primary hover:underline"
+            >
+              <Youtube className="h-3.5 w-3.5" /> Public founder interview — studied by the Matching
+              stage
             </a>
           ) : (
             <div className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-[12px] text-muted-foreground">
-              <Lock className="h-3 w-3" /> {s.synthetic || s.demo ? "AI interview runs in the live demo" : "Confidential — no public interview found"}
+              <Lock className="h-3 w-3" />{" "}
+              {s.synthetic || s.demo
+                ? "AI interview runs in the live demo"
+                : "Confidential — no public interview found"}
             </div>
           )}
         </DetailBlock>
@@ -956,12 +1169,22 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
           <DetailBlock title="Documents">
             <div className="flex flex-wrap gap-3">
               {s.sourceCardUrl && (
-                <a href={s.sourceCardUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12px] text-primary hover:underline">
+                <a
+                  href={s.sourceCardUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[12px] text-primary hover:underline"
+                >
                   <FileText className="h-3.5 w-3.5" /> Opportunity card (evidence ledger)
                 </a>
               )}
               {s.website && (
-                <a href={s.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12px] text-primary hover:underline">
+                <a
+                  href={s.website}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[12px] text-primary hover:underline"
+                >
                   <Globe2 className="h-3.5 w-3.5" /> Website
                 </a>
               )}
@@ -973,7 +1196,13 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
           <DetailBlock title="Public sources">
             <div className="space-y-1.5">
               {s.sources.map((source) => (
-                <a key={source.url} href={source.url} target="_blank" rel="noreferrer" className="block text-[12px] text-primary hover:underline">
+                <a
+                  key={source.url}
+                  href={source.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block text-[12px] text-primary hover:underline"
+                >
                   {source.label}
                 </a>
               ))}
@@ -998,7 +1227,9 @@ function DealDetail({ startup: s, onClose }: { startup: Startup; onClose: () => 
 function DetailBlock({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="mt-4">
-      <div className="mb-1.5 text-[10.5px] font-medium uppercase tracking-wider text-muted-foreground">{title}</div>
+      <div className="mb-1.5 text-[10.5px] font-medium uppercase tracking-wider text-muted-foreground">
+        {title}
+      </div>
       {children}
     </div>
   );
@@ -1020,7 +1251,11 @@ function FounderRow({
     <div className="rounded-md border border-border bg-surface p-2.5">
       <div className="flex items-center gap-2.5">
         {f.avatar?.type === "image" ? (
-          <img src={f.avatar.value} alt="" className="h-8 w-8 rounded-full border border-border object-cover" />
+          <img
+            src={f.avatar.value}
+            alt=""
+            className="h-8 w-8 rounded-full border border-border object-cover"
+          />
         ) : (
           <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary/10 text-[10px] font-medium text-primary">
             {founderInitials(f)}
@@ -1033,7 +1268,12 @@ function FounderRow({
         {synthetic ? (
           <Badge tone="positive">scored</Badge>
         ) : (
-          <a href={f.linkedin ?? linkedinSearch} target="_blank" rel="noreferrer" className="text-[11px] text-primary hover:underline">
+          <a
+            href={f.linkedin ?? linkedinSearch}
+            target="_blank"
+            rel="noreferrer"
+            className="text-[11px] text-primary hover:underline"
+          >
             LinkedIn ↗{f.linkedin ? "" : " (search)"}
           </a>
         )}
@@ -1056,7 +1296,7 @@ function FounderRow({
             className={`rounded border border-border px-1.5 py-0.5 text-[10px] ${axes ? "bg-background text-foreground" : "bg-surface text-muted-foreground"}`}
             title={
               axes
-                ? f.scoreRationale?.[SYNTHETIC_SCORE_KEYS[axis]] ?? undefined
+                ? (f.scoreRationale?.[SYNTHETIC_SCORE_KEYS[axis]] ?? undefined)
                 : "Not assessed — no fabricated scores for real people"
             }
           >
@@ -1078,7 +1318,9 @@ function FounderRow({
  *  part of the synthetic full-consent tier; real people show nothing here. */
 function ScoreWhy({ founder, axes }: { founder: FounderRef; axes: Record<string, number> | null }) {
   if (!axes || !founder.scoreRationale) return null;
-  const ranked = FOUNDER_AXES.filter((a) => founder.scoreRationale![SYNTHETIC_SCORE_KEYS[a]]).sort((a, b) => axes[b] - axes[a]);
+  const ranked = FOUNDER_AXES.filter((a) => founder.scoreRationale![SYNTHETIC_SCORE_KEYS[a]]).sort(
+    (a, b) => axes[b] - axes[a],
+  );
   if (ranked.length < 2) return null;
   const strongest = ranked[0];
   const weakest = ranked[ranked.length - 1];
@@ -1086,7 +1328,10 @@ function ScoreWhy({ founder, axes }: { founder: FounderRef; axes: Record<string,
     <div className="flex gap-1.5 text-[10.5px] leading-snug">
       <span className={up ? "text-positive" : "text-negative"}>{up ? "▲" : "▼"}</span>
       <span className="text-muted-foreground">
-        <span className="text-foreground">{axis} {axes[axis]}</span> — {founder.scoreRationale![SYNTHETIC_SCORE_KEYS[axis]]}
+        <span className="text-foreground">
+          {axis} {axes[axis]}
+        </span>{" "}
+        — {founder.scoreRationale![SYNTHETIC_SCORE_KEYS[axis]]}
       </span>
     </div>
   );
@@ -1101,7 +1346,9 @@ function ScoreWhy({ founder, axes }: { founder: FounderRef; axes: Record<string,
 function MicroAxis({ label, v }: { label: string; v: number | null }) {
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-[9.5px] uppercase tracking-wider text-muted-foreground font-mono w-5">{label}</span>
+      <span className="text-[9.5px] uppercase tracking-wider text-muted-foreground font-mono w-5">
+        {label}
+      </span>
       <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">
         <div className="h-full bg-primary" style={{ width: `${v ?? 0}%` }} />
       </div>
@@ -1143,20 +1390,26 @@ function FounderStrip({ startup }: { startup: Startup }) {
   return (
     <div className="mt-3 flex items-center gap-1.5 overflow-hidden">
       {startup.founders.slice(0, 3).map((founder) => (
-        <div key={founder.id ?? founder.name} className="flex min-w-0 items-center gap-1.5 rounded border border-border bg-surface px-1.5 py-1">
+        <div
+          key={founder.id ?? founder.name}
+          className="flex min-w-0 items-center gap-1.5 rounded border border-border bg-surface px-1.5 py-1"
+        >
           <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-primary/10 text-[9px] font-medium text-primary">
             {founderInitials(founder)}
           </span>
-          <span className="max-w-[108px] truncate text-[10.5px] text-foreground">{founder.name}</span>
+          <span className="max-w-[108px] truncate text-[10.5px] text-foreground">
+            {founder.name}
+          </span>
         </div>
       ))}
       {startup.founders.length > 3 && (
-        <span className="shrink-0 text-[10.5px] text-muted-foreground">+{startup.founders.length - 3}</span>
+        <span className="shrink-0 text-[10.5px] text-muted-foreground">
+          +{startup.founders.length - 3}
+        </span>
       )}
     </div>
   );
 }
-
 
 /**
  * Interview invitation for an inbound application. Previews first and always —
@@ -1165,7 +1418,9 @@ function FounderStrip({ startup }: { startup: Startup }) {
  */
 function useInterviewInvite(s: Startup) {
   const [enabled, setEnabled] = useState(false);
-  const [preview, setPreview] = useState<{ to: string; subject: string; text: string } | null>(null);
+  const [preview, setPreview] = useState<{ to: string; subject: string; text: string } | null>(
+    null,
+  );
   const [result, setResult] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -1198,7 +1453,13 @@ function useInterviewInvite(s: Startup) {
   return { applicable: Boolean(s.currentApplication), enabled, preview, result, busy, call };
 }
 
-function InviteBlock({ invite, company }: { invite: ReturnType<typeof useInterviewInvite>; company: string }) {
+function InviteBlock({
+  invite,
+  company,
+}: {
+  invite: ReturnType<typeof useInterviewInvite>;
+  company: string;
+}) {
   if (!invite.applicable) return null;
 
   return (
@@ -1207,7 +1468,9 @@ function InviteBlock({ invite, company }: { invite: ReturnType<typeof useIntervi
         <Mail className="h-3.5 w-3.5 text-primary" />
         <span className="text-[12.5px] font-medium">Interview invitation</span>
         {!invite.enabled && (
-          <span className="text-[10.5px] uppercase tracking-wider text-muted-foreground">resend not configured</span>
+          <span className="text-[10.5px] uppercase tracking-wider text-muted-foreground">
+            resend not configured
+          </span>
         )}
         <span className="ml-auto flex gap-2">
           <button
@@ -1230,17 +1493,21 @@ function InviteBlock({ invite, company }: { invite: ReturnType<typeof useIntervi
       {invite.preview && (
         <div className="mt-2.5 rounded border border-border bg-card p-2.5">
           <div className="text-[11px] text-muted-foreground">
-            To {invite.preview.to} · <span className="text-foreground/90">{invite.preview.subject}</span>
+            To {invite.preview.to} ·{" "}
+            <span className="text-foreground/90">{invite.preview.subject}</span>
           </div>
           <pre className="mt-1.5 max-h-32 overflow-y-auto whitespace-pre-wrap text-[11.5px] leading-relaxed text-muted-foreground">
             {invite.preview.text}
           </pre>
         </div>
       )}
-      {invite.result && <div className="mt-2 text-[11.5px] text-muted-foreground">{invite.result}</div>}
+      {invite.result && (
+        <div className="mt-2 text-[11.5px] text-muted-foreground">{invite.result}</div>
+      )}
       {!invite.preview && (
         <p className="mt-1.5 text-[11px] text-muted-foreground">
-          Preview renders the mail for {company} without sending. Send is a separate, deliberate click.
+          Preview renders the mail for {company} without sending. Send is a separate, deliberate
+          click.
         </p>
       )}
     </div>

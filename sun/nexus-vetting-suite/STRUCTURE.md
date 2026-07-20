@@ -8,11 +8,11 @@ deal.
 
 Three entries, nothing else:
 
-| Entry | Route | What it is |
-| --- | --- | --- |
-| **Board** | `/board` | Overview of all applicants + invested companies |
-| **Pipeline** | → `/memo` | The deal flow (see below) |
-| **Settings** | `/settings` | Fund and account settings |
+| Entry        | Route       | What it is                                      |
+| ------------ | ----------- | ----------------------------------------------- |
+| **Board**    | `/board`    | Overview of all applicants + invested companies |
+| **Pipeline** | → `/memo`   | The deal flow (see below)                       |
+| **Settings** | `/settings` | Fund and account settings                       |
 
 Pipeline has **no landing page of its own**. `/` redirects into the first stage,
 and the sidebar entry points straight at it. The old dashboard (funnel, metrics,
@@ -31,12 +31,12 @@ only. Defined once in `src/components/PipelineStages.tsx` and injected by
 Company snapshot  ›  Founder profiles  ›  Agent interview  ›  Due diligence
 ```
 
-| Stage | Route | Contents |
-| --- | --- | --- |
-| **Company snapshot** | `/memo` | The decision memo — snapshot, hypotheses, SWOT, evidence |
-| **Founder profiles** | `/founder` | Per-founder psychogram, surfaced instead of buried |
-| **Agent interview** | `/interviews` | Live AI interview; tests the hypotheses |
-| **Due diligence** | `/diligence` | Human approval gate + term sheet |
+| Stage                | Route         | Contents                                                 |
+| -------------------- | ------------- | -------------------------------------------------------- |
+| **Company snapshot** | `/memo`       | The decision memo — snapshot, hypotheses, SWOT, evidence |
+| **Founder profiles** | `/founder`    | Per-founder psychogram, surfaced instead of buried       |
+| **Agent interview**  | `/interviews` | Live AI interview; tests the hypotheses                  |
+| **Due diligence**    | `/diligence`  | Human approval gate + term sheet                         |
 
 States: completed stages show a check, the active stage is filled, later stages
 stay muted. Order comes from the `PIPELINE_STAGES` array — reorder or add a
@@ -51,17 +51,17 @@ in-page links; they are simply not in the sidebar or the stage bar.
 
 Two separate mechanisms, deliberately kept both:
 
-- **Login gate** (`src/lib/auth.ts`, `/login`) decides *who you are*. Logged-out
+- **Login gate** (`src/lib/auth.ts`, `/login`) decides _who you are_. Logged-out
   visitors are sent to the public `/apply` surface; the investor app is behind
   the gate. Demo-grade client flag, not security.
 - **Profile switcher** (header, top-right) lets an already-authenticated
-  investor *preview* the startup side without logging out. Persists in
+  investor _preview_ the startup side without logging out. Persists in
   `localStorage`.
 
-| View | Sidebar | Stage bar |
-| --- | --- | --- |
-| **Investor** | Board · Pipeline · Settings | shown |
-| **Startup** | Your application · Settings | hidden |
+| View         | Sidebar                     | Stage bar |
+| ------------ | --------------------------- | --------- |
+| **Investor** | Board · Pipeline · Settings | shown     |
+| **Startup**  | Your application · Settings | hidden    |
 
 State lives in `src/lib/view-mode.tsx`. It deliberately renders `investor` on
 first paint (server and client) and adopts the stored value after mount, so
@@ -111,20 +111,20 @@ details.
 the standalone HTML site it used to serve (`laura/frontend/`) was removed in
 favour of this app.
 
-| Endpoint | Purpose |
-| --- | --- |
-| `GET /events` | SSE stream of pipeline + interview events |
-| `POST /approve` | Fires the human approval gate |
-| `GET /thesis` | Fund criteria from `thesis.json` |
-| `GET /opportunity-db/*` | Opportunity cards and logos |
+| Endpoint                | Purpose                                   |
+| ----------------------- | ----------------------------------------- |
+| `GET /events`           | SSE stream of pipeline + interview events |
+| `POST /approve`         | Fires the human approval gate             |
+| `GET /thesis`           | Fund criteria from `thesis.json`          |
+| `GET /opportunity-db/*` | Opportunity cards and logos               |
 
 The investor app's own dev endpoints (in `vite.config.ts`, not `serve.js`):
 
-| Endpoint | Purpose |
-| --- | --- |
-| `POST /apply` | Screen an application, profile its founders, file it |
-| `GET /applications` | Everything in the inbox, newest first |
-| `GET`/`POST /thesis` | Fund criteria |
+| Endpoint             | Purpose                                              |
+| -------------------- | ---------------------------------------------------- |
+| `POST /apply`        | Screen an application, profile its founders, file it |
+| `GET /applications`  | Everything in the inbox, newest first                |
+| `GET`/`POST /thesis` | Fund criteria                                        |
 
 Run it with `node laura/pipeline/serve.js` (port 4173). Requests to `/` now
 404 by design — there is no static frontend behind it any more.

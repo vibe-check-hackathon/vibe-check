@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Card, Badge } from "@/components/ui-kit";
 import { FirstCheckLogo } from "@/components/FirstCheckLogo";
-import { AlertTriangle, CheckCircle2, ExternalLink, Plus, Send, Trash2 } from "lucide-react";
+import { Badge, Card } from "@/components/ui-kit";
 import { getThesis, submitApplication } from "@/lib/browser-api";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { AlertTriangle, CheckCircle2, ExternalLink, Plus, Send, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/apply")({
   head: () => ({ meta: [{ title: "Apply · FirstCheck" }] }),
@@ -23,7 +23,12 @@ type Verdict = {
   founderAccounts?: FounderAccount[];
 };
 type ThesisDoc = {
-  fund: { sectors: string[]; stages: string[]; geographies: string[]; checkSizeUsd: { min: number; max: number } };
+  fund: {
+    sectors: string[];
+    stages: string[];
+    geographies: string[];
+    checkSizeUsd: { min: number; max: number };
+  };
 };
 
 type FounderInput = {
@@ -60,7 +65,10 @@ const emptyFounder = (role = "CEO"): FounderInput => ({
 
 function ApplyPage() {
   const [form, setForm] = useState<Record<string, string>>({});
-  const [founders, setFounders] = useState<FounderInput[]>([emptyFounder("CEO"), emptyFounder("CTO")]);
+  const [founders, setFounders] = useState<FounderInput[]>([
+    emptyFounder("CEO"),
+    emptyFounder("CTO"),
+  ]);
   const [round, setRound] = useState("Pre-seed");
   const [consentResearch, setConsentResearch] = useState(false);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
@@ -69,7 +77,9 @@ function ApplyPage() {
   const [thesis, setThesis] = useState<ThesisDoc | null>(null);
 
   useEffect(() => {
-    getThesis().then(setThesis).catch(() => {});
+    getThesis()
+      .then(setThesis)
+      .catch(() => {});
   }, []);
 
   async function submit() {
@@ -101,7 +111,11 @@ function ApplyPage() {
         founders: cleanFounders,
         round,
         stage: round,
-        permissions: { "public research": "granted", "interview recording": "pending", "reference calls": "pending" },
+        permissions: {
+          "public research": "granted",
+          "interview recording": "pending",
+          "reference calls": "pending",
+        },
       });
       setVerdict(data as Verdict);
     } catch {
@@ -120,7 +134,10 @@ function ApplyPage() {
           <FirstCheckLogo className="h-4 w-auto text-foreground" />
           <span className="text-[13px] text-muted-foreground">· founder application</span>
         </div>
-        <Link to={"/login" as never} className="text-[12px] text-muted-foreground hover:text-foreground">
+        <Link
+          to={"/login" as never}
+          className="text-[12px] text-muted-foreground hover:text-foreground"
+        >
           Investor login →
         </Link>
       </header>
@@ -130,15 +147,17 @@ function ApplyPage() {
           <div>
             <h1 className="text-[22px] font-semibold tracking-tight">Apply for funding</h1>
             <p className="mt-1 text-[13px] text-muted-foreground">
-              Deck + company name is the minimum bar. You get an honest first answer immediately, and a full
-              decision within 24 hours of a complete application.
+              Deck + company name is the minimum bar. You get an honest first answer immediately,
+              and a full decision within 24 hours of a complete application.
             </p>
           </div>
 
           <Card className="p-5 space-y-3">
             {COMPANY_FIELDS.map(([key, label, placeholder]) => (
               <label key={key} className="block">
-                <div className="mb-1 text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
+                <div className="mb-1 text-[11px] uppercase tracking-wider text-muted-foreground">
+                  {label}
+                </div>
                 <input
                   value={form[key] ?? ""}
                   onChange={(e) => setForm({ ...form, [key]: e.target.value })}
@@ -148,7 +167,9 @@ function ApplyPage() {
               </label>
             ))}
             <label className="block">
-              <div className="mb-1 text-[11px] uppercase tracking-wider text-muted-foreground">Current round</div>
+              <div className="mb-1 text-[11px] uppercase tracking-wider text-muted-foreground">
+                Current round
+              </div>
               <select
                 value={round}
                 onChange={(e) => setRound(e.target.value)}
@@ -179,32 +200,52 @@ function ApplyPage() {
                       label="Name *"
                       value={founder.name}
                       placeholder="Jane Rivera"
-                      onChange={(value) => setFounders(founders.map((f, i) => i === index ? { ...f, name: value } : f))}
+                      onChange={(value) =>
+                        setFounders(
+                          founders.map((f, i) => (i === index ? { ...f, name: value } : f)),
+                        )
+                      }
                     />
                     <FounderField
                       label="Role"
                       value={founder.role}
                       placeholder="CEO / CTO / Co-founder"
-                      onChange={(value) => setFounders(founders.map((f, i) => i === index ? { ...f, role: value } : f))}
+                      onChange={(value) =>
+                        setFounders(
+                          founders.map((f, i) => (i === index ? { ...f, role: value } : f)),
+                        )
+                      }
                     />
                     <FounderField
                       label="Email"
                       value={founder.email}
                       placeholder="jane@company.com"
-                      onChange={(value) => setFounders(founders.map((f, i) => i === index ? { ...f, email: value } : f))}
+                      onChange={(value) =>
+                        setFounders(
+                          founders.map((f, i) => (i === index ? { ...f, email: value } : f)),
+                        )
+                      }
                     />
                     <FounderField
                       label="LinkedIn *"
                       value={founder.linkedin}
                       placeholder="https://www.linkedin.com/in/..."
-                      onChange={(value) => setFounders(founders.map((f, i) => i === index ? { ...f, linkedin: value } : f))}
+                      onChange={(value) =>
+                        setFounders(
+                          founders.map((f, i) => (i === index ? { ...f, linkedin: value } : f)),
+                        )
+                      }
                     />
                     <div className="md:col-span-2">
                       <FounderField
                         label="GitHub / personal site"
                         value={founder.github}
                         placeholder="https://github.com/... or https://..."
-                        onChange={(value) => setFounders(founders.map((f, i) => i === index ? { ...f, github: value } : f))}
+                        onChange={(value) =>
+                          setFounders(
+                            founders.map((f, i) => (i === index ? { ...f, github: value } : f)),
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -228,8 +269,9 @@ function ApplyPage() {
                 className="mt-0.5"
               />
               <span>
-                I consent to research of the <b>public links I provide</b> (website, LinkedIn, GitHub) for this
-                application. Interview recording and reference calls are separate consents, asked later. *
+                I consent to research of the <b>public links I provide</b> (website, LinkedIn,
+                GitHub) for this application. Interview recording and reference calls are separate
+                consents, asked later. *
               </span>
             </label>
             <div className="flex items-center justify-end gap-3 pt-1">
@@ -246,7 +288,8 @@ function ApplyPage() {
 
           <Card className="p-4 flex items-center justify-between gap-3">
             <div className="text-[12.5px] text-muted-foreground">
-              Prefer a form? The Google Form shows the same criteria and consent language and feeds the same inbox.
+              Prefer a form? The Google Form shows the same criteria and consent language and feeds
+              the same inbox.
             </div>
             <a
               href={GOOGLE_FORM_URL}
@@ -267,9 +310,18 @@ function ApplyPage() {
             </div>
             {thesis ? (
               <div className="mt-2 space-y-2 text-[12.5px]">
-                <div><span className="text-muted-foreground">Sectors · </span>{thesis.fund.sectors.join(", ")}</div>
-                <div><span className="text-muted-foreground">Stages · </span>{thesis.fund.stages.join(", ")}</div>
-                <div><span className="text-muted-foreground">Geography · </span>{thesis.fund.geographies.join(", ")}</div>
+                <div>
+                  <span className="text-muted-foreground">Sectors · </span>
+                  {thesis.fund.sectors.join(", ")}
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Stages · </span>
+                  {thesis.fund.stages.join(", ")}
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Geography · </span>
+                  {thesis.fund.geographies.join(", ")}
+                </div>
                 <div>
                   <span className="text-muted-foreground">First check · </span>
                   {money(thesis.fund.checkSizeUsd.min)} – {money(thesis.fund.checkSizeUsd.max)}
@@ -279,8 +331,8 @@ function ApplyPage() {
               <div className="mt-2 text-[12px] text-muted-foreground">loading…</div>
             )}
             <p className="mt-3 border-t border-border pt-2 text-[11.5px] leading-relaxed text-muted-foreground">
-              If you're outside these criteria you'll get an immediate, honest no with reasons — we'd rather
-              save you three weeks than waste them.
+              If you're outside these criteria you'll get an immediate, honest no with reasons —
+              we'd rather save you three weeks than waste them.
             </p>
           </Card>
 
@@ -299,8 +351,8 @@ function ApplyPage() {
               </div>
               {verdict.pass ? (
                 <p className="mt-2 text-[12.5px] text-muted-foreground">
-                  We&rsquo;ll get back to you in the next couple of hours! Your application entered the research
-                  funnel — we only research the links you provided.
+                  We&rsquo;ll get back to you in the next couple of hours! Your application entered
+                  the research funnel — we only research the links you provided.
                 </p>
               ) : (
                 <ul className="mt-2 space-y-1 text-[12.5px] text-negative">
@@ -319,11 +371,13 @@ function ApplyPage() {
               {verdict.founderAccounts && verdict.founderAccounts.length > 0 && (
                 <div className="mt-3 border-t border-border pt-3">
                   <p className="text-[12.5px] font-medium">
-                    Your feedback account — <span className="text-negative">shown once, save it now</span>
+                    Your feedback account —{" "}
+                    <span className="text-negative">shown once, save it now</span>
                   </p>
                   <p className="mt-1 text-[11.5px] text-muted-foreground">
-                    Check back any time to see your screening result and, once your interview is scored, your
-                    per-area feedback. There is no password reset yet, so keep this somewhere safe.
+                    Check back any time to see your screening result and, once your interview is
+                    scored, your per-area feedback. There is no password reset yet, so keep this
+                    somewhere safe.
                   </p>
                   <ul className="mt-2 space-y-1">
                     {verdict.founderAccounts.map((a) => (

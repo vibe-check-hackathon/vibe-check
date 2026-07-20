@@ -1,5 +1,5 @@
-import type { Startup, Stage } from "./data";
 import syntheticDb from "../../../../laura/opportunity-db/synthetic/index.json";
+import type { Stage, Startup } from "./data";
 
 /*
  * Loads current application demos plus outbound-selected public records from
@@ -65,7 +65,8 @@ type OutboundOpp = SyntheticOpp & {
 
 function moneyLabel(amount?: number) {
   if (!amount) return "Public record";
-  if (amount >= 1000000000) return `$${(amount / 1000000000).toFixed(amount % 1000000000 ? 1 : 0)}B`;
+  if (amount >= 1000000000)
+    return `$${(amount / 1000000000).toFixed(amount % 1000000000 ? 1 : 0)}B`;
   if (amount >= 1000000) return `$${(amount / 1000000).toFixed(amount % 1000000 ? 1 : 0)}M`;
   return `$${amount.toLocaleString()}`;
 }
@@ -80,7 +81,14 @@ function mapCurrentApplication(o: SyntheticOpp): Startup {
       name: f.name,
       role: f.role,
       assessed: true,
-      avatar: { type: "initials" as const, value: f.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2) },
+      avatar: {
+        type: "initials" as const,
+        value: f.name
+          .split(/\s+/)
+          .map((part) => part[0])
+          .join("")
+          .slice(0, 2),
+      },
       email: f.email,
       linkedin: f.linkedin,
       scores: f.scores,
@@ -190,7 +198,9 @@ async function fetchSyntheticStartups(): Promise<Startup[]> {
   };
   const currentApplications = db.currentApplications ?? db.opportunities ?? [];
   const scanned = JSON.parse(localStorage.getItem(SCANNED_KEY) ?? "[]") as OutboundOpp[];
-  const outboundSelected = [...scanned, ...(db.outboundSelected ?? [])].filter((o) => !offThesis(o));
+  const outboundSelected = [...scanned, ...(db.outboundSelected ?? [])].filter(
+    (o) => !offThesis(o),
+  );
   return [
     ...currentApplications.map(mapCurrentApplication),
     ...outboundSelected.map(mapOutboundSelected),
@@ -199,28 +209,61 @@ async function fetchSyntheticStartups(): Promise<Startup[]> {
 
 const DEMO_SCANS: Record<string, OutboundOpp> = {
   europe: {
-    id: "OPP-DEMO-SCAN-EU", company: "VectorForge", sector: "AI infrastructure", location: "Paris, FR",
-    card: "", status: "research", oneLiner: "Evaluation infrastructure for production AI agents", stage: "Seed",
-    raiseUsd: 2500000, website: "https://vectorforge.example",
+    id: "OPP-DEMO-SCAN-EU",
+    company: "VectorForge",
+    sector: "AI infrastructure",
+    location: "Paris, FR",
+    card: "",
+    status: "research",
+    oneLiner: "Evaluation infrastructure for production AI agents",
+    stage: "Seed",
+    raiseUsd: 2500000,
+    website: "https://vectorforge.example",
     founders: [{ id: "FND-DEMO-EU", name: "Demo Founder", role: "CEO" }],
-    outboundSelected: true, realCompany: false, currentAsOf: "2026-07-20", freshScan: true,
-    verification: "demo-simulation", outboundRationale: "Bundled fictional lead matching the browser demo thesis.",
+    outboundSelected: true,
+    realCompany: false,
+    currentAsOf: "2026-07-20",
+    freshScan: true,
+    verification: "demo-simulation",
+    outboundRationale: "Bundled fictional lead matching the browser demo thesis.",
   },
   us: {
-    id: "OPP-DEMO-SCAN-US", company: "CircuitPilot", sector: "robotics", location: "Boston, US",
-    card: "", status: "research", oneLiner: "Adaptive controls for small industrial robot fleets", stage: "Pre-seed",
-    raiseUsd: 1400000, website: "https://circuitpilot.example",
+    id: "OPP-DEMO-SCAN-US",
+    company: "CircuitPilot",
+    sector: "robotics",
+    location: "Boston, US",
+    card: "",
+    status: "research",
+    oneLiner: "Adaptive controls for small industrial robot fleets",
+    stage: "Pre-seed",
+    raiseUsd: 1400000,
+    website: "https://circuitpilot.example",
     founders: [{ id: "FND-DEMO-US", name: "Demo Founder", role: "CEO" }],
-    outboundSelected: true, realCompany: false, currentAsOf: "2026-07-20", freshScan: true,
-    verification: "demo-simulation", outboundRationale: "Bundled fictional lead for the static scan interaction.",
+    outboundSelected: true,
+    realCompany: false,
+    currentAsOf: "2026-07-20",
+    freshScan: true,
+    verification: "demo-simulation",
+    outboundRationale: "Bundled fictional lead for the static scan interaction.",
   },
   china: {
-    id: "OPP-DEMO-SCAN-CN", company: "MotionLayer", sector: "robotics", location: "Shenzhen, CN",
-    card: "", status: "research", oneLiner: "Machine-vision calibration for flexible manufacturing cells", stage: "Seed",
-    raiseUsd: 3000000, website: "https://motionlayer.example",
+    id: "OPP-DEMO-SCAN-CN",
+    company: "MotionLayer",
+    sector: "robotics",
+    location: "Shenzhen, CN",
+    card: "",
+    status: "research",
+    oneLiner: "Machine-vision calibration for flexible manufacturing cells",
+    stage: "Seed",
+    raiseUsd: 3000000,
+    website: "https://motionlayer.example",
     founders: [{ id: "FND-DEMO-CN", name: "Demo Founder", role: "CEO" }],
-    outboundSelected: true, realCompany: false, currentAsOf: "2026-07-20", freshScan: true,
-    verification: "demo-simulation", outboundRationale: "Bundled fictional lead for the static scan interaction.",
+    outboundSelected: true,
+    realCompany: false,
+    currentAsOf: "2026-07-20",
+    freshScan: true,
+    verification: "demo-simulation",
+    outboundRationale: "Bundled fictional lead for the static scan interaction.",
   },
 };
 

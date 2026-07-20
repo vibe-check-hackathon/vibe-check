@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card } from "@/components/ui-kit";
-import { LogIn } from "lucide-react";
 import { login } from "@/lib/auth";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { LogIn } from "lucide-react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Investor login · FirstCheck" }] }),
@@ -69,7 +69,8 @@ function LoginPage() {
           <LogIn className="h-3.5 w-3.5" /> Sign in
         </button>
         <p className="mt-3 text-[10.5px] text-muted-foreground">
-          Frontend-only demo session stored in this browser. This is not authentication and must not protect real data.
+          Frontend-only demo session stored in this browser. This is not authentication and must not
+          protect real data.
         </p>
       </Card>
     </div>

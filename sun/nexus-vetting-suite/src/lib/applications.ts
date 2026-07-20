@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import type { Startup, Stage } from "@/lib/data";
 import { getApplications } from "@/lib/browser-api";
+import type { Stage, Startup } from "@/lib/data";
+import { useEffect, useState } from "react";
 
 /** One founder profile generated at submit time by the pipeline. */
 export type SubmittedFounder = {

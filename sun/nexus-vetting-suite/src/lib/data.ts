@@ -122,14 +122,22 @@ const ACME_STARTUP: Startup = {
       name: "Sun Chuanqi",
       role: "CTO",
       assessed: true,
-      avatar: { type: "image", value: `${import.meta.env.BASE_URL}sun-chuanqi.jpg`, basis: "team demo founder" },
+      avatar: {
+        type: "image",
+        value: `${import.meta.env.BASE_URL}sun-chuanqi.jpg`,
+        basis: "team demo founder",
+      },
     },
     {
       id: "FND-0009",
       name: "Laura Spies",
       role: "COO",
       assessed: true,
-      avatar: { type: "image", value: `${import.meta.env.BASE_URL}laura-spies.png`, basis: "team demo founder" },
+      avatar: {
+        type: "image",
+        value: `${import.meta.env.BASE_URL}laura-spies.png`,
+        basis: "team demo founder",
+      },
     },
   ],
   stage: "Interview",
@@ -158,14 +166,21 @@ export const METRICS = {
   activeApplications: STARTUPS.length,
   assessedDeals: STARTUPS.filter((s) => s.assessed).length,
   publicOutcomes: STARTUPS.filter((s) => s.realEvent).length,
-  diligenceInProgress: STARTUPS.filter((s) => s.stage === "Diligence" || s.stage === "Partner Review").length,
-  decisionsDue24h: STARTUPS.filter((s) => s.stage === "Partner Review" || s.stage === "Term Sheet").length || 1,
+  diligenceInProgress: STARTUPS.filter(
+    (s) => s.stage === "Diligence" || s.stage === "Partner Review",
+  ).length,
+  decisionsDue24h:
+    STARTUPS.filter((s) => s.stage === "Partner Review" || s.stage === "Term Sheet").length || 1,
   interviewsAvailable: STARTUPS.filter((s) => s.interviewUrl).length,
 };
 
 export const FUNNEL = [
   { stage: "Sourcing", count: 214, delta: "public + inbound" },
-  { stage: "Screening", count: STARTUPS.length, delta: `${OFFICIAL_STARTUPS.length} official + 1 demo` },
+  {
+    stage: "Screening",
+    count: STARTUPS.length,
+    delta: `${OFFICIAL_STARTUPS.length} official + 1 demo`,
+  },
   { stage: "Interview", count: 1, delta: "FirstCheck - live" },
   { stage: "Diligence", count: METRICS.diligenceInProgress, delta: "confidential" },
   { stage: "Portfolio", count: OFFICIAL_STARTUPS.length, delta: "official cards" },
@@ -408,7 +423,10 @@ export const EVALUATION_CRITERIA = [
   { criterion: "Stage", requirement: "Pre-seed to Series A entry" },
   { criterion: "Geography", requirement: "Europe (ALSTIN) · US (MGV.VC)" },
   { criterion: "Evidence", requirement: "Claims sourced, trust-scored 0-100; unknown ≠ false" },
-  { criterion: "Founder axes", requirement: "Resilience · Autonomy · Curiosity · Perseverance · Co-founder fit" },
+  {
+    criterion: "Founder axes",
+    requirement: "Resilience · Autonomy · Curiosity · Perseverance · Co-founder fit",
+  },
 ];
 
 export type Outcome = {
@@ -507,7 +525,8 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     personality: {
       type: "ENTJ",
       label: "Commander",
-      hypothesis: "Frames the roadmap as a sequence of commitments and drives the room to a decision; the risk is closing a debate before the technical objection has fully landed.",
+      hypothesis:
+        "Frames the roadmap as a sequence of commitments and drives the room to a decision; the risk is closing a debate before the technical objection has fully landed.",
       basis: "Written application and deck framing; no interview evidence yet.",
       status: "open",
       confidence: 41,
@@ -537,7 +556,8 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     personality: {
       type: "INTP",
       label: "Logician",
-      hypothesis: "Reaches for the underlying mechanism before the business framing, and will reopen a settled question if the model does not hold; the risk is depth at the cost of shipping.",
+      hypothesis:
+        "Reaches for the underlying mechanism before the business framing, and will reopen a settled question if the model does not hold; the risk is depth at the cost of shipping.",
       basis: "Technical writing and architecture notes; no interview evidence yet.",
       status: "open",
       confidence: 38,
@@ -566,7 +586,8 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     personality: {
       type: "INFJ",
       label: "Advocate",
-      hypothesis: "Optimises for the system nobody asked for yet — pipelines, taxonomies, the shape of the data; the risk is building the general case before the specific one is proven.",
+      hypothesis:
+        "Optimises for the system nobody asked for yet — pipelines, taxonomies, the shape of the data; the risk is building the general case before the specific one is proven.",
       basis: "Pipeline and schema design decisions; no interview evidence yet.",
       status: "open",
       confidence: 44,

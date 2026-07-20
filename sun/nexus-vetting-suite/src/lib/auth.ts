@@ -30,7 +30,10 @@ export function founderInfo(): CachedSession | null {
   return cached?.role === "founder" ? cached : null;
 }
 
-export async function login(email: string, password: string): Promise<{ ok: boolean; error?: string }> {
+export async function login(
+  email: string,
+  password: string,
+): Promise<{ ok: boolean; error?: string }> {
   const session = await authenticateDemo(email, password);
   if (!session) return { ok: false, error: "invalid demo email or password" };
   localStorage.setItem(KEY, JSON.stringify(session));
