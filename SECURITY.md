@@ -19,12 +19,19 @@ committed anywhere, treat it as burned: rotate it first, clean up second.
   always labeled synthetic. Full invariants: AGENTS.md §26.
 - **Accounts.** Server-verified sessions (`laura/pipeline/lib/accounts.js`) —
   password hashing via Node's `scryptSync` with a per-account salt, HttpOnly
-  session cookie, timing-safe comparison. `laura/pipeline/accounts.json`
-  (password hashes + salts) is gitignored, never committed. A founder session
-  can only ever read its own opportunity's feedback (`/my-feedback` scopes
-  server-side by the session's stored `opportunityId`, never by anything the
-  client sends) — verified by a role-scoping test in
-  `laura/pipeline/test/app-endpoints.test.js`.
+  session cookie, timing-safe comparison. A founder session can only ever
+  read its own opportunity's feedback (`/my-feedback` scopes server-side by
+  the session's stored `opportunityId`, never by anything the client sends)
+  — verified by a role-scoping test in `laura/pipeline/test/app-endpoints.test.js`.
+- **Accounts and sessions persist in Postgres when `DATABASE_URL` is set**
+  (`laura/pipeline/lib/db.js`, added 2026-07-20 — free option: Neon, whose
+  free tier doesn't expire) — verified against a real, disposable local
+  Postgres instance, including that a session survives a fresh connection
+  pool (i.e. would survive a process restart): see
+  `laura/pipeline/test/accounts-postgres.test.js`, also wired into CI with a
+  Postgres service container. **Without `DATABASE_URL`**, falls back to
+  `laura/pipeline/accounts.json` (gitignored, never committed) + an
+  in-memory session map — same as before this existed, resets on restart.
 - **Every investor-only route now enforces its session server-side**
   (`requireInvestor` in `app-endpoints.js`) — `/applications`,
   `/opportunity-db`, `/thesis` (POST), `/nl-query`, `/outbound-scan`,
@@ -57,16 +64,22 @@ traversal-checked and covered by security tests
 
 ## Known non-protections (honest limits)
 
-- Sessions are **in-memory** — a server restart logs everyone out — and
-  there is **no password-reset flow** yet for either role. A founder's
-  one-time password is shown once, at application time, with no recovery
-  path if lost. Enforcing authorization on every route (above) does not fix
-  session durability; these are separate gaps, both still open.
-- The free-tier deploy (`render.yaml`) has an **ephemeral disk** —
-  `accounts.json`, submitted applications, and rate-limit counters all reset
-  on every restart or redeploy (Render's free tier also sleeps after ~15 min
-  idle, which is itself a restart). See `laura/repo-restructure-guide.md`
-  for the path to a real database when this starts to hurt.
+- **Only fixed when `DATABASE_URL` is configured.** Without it, sessions are
+  still in-memory (a server restart logs everyone out) and accounts still
+  reset with the rest of the ephemeral disk. This is a deploy-time choice,
+  not automatic — an operator who skips setting `DATABASE_URL` gets the old
+  behavior silently, which is the intended degrade-legibly default but is
+  easy to forget about.
+- There is still **no password-reset flow** for either role, with or
+  without a database. A founder's one-time password is shown once, at
+  application time, with no recovery path if lost.
+- Submitted applications (`laura/pipeline/inbox/`) are **not yet migrated**
+  to Postgres — only accounts/sessions are. They still reset on every
+  restart/redeploy along with the rest of the ephemeral disk. Same
+  justification would apply to migrating them; not done yet.
+- Rate-limit counters remain in-memory regardless of `DATABASE_URL` — low
+  stakes if they reset (worst case, a brief window of unlimited attempts
+  right after a restart), so not worth the persistence cost.
 - Rate limiting (below) is **in-memory and per-process** — same caveat as
   sessions: it resets on restart and does not coordinate across multiple
   instances. Real protection against a determined attacker still needs a
@@ -86,10 +99,12 @@ instead of forgotten:
 2. Keep the AGENTS.md §33 route/role/ownership matrix current as routes
    change.
 3. ~~Add login rate limiting.~~ **Done 2026-07-20** (`/auth/login`, `/apply`
-   — see above). Session lifecycle otherwise: rotation on auth is already
-   true (`createSession` mints a fresh token every login); still open —
-   idle timeout distinct from the 7-day absolute TTL, and durable
-   cross-process session storage.
+   — see above). ~~Durable cross-process session storage.~~ **Done
+   2026-07-20** when `DATABASE_URL` is set (Postgres — see above); still the
+   file/in-memory fallback otherwise. Still open regardless: idle timeout
+   distinct from the 7-day absolute TTL.
+3a. Migrate submitted applications (`laura/pipeline/inbox/`) to Postgres too
+    — same ephemeral-disk problem as accounts had, not yet addressed.
 4. Replace the shared seeded investor account with individual accounts
    before anyone outside the team uses this.
 5. Replace the response-delivered founder password with an activation/reset
