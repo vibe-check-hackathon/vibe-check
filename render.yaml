@@ -1,0 +1,19 @@
+# Free deploy on Render (https://render.com — free web service plan).
+# One Node process: laura/pipeline/app-server.js serves the backend endpoints
+# and proxies everything else to the built TanStack Start SSR app.
+#
+# Free-tier honesty: the instance sleeps after ~15 min idle (first request
+# then takes ~1 min), and the disk is ephemeral — thesis edits, inbox
+# applications, and outbound-scan results reset on every restart/redeploy.
+# Fine for a demo; a persistent database is the next step (AGENTS.md §25).
+#
+# Set ANTHROPIC_API_KEY (or OPENAI_API_KEY) in the Render dashboard to enable
+# LLM features — env vars override the local key file, which is not deployed.
+services:
+  - type: web
+    name: firstcheck
+    runtime: node
+    plan: free
+    buildCommand: cd Martin/nexus-vetting-suite && npm install && NITRO_PRESET=node-server npm run build
+    startCommand: node laura/pipeline/app-server.js
+    healthCheckPath: /integrations
