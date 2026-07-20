@@ -506,6 +506,12 @@ unreviewed throughput is not progress.
   five most important queries, the consistency requirements, corpus size,
   query rate, and latency target — and show the current stack fails one of
   them. "What would the most advanced system use" is not a requirement.
+  Accounts/sessions were the first measured need that actually justified
+  Postgres (2026-07-20, `laura/pipeline/lib/db.js` — see AGENTS.md §29): they
+  were being wiped every restart on the free-tier ephemeral disk, and that
+  was an active, named problem, not a hypothetical one. Submitted
+  applications (`laura/pipeline/inbox/`) have the identical problem and are
+  not migrated yet — same justification would apply whenever that's tackled.
 - **Retrieval is hybrid.** Authorization/metadata filters + full-text search +
   semantic similarity together; vector-only retrieval misses exact
   identifiers and cannot enforce permission scoping.
@@ -593,8 +599,13 @@ security incident, not a bug:
 
 ## 29. Toolchain and team process
 
-- **Node 22** is the tested runtime; the pipeline stays zero-dependency
-  (`node:` builtins only — a dependency there is a §18 stop-and-ask).
+- **Node 22** is the tested runtime; the pipeline defaults to zero-dependency
+  (`node:` builtins only) — a new dependency there is a §18 stop-and-ask,
+  confirmed explicitly before adding, not decided silently. One exception
+  exists on measured need (§25): `pg` (node-postgres), added 2026-07-20 to
+  back accounts/sessions with Postgres when `DATABASE_URL` is set — there is
+  no built-in way to speak the Postgres wire protocol, so some driver was
+  unavoidable once persistence was the actual requirement.
 - **npm is the canonical package manager** for the web app
   (`package-lock.json` is the lockfile of record; `bun.lock` is historical —
   do not update it, flag it for removal).

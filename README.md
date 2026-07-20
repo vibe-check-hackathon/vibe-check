@@ -52,14 +52,22 @@ node laura/pipeline/app-server.js        # → http://localhost:8080 (API + SSR)
 ```
 
 Free hosting: [`render.yaml`](render.yaml) deploys this on Render's free plan
-(sleeps when idle, ephemeral disk — demo-grade; see the file's comments). Its
-Blueprint setup prompts for every optional key (see
-[`.env.example`](.env.example) for the full list — `ANTHROPIC_API_KEY` or
-`OPENAI_API_KEY` for LLM features, `RESEND_API_KEY` for interview-invite
-email, `ELEVENLABS_API_KEY`/`ELEVENLABS_AGENT_ID` for live interviews). None
-are required — the app runs and degrades legibly without any of them. GitHub
+(sleeps when idle — demo-grade; see the file's comments). Its Blueprint setup
+prompts for every optional key (see [`.env.example`](.env.example) for the
+full list — `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` or a free endpoint like Groq
+for LLM features, `RESEND_API_KEY` for interview-invite email,
+`ELEVENLABS_API_KEY`/`ELEVENLABS_AGENT_ID` for live interviews). None are
+required — the app runs and degrades legibly without any of them. GitHub
 Pages cannot host this app (it is SSR + backend, not static); that workflow
 was removed.
+
+**Accounts and sessions can survive a restart now.** Set `DATABASE_URL` to a
+free Postgres database (e.g. [Neon](https://neon.tech) — its free tier
+doesn't expire, unlike Render's own free Postgres, which is deleted after 30
+days) and `laura/pipeline/lib/db.js` takes over from the ephemeral
+`accounts.json` file. Without it, behavior is unchanged from before — file +
+in-memory, resets on restart. Submitted applications aren't migrated yet;
+that's the next piece if you need them to survive too.
 
 Before pushing, prove the commit actually deploys — this is also what CI
 ([`.github/workflows/test.yml`](.github/workflows/test.yml)) runs on every

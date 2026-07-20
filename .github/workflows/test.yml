@@ -9,13 +9,34 @@ on:
 jobs:
   pipeline-tests:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_DB: firstcheck_test
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Pipeline test suite
+      - name: Install pipeline dependencies (pg driver)
+        run: npm install
+        working-directory: laura/pipeline
+      - name: Pipeline test suite (file-based storage)
         run: node --test laura/pipeline/test/*.test.js
+      - name: Pipeline test suite (Postgres-backed accounts)
+        run: node --test laura/pipeline/test/accounts-postgres.test.js
+        env:
+          TEST_DATABASE_URL: postgresql://testuser@localhost:5432/firstcheck_test
 
   verify-deploy:
     runs-on: ubuntu-latest

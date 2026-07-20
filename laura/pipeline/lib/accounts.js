@@ -8,17 +8,18 @@
 //     to exactly their own opportunity — a founder session can only ever read
 //     its own record (enforced in app-endpoints.js /my-feedback, not here).
 //
-// Zero-dependency by policy (AGENTS.md §29): password hashing uses Node's
-// built-in crypto.scryptSync, nothing external.
-//
-// Known limitation, honestly stated: sessions are in-memory (a server
-// restart logs everyone out) and accounts.json has no rotation/reset flow
-// yet. Fine for the current demo-stage deployment; both are real gaps to
-// close before this is a production auth system.
+// Dual storage (AGENTS.md §25 — technology added on measured need): when
+// DATABASE_URL is set (Neon Postgres, free tier), accounts and sessions
+// persist there and survive restarts. Without it, falls back to the
+// original file-based behavior (laura/pipeline/accounts.json + an in-memory
+// session Map) — zero setup for local dev and the test suite, same as
+// before this existed. Password hashing (scryptSync) is unaffected either
+// way — that part was never the ephemeral piece.
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { hasDatabase, getPool, ensureSchema } from "./db.js";
 
 const LIB_DIR = dirname(fileURLToPath(import.meta.url));
 // Env override exists so tests can point writes at a temp file — production
@@ -27,7 +28,7 @@ const ACCOUNTS_PATH = process.env.FIRSTCHECK_ACCOUNTS_PATH ?? join(LIB_DIR, ".."
 const SEED_INVESTOR_PASSWORD = "growth-signal"; // same value the old demo gate used
 
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
-const sessions = new Map(); // token -> { accountId, expiresAt }
+const fileSessions = new Map(); // token -> { accountId, expiresAt } — file-mode only
 
 function hashPassword(password, salt = randomBytes(16).toString("hex")) {
   const hash = scryptSync(password, salt, 64).toString("hex");
@@ -40,7 +41,9 @@ function verifyPassword(password, salt, hash) {
   return attempt.length === expected.length && timingSafeEqual(attempt, expected);
 }
 
-function loadAccounts() {
+// ---------- file-mode storage ----------
+
+function loadAccountsFile() {
   if (!existsSync(ACCOUNTS_PATH)) return [];
   try {
     return JSON.parse(readFileSync(ACCOUNTS_PATH, "utf8"));
@@ -49,26 +52,9 @@ function loadAccounts() {
   }
 }
 
-function saveAccounts(accounts) {
+function saveAccountsFile(accounts) {
   writeFileSync(ACCOUNTS_PATH, JSON.stringify(accounts, null, 2) + "\n", "utf8");
 }
-
-function ensureSeedInvestor() {
-  const accounts = loadAccounts();
-  if (accounts.some((a) => a.role === "investor")) return;
-  const { salt, hash } = hashPassword(SEED_INVESTOR_PASSWORD);
-  accounts.push({
-    id: "ACC-investor-seed",
-    email: "investor@firstcheck.demo",
-    name: "Investor (demo seat)",
-    role: "investor",
-    salt,
-    hash,
-    createdAt: new Date().toISOString(),
-  });
-  saveAccounts(accounts);
-}
-ensureSeedInvestor();
 
 function randomPassword() {
   // 10 base32-ish characters — readable enough to type back from a screen,
@@ -78,16 +64,61 @@ function randomPassword() {
   return randomBytes(8).toString("base64url").slice(0, 10);
 }
 
+function stripSecrets({ salt, hash, ...safe }) {
+  return safe;
+}
+
+async function ensureSeedInvestor() {
+  const { salt, hash } = hashPassword(SEED_INVESTOR_PASSWORD);
+  if (hasDatabase()) {
+    await ensureSchema();
+    await getPool().query(
+      `INSERT INTO accounts (id, email, name, role, opportunity_id, salt, hash)
+       VALUES ($1, $2, $3, 'investor', NULL, $4, $5)
+       ON CONFLICT (email) DO NOTHING`,
+      ["ACC-investor-seed", "investor@firstcheck.demo", "Investor (demo seat)", salt, hash],
+    );
+    return;
+  }
+  const accounts = loadAccountsFile();
+  if (accounts.some((a) => a.role === "investor")) return;
+  accounts.push({
+    id: "ACC-investor-seed",
+    email: "investor@firstcheck.demo",
+    name: "Investor (demo seat)",
+    role: "investor",
+    salt,
+    hash,
+    createdAt: new Date().toISOString(),
+  });
+  saveAccountsFile(accounts);
+}
+await ensureSeedInvestor();
+
 /** Creates one founder account per founder with an email. Returns the
  * plaintext password ONCE — there is no recovery flow, so the caller must
  * show it to the founder immediately (the /apply response does this). */
-export function createFounderAccount({ email, name, opportunityId }) {
+export async function createFounderAccount({ email, name, opportunityId }) {
   if (!email) return null;
-  const accounts = loadAccounts();
   const normalizedEmail = email.trim().toLowerCase();
-  const existing = accounts.find((a) => a.email === normalizedEmail && a.role === "founder");
   const password = randomPassword();
   const { salt, hash } = hashPassword(password);
+
+  if (hasDatabase()) {
+    await ensureSchema();
+    const existing = await getPool().query("SELECT id, created_at FROM accounts WHERE email = $1 AND role = 'founder'", [normalizedEmail]);
+    const id = existing.rows[0]?.id ?? `ACC-founder-${randomBytes(6).toString("hex")}`;
+    await getPool().query(
+      `INSERT INTO accounts (id, email, name, role, opportunity_id, salt, hash)
+       VALUES ($1, $2, $3, 'founder', $4, $5, $6)
+       ON CONFLICT (email) DO UPDATE SET name = $3, opportunity_id = $4, salt = $5, hash = $6`,
+      [id, normalizedEmail, name ?? "Founder", opportunityId, salt, hash],
+    );
+    return { email: normalizedEmail, password, opportunityId };
+  }
+
+  const accounts = loadAccountsFile();
+  const existing = accounts.find((a) => a.email === normalizedEmail && a.role === "founder");
   const record = {
     id: existing?.id ?? `ACC-founder-${randomBytes(6).toString("hex")}`,
     email: normalizedEmail,
@@ -99,40 +130,77 @@ export function createFounderAccount({ email, name, opportunityId }) {
     createdAt: existing?.createdAt ?? new Date().toISOString(),
   };
   const next = existing ? accounts.map((a) => (a.id === existing.id ? record : a)) : [...accounts, record];
-  saveAccounts(next);
+  saveAccountsFile(next);
   return { email: normalizedEmail, password, opportunityId };
 }
 
-export function verifyLogin(email, password) {
-  const accounts = loadAccounts();
-  const account = accounts.find((a) => a.email === String(email ?? "").trim().toLowerCase());
+export async function verifyLogin(email, password) {
+  const normalizedEmail = String(email ?? "").trim().toLowerCase();
+
+  if (hasDatabase()) {
+    await ensureSchema();
+    const { rows } = await getPool().query("SELECT * FROM accounts WHERE email = $1", [normalizedEmail]);
+    const account = rows[0];
+    if (!account || !verifyPassword(password ?? "", account.salt, account.hash)) return null;
+    return { id: account.id, email: account.email, name: account.name, role: account.role, opportunityId: account.opportunity_id };
+  }
+
+  const accounts = loadAccountsFile();
+  const account = accounts.find((a) => a.email === normalizedEmail);
   if (!account || !verifyPassword(password ?? "", account.salt, account.hash)) return null;
-  const { salt, hash, ...safe } = account;
-  return safe;
+  return stripSecrets(account);
 }
 
-export function createSession(accountId) {
+export async function createSession(accountId) {
   const token = randomBytes(24).toString("hex");
-  sessions.set(token, { accountId, expiresAt: Date.now() + SESSION_TTL_MS });
+  const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+
+  if (hasDatabase()) {
+    await ensureSchema();
+    await getPool().query("INSERT INTO sessions (token, account_id, expires_at) VALUES ($1, $2, $3)", [token, accountId, expiresAt]);
+    return token;
+  }
+  fileSessions.set(token, { accountId, expiresAt: expiresAt.getTime() });
   return token;
 }
 
-export function destroySession(token) {
-  sessions.delete(token);
+export async function destroySession(token) {
+  if (!token) return;
+  if (hasDatabase()) {
+    await ensureSchema();
+    await getPool().query("DELETE FROM sessions WHERE token = $1", [token]);
+    return;
+  }
+  fileSessions.delete(token);
 }
 
-export function getSessionAccount(token) {
+export async function getSessionAccount(token) {
   if (!token) return null;
-  const session = sessions.get(token);
+
+  if (hasDatabase()) {
+    await ensureSchema();
+    const { rows } = await getPool().query(
+      `SELECT a.* FROM sessions s JOIN accounts a ON a.id = s.account_id
+       WHERE s.token = $1 AND s.expires_at > now()`,
+      [token],
+    );
+    const account = rows[0];
+    if (!account) {
+      await getPool().query("DELETE FROM sessions WHERE token = $1", [token]); // clean up if expired
+      return null;
+    }
+    return { id: account.id, email: account.email, name: account.name, role: account.role, opportunityId: account.opportunity_id };
+  }
+
+  const session = fileSessions.get(token);
   if (!session || session.expiresAt < Date.now()) {
-    sessions.delete(token);
+    fileSessions.delete(token);
     return null;
   }
-  const accounts = loadAccounts();
+  const accounts = loadAccountsFile();
   const account = accounts.find((a) => a.id === session.accountId);
   if (!account) return null;
-  const { salt, hash, ...safe } = account;
-  return safe;
+  return stripSecrets(account);
 }
 
 export function parseCookies(req) {

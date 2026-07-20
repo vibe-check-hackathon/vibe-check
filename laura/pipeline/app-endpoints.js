@@ -256,7 +256,7 @@ export function registerAppEndpoints(use) {
         return;
       }
       if (req.method === "POST") {
-        if (!requireInvestor(req, res)) return;
+        if (!(await requireInvestor(req, res))) return;
         let body = "";
         req.on("data", (c) => (body += c));
         req.on("end", async () => {
@@ -363,10 +363,13 @@ export function registerAppEndpoints(use) {
         // One founder account per founder who supplied an email, scoped to
         // this opportunity only. Shown once in the response — there is no
         // password-reset flow yet, so the frontend must display it clearly.
-        const founderAccounts = normalized.intake.founders
-          .filter((f) => f.email)
-          .map((f) => createFounderAccount({ email: f.email, name: f.name, opportunityId: normalized.opportunityId }))
-          .filter(Boolean);
+        const founderAccounts = (
+          await Promise.all(
+            normalized.intake.founders
+              .filter((f) => f.email)
+              .map((f) => createFounderAccount({ email: f.email, name: f.name, opportunityId: normalized.opportunityId })),
+          )
+        ).filter(Boolean);
         res.end(
           JSON.stringify({
             id,
@@ -386,9 +389,9 @@ export function registerAppEndpoints(use) {
   // LLM fallback for the board command bar (MVP #3): free-text queries the
   // rule parser can't handle. Key comes from set-key.js (24h) or env vars;
   // the key file is read per request, so no server restart after set-key.
-  use("/nl-query", (req, res, next) => {
+  use("/nl-query", async (req, res, next) => {
     if (req.method !== "POST") return next();
-    if (!requireInvestor(req, res)) return;
+    if (!(await requireInvestor(req, res))) return;
     let body = "";
     req.on("data", (c) => (body += c));
     req.on("end", async () => {
@@ -424,9 +427,9 @@ export function registerAppEndpoints(use) {
   // Live outbound refresh (MVP #5): LLM scan for new candidates in a region,
   // structured by the intelligence-brief template, screened, then persisted
   // to the synthetic index so the new deals pop onto the board and stay.
-  use("/outbound-scan", (req, res, next) => {
+  use("/outbound-scan", async (req, res, next) => {
     if (req.method !== "POST") return next();
-    if (!requireInvestor(req, res)) return;
+    if (!(await requireInvestor(req, res))) return;
     let body = "";
     req.on("data", (c) => (body += c));
     req.on("end", async () => {
@@ -480,9 +483,9 @@ export function registerAppEndpoints(use) {
   });
 
   // Checky (frontend assistant): retrieval-grounded chat over the DB.
-  use("/assistant", (req, res, next) => {
+  use("/assistant", async (req, res, next) => {
     if (req.method !== "POST") return next();
-    if (!requireInvestor(req, res)) return;
+    if (!(await requireInvestor(req, res))) return;
     let body = "";
     req.on("data", (c) => (body += c));
     req.on("end", async () => {
@@ -513,7 +516,7 @@ export function registerAppEndpoints(use) {
 
   // Token management from the UI: status, set/switch, forget. Same 24h
   // gitignored cache as the set-key.js terminal flow.
-  use("/llm-key", (req, res, next) => {
+  use("/llm-key", async (req, res, next) => {
     res.setHeader("Content-Type", "application/json");
     if (req.method === "GET") {
       res.end(
@@ -526,13 +529,13 @@ export function registerAppEndpoints(use) {
       return;
     }
     if (req.method === "DELETE") {
-      if (!requireInvestor(req, res)) return;
+      if (!(await requireInvestor(req, res))) return;
       clearKey();
       res.end(JSON.stringify({ status: keyStatus(), active: false }));
       return;
     }
     if (req.method !== "POST") return next();
-    if (!requireInvestor(req, res)) return;
+    if (!(await requireInvestor(req, res))) return;
     let body = "";
     req.on("data", (c) => (body += c));
     req.on("end", () => {
@@ -556,7 +559,7 @@ export function registerAppEndpoints(use) {
   // founder pipeline both read this so a submission shows up immediately.
   use("/applications", async (req, res, next) => {
     if (req.method !== "GET") return next();
-    if (!requireInvestor(req, res)) return;
+    if (!(await requireInvestor(req, res))) return;
     res.setHeader("Content-Type", "application/json");
     try {
       const names = (await readdir(INBOX_DIR)).filter((n) => n.endsWith(".json"));
@@ -579,14 +582,14 @@ export function registerAppEndpoints(use) {
   // client-only localStorage gate. Two roles: investor (seeded, see
   // lib/accounts.js) and founder (auto-created on /apply, scoped to their
   // own opportunity — see /my-feedback below for the enforcement).
-  function currentAccount(req) {
+  async function currentAccount(req) {
     return getSessionAccount(parseCookies(req).fc_session);
   }
 
   // AGENTS.md §33: every non-public route performs its own server-side
   // check, default deny. Returns the account on success; on failure it
   // writes the 401 itself and returns null — callers just do
-  // `const account = requireInvestor(req, res); if (!account) return;`.
+  // `const account = await requireInvestor(req, res); if (!account) return;`.
   // Returns true and writes a 429 when the caller has exceeded `max`
   // requests in `windowMs` under `routeKey`. Callers do:
   // `if (tooManyRequests(req, res, "login", { max: 10, windowMs: 15*60_000 })) return;`
@@ -600,8 +603,8 @@ export function registerAppEndpoints(use) {
     return true;
   }
 
-  function requireInvestor(req, res) {
-    const account = currentAccount(req);
+  async function requireInvestor(req, res) {
+    const account = await currentAccount(req);
     if (!account || account.role !== "investor") {
       res.statusCode = 401;
       res.setHeader("Content-Type", "application/json");
@@ -616,17 +619,17 @@ export function registerAppEndpoints(use) {
     if (tooManyRequests(req, res, "login", { max: LOGIN_RATE_MAX, windowMs: 15 * 60_000 })) return;
     let body = "";
     req.on("data", (c) => (body += c));
-    req.on("end", () => {
+    req.on("end", async () => {
       res.setHeader("Content-Type", "application/json");
       try {
         const { email, password } = JSON.parse(body || "{}");
-        const account = verifyLogin(email, password);
+        const account = await verifyLogin(email, password);
         if (!account) {
           res.statusCode = 401;
           res.end(JSON.stringify({ error: "invalid email or password" }));
           return;
         }
-        const token = createSession(account.id);
+        const token = await createSession(account.id);
         res.setHeader("Set-Cookie", sessionCookieHeader(token));
         res.end(JSON.stringify({ role: account.role, name: account.name, opportunityId: account.opportunityId ?? null }));
       } catch {
@@ -636,18 +639,18 @@ export function registerAppEndpoints(use) {
     });
   });
 
-  use("/auth/logout", (req, res, next) => {
+  use("/auth/logout", async (req, res, next) => {
     if (req.method !== "POST") return next();
-    destroySession(parseCookies(req).fc_session);
+    await destroySession(parseCookies(req).fc_session);
     res.setHeader("Set-Cookie", sessionCookieHeader(null, { clear: true }));
     res.statusCode = 204;
     res.end();
   });
 
-  use("/auth/me", (req, res, next) => {
+  use("/auth/me", async (req, res, next) => {
     if (req.method !== "GET") return next();
     res.setHeader("Content-Type", "application/json");
-    const account = currentAccount(req);
+    const account = await currentAccount(req);
     if (!account) {
       res.statusCode = 401;
       res.end(JSON.stringify({ error: "not signed in" }));
@@ -664,7 +667,7 @@ export function registerAppEndpoints(use) {
   use("/my-feedback", async (req, res, next) => {
     if (req.method !== "GET") return next();
     res.setHeader("Content-Type", "application/json");
-    const account = currentAccount(req);
+    const account = await currentAccount(req);
     if (!account || account.role !== "founder") {
       res.statusCode = 401;
       res.end(JSON.stringify({ error: "founder sign-in required" }));
@@ -709,7 +712,7 @@ export function registerAppEndpoints(use) {
   // hand-typed placeholder whenever one exists for the opportunity.
   use("/interview-score", async (req, res, next) => {
     if (req.method !== "GET") return next();
-    if (!requireInvestor(req, res)) return;
+    if (!(await requireInvestor(req, res))) return;
     res.setHeader("Content-Type", "application/json");
     const url = new URL(req.url ?? "/", "http://internal");
     const opportunityId = url.searchParams.get("opportunityId");
@@ -724,9 +727,9 @@ export function registerAppEndpoints(use) {
 
   // Interview invitation (Resend). Previews by default; only delivers when
   // the caller explicitly asks, so a rehearsal cannot mail a real founder.
-  use("/invite", (req, res, next) => {
+  use("/invite", async (req, res, next) => {
     if (req.method !== "POST") return next();
-    if (!requireInvestor(req, res)) return;
+    if (!(await requireInvestor(req, res))) return;
     let body = "";
     req.on("data", (c) => (body += c));
     req.on("end", async () => {
@@ -761,9 +764,9 @@ export function registerAppEndpoints(use) {
 
   // Mints a short-lived signed URL so the ElevenLabs key never reaches the
   // browser, and returns the founder context as dynamic variables.
-  use("/interview-session", (req, res, next) => {
+  use("/interview-session", async (req, res, next) => {
     if (req.method !== "POST") return next();
-    if (!requireInvestor(req, res)) return;
+    if (!(await requireInvestor(req, res))) return;
     let body = "";
     req.on("data", (c) => (body += c));
     req.on("end", async () => {
@@ -808,9 +811,9 @@ export function registerAppEndpoints(use) {
   // Adaptive term sheets (feeds Martin's annotated-PDF work): POST a team
   // analysis, get thesis-based terms adapted to it + a per-change
   // explanation trail + markdown with stable TS-§n anchors for annotation.
-  use("/term-sheet", (req, res, next) => {
+  use("/term-sheet", async (req, res, next) => {
     if (req.method !== "POST") return next();
-    if (!requireInvestor(req, res)) return;
+    if (!(await requireInvestor(req, res))) return;
     let body = "";
     req.on("data", (c) => (body += c));
     req.on("end", () => {
@@ -867,7 +870,7 @@ export function registerAppEndpoints(use) {
   // source of truth — no copied data. The old copy used a cards/ subfolder;
   // laura keeps cards at the DB root, so that prefix is rewritten.
   use("/opportunity-db", async (req, res, next) => {
-    if (!requireInvestor(req, res)) return;
+    if (!(await requireInvestor(req, res))) return;
     try {
       let rel = decodeURIComponent((req.url ?? "/").split("?")[0]);
       rel = rel.replace(/^\/cards\//, "/"); // legacy path from the public/ copy
