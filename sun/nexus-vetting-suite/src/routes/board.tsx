@@ -233,7 +233,7 @@ function BoardPage() {
       `Scanning ${scanRegion === "us" ? "the US" : scanRegion === "china" ? "China" : "Europe"} for new on-thesis startups…`,
     );
     try {
-      const data = await runDemoOutboundScan(scanRegion);
+      const data = await runDemoOutboundScan(scanRegion as "china" | "europe" | "us");
       invalidateSyntheticCache();
       setSynthetic(await loadSyntheticStartups());
       if (data.added === 0) {
