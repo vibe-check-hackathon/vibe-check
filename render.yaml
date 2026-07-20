@@ -29,6 +29,14 @@ services:
         sync: false
       - key: OPENAI_API_KEY
         sync: false
+      # ...or a free-tier OpenAI-compatible endpoint instead (e.g. Groq) —
+      # see .env.example. Leave ANTHROPIC/OPENAI blank if using this.
+      - key: LLM_BASE_URL
+        sync: false
+      - key: LLM_API_KEY
+        sync: false
+      - key: LLM_MODEL
+        sync: false
       # Interview-invite email (laura/pipeline/lib/email.js). Optional.
       - key: RESEND_API_KEY
         sync: false

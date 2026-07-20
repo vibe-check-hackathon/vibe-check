@@ -49,6 +49,18 @@ export function loadConfig() {
   if (process.env.OPENAI_API_KEY) {
     return { provider: "openai", key: process.env.OPENAI_API_KEY, model: DEFAULT_MODEL.openai, source: "env" };
   }
+  // Any OpenAI-compatible endpoint — a free-tier hosted provider (e.g. Groq)
+  // works here just as well as a local Ollama/LM Studio server, since the
+  // request shape (Bearer key, /v1/chat/completions) is identical either way.
+  if (process.env.LLM_BASE_URL && process.env.LLM_API_KEY) {
+    return {
+      provider: "local",
+      key: process.env.LLM_API_KEY,
+      baseUrl: process.env.LLM_BASE_URL,
+      model: process.env.LLM_MODEL ?? DEFAULT_MODEL.local,
+      source: "env",
+    };
+  }
   if (!existsSync(KEY_PATH)) return null;
   try {
     const saved = JSON.parse(readFileSync(KEY_PATH, "utf8"));

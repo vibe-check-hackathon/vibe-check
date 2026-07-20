@@ -27,6 +27,9 @@ export function Checky() {
   const [keyStatus, setKeyStatus] = useState<{ active: boolean; status: string; provider: string | null } | null>(null);
   const [keyInput, setKeyInput] = useState("");
   const [showKeyForm, setShowKeyForm] = useState(false);
+  const [showCustomEndpoint, setShowCustomEndpoint] = useState(false);
+  const [baseUrl, setBaseUrl] = useState("");
+  const [model, setModel] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const refreshKeyStatus = () =>
@@ -41,13 +44,20 @@ export function Checky() {
 
   async function saveToken() {
     if (!keyInput.trim()) return;
+    if (showCustomEndpoint && !baseUrl.trim()) return;
     const res = await fetch("/llm-key", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key: keyInput.trim() }),
+      body: JSON.stringify({
+        key: keyInput.trim(),
+        ...(showCustomEndpoint && baseUrl.trim() ? { baseUrl: baseUrl.trim() } : {}),
+        ...(showCustomEndpoint && model.trim() ? { model: model.trim() } : {}),
+      }),
     });
     const data = await res.json();
     setKeyInput("");
+    setBaseUrl("");
+    setModel("");
     setShowKeyForm(false);
     setKeyStatus(data);
     setMsgs((m) => [
@@ -146,14 +156,37 @@ export function Checky() {
                 type="password"
                 value={keyInput}
                 onChange={(e) => setKeyInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && saveToken()}
-                placeholder="sk-ant-… or sk-…"
+                onKeyDown={(e) => e.key === "Enter" && !showCustomEndpoint && saveToken()}
+                placeholder={showCustomEndpoint ? "API key for that endpoint" : "sk-ant-… or sk-…"}
                 className="h-8 w-full rounded-md border border-border bg-card px-2 text-[12px] outline-none focus:border-ring"
               />
               <button onClick={saveToken} className="h-8 shrink-0 rounded-md bg-primary px-2.5 text-[12px] text-primary-foreground">
                 Activate
               </button>
             </div>
+            {showCustomEndpoint && (
+              <div className="mt-1.5 space-y-1.5">
+                <input
+                  value={baseUrl}
+                  onChange={(e) => setBaseUrl(e.target.value)}
+                  placeholder="Base URL — e.g. https://api.groq.com/openai"
+                  className="h-8 w-full rounded-md border border-border bg-card px-2 text-[12px] outline-none focus:border-ring"
+                />
+                <input
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && saveToken()}
+                  placeholder="Model — e.g. llama-3.3-70b-versatile"
+                  className="h-8 w-full rounded-md border border-border bg-card px-2 text-[12px] outline-none focus:border-ring"
+                />
+              </div>
+            )}
+            <button
+              onClick={() => setShowCustomEndpoint((v) => !v)}
+              className="mt-1.5 text-[11px] text-primary hover:underline"
+            >
+              {showCustomEndpoint ? "Use Claude or OpenAI instead" : "Use a free / self-hosted endpoint instead (Groq, Ollama, LM Studio…)"}
+            </button>
           </div>
         )}
       </div>
