@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  base: "./",
+  base: "/vibe-check/",
   plugins: [
     tanstackRouter({ target: "react", autoCodeSplitting: true }),
     react(),
