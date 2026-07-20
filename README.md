@@ -1,5 +1,8 @@
 # FirstCheck
 
+- [Demo app](https://vibe-check-hackathon.github.io/vibe-check/)
+- [Explainer app](https://code.chuanqisun.com/first-check/)
+
 AI-driven VC deal-flow platform built for the Maschmeyer Group **VC Brain**
 challenge: 24-hour founder evaluation, evidence-backed memos, thesis-driven
 screening, and a BATNA negotiation model. The full mapping of the challenge
@@ -81,7 +84,7 @@ node laura/pipeline/verify-deploy.js        # clones HEAD fresh, builds, boots, 
 ## The two surfaces
 
 **Logged out → founder surface.** Visiting the app without the investor flag
-redirects to `/apply`: a public application form showing the fund's *live*
+redirects to `/apply`: a public application form showing the fund's _live_
 criteria (sectors, stages, geography, check size — loaded from the thesis, not
 hardcoded). Deck + company name is the minimum bar. Submitting runs the
 canonical screen immediately and returns an honest pass / screened-out verdict
@@ -174,7 +177,7 @@ golden-file render, plus backend endpoint + security tests).
 ## Checky & the live outbound scan
 
 **Checky** (button bottom-right on every investor page) is the diligence
-assistant: ask *"check Auxilius"* or *"which outbound deals fit our thesis?"*
+assistant: ask _"check Auxilius"_ or _"which outbound deals fit our thesis?"_
 and it answers from retrieval (RAG) over the whole evidence base — real cards,
 outbound briefs, scan results, thesis — **citing the chunk ids it reasoned
 from**. If the evidence isn't there it says "not in the evidence base" instead
@@ -185,7 +188,7 @@ the API token in the UI** (paste a different key to change provider).
 **Scan outbound** (board, next to the command bar): pick a region
 (Europe / US / China) and the configured LLM searches for newly funded
 on-thesis startups, structured by
-[`laura/outbound_person_team_intelligence_template(1).md`](laura/outbound_person_team_intelligence_template(1).md).
+[`laura/outbound_person_team_intelligence_template(1).md`](<laura/outbound_person_team_intelligence_template(1).md>).
 Every find passes the canonical thesis screen, is deduped against tracked
 companies, gets a **filled intelligence-brief card** in
 `laura/opportunity-db/outbound-scans/`, and pops onto the board permanently.
@@ -230,12 +233,12 @@ own folder unless agreed otherwise). The staged plan for merging the four
 folders into one component-structured repo lives in
 [`laura/repo-restructure-guide.md`](laura/repo-restructure-guide.md):
 
-| Folder | What's in it |
-|---|---|
-| `Martin/` | `nexus-vetting-suite` — the main web app (TanStack Start + Vite, Growth Signal palette) |
-| `laura/` | opportunity DB, pipeline (screening, sourcing, LLM adapter, SSE server), studio frontend, docs (`mvp-tasks.md`, `vc-criteria.md`, `color-guide.md`) |
-| `sun/` | technical architecture, opportunity-card spec, flow design |
-| `mehdi/` | teammate workspace |
+| Folder    | What's in it                                                                                                                                        |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Martin/` | `nexus-vetting-suite` — the main web app (TanStack Start + Vite, Growth Signal palette)                                                             |
+| `laura/`  | opportunity DB, pipeline (screening, sourcing, LLM adapter, SSE server), studio frontend, docs (`mvp-tasks.md`, `vc-criteria.md`, `color-guide.md`) |
+| `sun/`    | technical architecture, opportunity-card spec, flow design                                                                                          |
+| `mehdi/`  | teammate workspace                                                                                                                                  |
 
 ## Working in this repo (agents and contributors)
 
