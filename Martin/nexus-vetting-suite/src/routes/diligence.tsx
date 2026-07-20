@@ -6,6 +6,12 @@ import { INVESTOR } from "@/lib/data";
 import { TermSheetStudio } from "@/components/TermSheetStudio";
 
 export const Route = createFileRoute("/diligence")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    // Deep-link a real opportunity in: /diligence?opportunityId=OPP-APP-...
+    // Without it, the page shows the staged FirstCheck team demo — same as
+    // before this param existed.
+    opportunityId: typeof search.opportunityId === "string" ? search.opportunityId : undefined,
+  }),
   head: () => ({
     meta: [{ title: "Due Diligence · VibeCheck" }],
   }),
@@ -93,6 +99,7 @@ const LOG = [
 ];
 
 export function DiligencePage() {
+  const { opportunityId } = Route.useSearch();
   // Derived from LANES so the header can never drift from the checks below.
   const all = LANES.flatMap((l) => l.items);
   const contradictions = all.filter((i) => i.status === "contradiction").length;
@@ -182,7 +189,7 @@ export function DiligencePage() {
         {/* Approval gate deliverable: the annotated term sheet, adapting live
             to the team analysis, with per-change reasoning + evidence. */}
         <div className="lg:col-span-2">
-          <TermSheetStudio company="FirstCheck" askUsd={1200000} />
+          <TermSheetStudio company="FirstCheck" askUsd={1200000} opportunityId={opportunityId} />
         </div>
       </div>
     </AppShell>

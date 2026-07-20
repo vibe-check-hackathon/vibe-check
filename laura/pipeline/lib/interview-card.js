@@ -18,7 +18,7 @@ export function segmentRef(intId, transcript, segmentIds) {
 
 /** Full interview opportunity card — every section from the pipeline spec. */
 export function renderInterviewCard(record) {
-  const { oppId, intId, company, personName, transcript, claims, links, evidence, contradictions, questions, features, score, review, outreach, createdAt, hypothesis } = record;
+  const { oppId, intId, company, personName, transcript, claims, links, evidence, contradictions, questions, features, score, review, outreach, createdAt, hypothesis, sourceOpportunityId } = record;
   const stateOf = new Map(links.map((l) => [l.claim_id, l]));
   const ref = (c) => segmentRef(intId, transcript, c.evidence_segment_ids);
   const speakerName = (id) => transcript.speakers.find((s) => s.speaker_id === id)?.display_name ?? id;
@@ -47,6 +47,7 @@ id: ${oppId}
 company: ${JSON.stringify(company)}
 status: ${review.state}
 source_channel: interview_pipeline
+source_opportunity_id: ${sourceOpportunityId ? JSON.stringify(sourceOpportunityId) : "null"}
 interview_id: ${intId}
 transcript_id: ${transcript.transcript_id}
 content_hash: ${transcript.content_hash}

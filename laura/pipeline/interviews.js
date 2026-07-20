@@ -3,8 +3,13 @@
 // with this repo's pipeline (thesis config, screening conventions, OPP-MGV
 // cards, 24h LLM key store). Human review is mandatory before outreach.
 //
-//   node laura/pipeline/interviews.js ingest  --file sample/interview-x.vtt --company "X" [--title "..."] [--speaker "Name=founder"]
-//   node laura/pipeline/interviews.js ingest  --url https://example.com/interview --company "X"
+//   node laura/pipeline/interviews.js ingest  --file sample/interview-x.vtt --company "X" [--title "..."] [--speaker "Name=founder"] [--opportunity OPP-APP-...]
+//   node laura/pipeline/interviews.js ingest  --url https://example.com/interview --company "X" [--opportunity OPP-APP-...]
+//
+// --opportunity links the interview to the applicant's own OPP-APP-... id
+// (from POST /apply) so /my-feedback can find the real card instead of
+// falling back to a company-name guess. Optional — omit for research-sourced
+// interviews that never went through /apply.
 //   node laura/pipeline/interviews.js process --transcript TRN-xxxx [--person "Name"]
 //   node laura/pipeline/interviews.js review  --interview INT-0001 --approve|--reject --ack [--notes "..."]
 //   node laura/pipeline/interviews.js render  --interview INT-0001 [--enrich laura/opportunity-db/OPP-MGV-0002-deskbird.md]
@@ -83,6 +88,7 @@ async function ingest() {
     speakerRoles,
   });
   transcript.company = opt("company") ?? null;
+  transcript.sourceOpportunityId = opt("opportunity") ?? null;
   save(transcript.transcript_id, transcript);
   console.log(`✓ ingested ${transcript.transcript_id} — ${transcript.segments.length} segments, ${transcript.speakers.length} speakers, hash ${transcript.content_hash.slice(0, 12)}…`);
   console.log(`  next: node laura/pipeline/interviews.js process --transcript ${transcript.transcript_id}`);
@@ -124,6 +130,7 @@ async function processTranscript() {
     interview_id: intId,
     transcript_id: trnId,
     company,
+    sourceOpportunityId: opt("opportunity") ?? transcript.sourceOpportunityId ?? null,
     personName: opt("person") ?? founder?.display_name ?? null,
     claims,
     links: cor.links,

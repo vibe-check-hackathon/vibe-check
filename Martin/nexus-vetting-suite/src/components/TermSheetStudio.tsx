@@ -47,9 +47,24 @@ function printMarkdown(title: string, markdown: string) {
   w.print();
 }
 
-export function TermSheetStudio({ company = "FirstCheck", askUsd = 1200000 }: { company?: string; askUsd?: number }) {
+type DataSource = "loading" | "real" | "staged-default";
+
+export function TermSheetStudio({
+  company = "FirstCheck",
+  askUsd = 1200000,
+  opportunityId,
+}: {
+  company?: string;
+  askUsd?: number;
+  /** When given, the studio looks up a real scored interview card
+   * (GET /interview-score) and prefills from it instead of the staged
+   * FirstCheck demo defaults. Sliders stay editable either way — this only
+   * changes the starting point, never removes override capability. */
+  opportunityId?: string;
+}) {
   /* Defaults mirror the post-meeting analysis of record (TS-001, staged):
-   * team 70 = mean(Martin 84, Sun 82, Laura 74, Mehdi 38 — scripted). */
+   * team 70 = mean(Martin 84, Sun 82, Laura 74, Mehdi 38 — scripted). Used
+   * only when no real interview score exists for this opportunity. */
   const [founderScore, setFounderScore] = useState(70);
   const [confidence, setConfidence] = useState(58);
   const [trust, setTrust] = useState(92);
@@ -57,6 +72,25 @@ export function TermSheetStudio({ company = "FirstCheck", askUsd = 1200000 }: { 
   const [result, setResult] = useState<TermSheetResult | null>(null);
   const [md, setMd] = useState("");
   const [busy, setBusy] = useState(false);
+  const [dataSource, setDataSource] = useState<DataSource>(opportunityId ? "loading" : "staged-default");
+
+  useEffect(() => {
+    if (!opportunityId) {
+      setDataSource("staged-default");
+      return;
+    }
+    setDataSource("loading");
+    fetch(`/interview-score?opportunityId=${encodeURIComponent(opportunityId)}&company=${encodeURIComponent(company)}`)
+      .then((r) => r.json())
+      .then((data: { interviewFeedback: { founderScore: number | null; founderScoreConfidence: number | null } | null }) => {
+        const fb = data.interviewFeedback;
+        if (fb?.founderScore != null) setFounderScore(fb.founderScore);
+        if (fb?.founderScoreConfidence != null) setConfidence(fb.founderScoreConfidence);
+        setDataSource(fb ? "real" : "staged-default");
+      })
+      .catch(() => setDataSource("staged-default"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opportunityId, company]);
 
   async function regenerate() {
     setBusy(true);
@@ -104,6 +138,9 @@ export function TermSheetStudio({ company = "FirstCheck", askUsd = 1200000 }: { 
         <FileText className="h-3.5 w-3.5 text-primary" />
         <div className="text-[13px] font-medium">Annotated term sheet — adapts live to the team analysis</div>
         <Badge tone="teal">{result?.status ?? "…"}</Badge>
+        <Badge tone={dataSource === "real" ? "positive" : "outline"}>
+          {dataSource === "loading" ? "loading score…" : dataSource === "real" ? "real interview score" : "staged demo default"}
+        </Badge>
         <div className="ml-auto flex items-center gap-1.5">
           <button
             onClick={() => beforeMd && printMarkdown(`${company} term sheet — before negotiation`, beforeMd)}

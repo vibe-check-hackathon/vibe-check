@@ -4,6 +4,7 @@ id: OPP-MGV-INT-9999
 company: "Acme Robotics"
 status: pending_review
 source_channel: interview_pipeline
+source_opportunity_id: null
 interview_id: INT-9999
 transcript_id: TRN-3929fee060
 content_hash: 990462f2df631057c74399d28b732371ba393f46387fb0789d8cde31e11f1362
