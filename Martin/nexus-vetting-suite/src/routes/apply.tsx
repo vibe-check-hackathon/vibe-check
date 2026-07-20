@@ -13,7 +13,14 @@ export const Route = createFileRoute("/apply")({
  * language, feeding the same inbox. Create it and paste the URL here. */
 const GOOGLE_FORM_URL = "https://forms.gle/REPLACE-WITH-REAL-FORM";
 
-type Verdict = { id: string; pass: boolean; hardFails: string[]; softFlags: string[] };
+type FounderAccount = { email: string; password: string; opportunityId: string };
+type Verdict = {
+  id: string;
+  pass: boolean;
+  hardFails: string[];
+  softFlags: string[];
+  founderAccounts?: FounderAccount[];
+};
 type ThesisDoc = {
   fund: { sectors: string[]; stages: string[]; geographies: string[]; checkSizeUsd: { min: number; max: number } };
 };
@@ -313,6 +320,30 @@ function ApplyPage() {
                     <li key={f}>· {f}</li>
                   ))}
                 </ul>
+              )}
+              {verdict.founderAccounts && verdict.founderAccounts.length > 0 && (
+                <div className="mt-3 border-t border-border pt-3">
+                  <p className="text-[12.5px] font-medium">
+                    Your feedback account — <span className="text-negative">shown once, save it now</span>
+                  </p>
+                  <p className="mt-1 text-[11.5px] text-muted-foreground">
+                    Check back any time to see your screening result and, once your interview is scored, your
+                    per-area feedback. There is no password reset yet, so keep this somewhere safe.
+                  </p>
+                  <ul className="mt-2 space-y-1">
+                    {verdict.founderAccounts.map((a) => (
+                      <li key={a.email} className="text-[12px] font-mono">
+                        {a.email} · {a.password}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    to={"/founder-portal" as never}
+                    className="mt-2 inline-block text-[12px] text-primary hover:underline"
+                  >
+                    Go to your feedback portal →
+                  </Link>
+                </div>
               )}
             </Card>
           )}

@@ -316,7 +316,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       })}
                       <div className="mt-1 border-t border-border pt-1">
                         <MenuItem onClick={() => { setMenu(null); navigate({ to: "/settings" as never }); }}>Settings</MenuItem>
-                        <MenuItem onClick={() => { logout(); window.location.href = "/apply"; }}>Log out</MenuItem>
+                        <MenuItem onClick={() => { void logout().then(() => { window.location.href = "/apply"; }); }}>Log out</MenuItem>
                       </div>
                     </div>
                   )}
