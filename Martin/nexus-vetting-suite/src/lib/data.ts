@@ -421,17 +421,17 @@ export function outcomeOf(s: Startup): Outcome | null {
   if (s.demo || s.synthetic) return null;
   switch (s.companyStatus) {
     case "acquired":
-      return { label: "Success — acquired", tone: "positive" };
+      return { label: "Success: acquired", tone: "positive" };
     case "inactive":
-      return { label: "Inactive — no longer operating", tone: "negative" };
+      return { label: "Inactive: no longer operating", tone: "negative" };
     case "active_rebrand":
-      return { label: "Active — rebranded", tone: "outline" };
+      return { label: "Active: rebranded", tone: "outline" };
     case "unclear":
       return { label: "Outcome unclear", tone: "warning" };
   }
   const record = `${s.realEvent ?? ""} ${s.oneLiner}`.toLowerCase();
   if (/series [bcd]/.test(record)) {
-    return { label: "Success signal — raised follow-on capital", tone: "positive" };
+    return { label: "Success signal: raised follow-on capital", tone: "positive" };
   }
   return { label: "Active portfolio company", tone: "outline" };
 }
@@ -546,7 +546,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     confidence: 62,
     trend: "stable",
     history:
-      "Owns the system architecture and the narrative layer — the conceptual pipeline the implementation follows, plus the deck and talk track. 43 commits, the second-largest contribution.",
+      "Owns the system architecture and the narrative layer, the conceptual pipeline the implementation follows, plus the deck and talk track. 43 commits, the second-largest contribution.",
     axes: [
       { key: "Resilience", full: AXIS_FULL.Resilience, v: 68, conf: 55 },
       { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 79, conf: 65 },
@@ -566,7 +566,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     personality: {
       type: "INFJ",
       label: "Advocate",
-      hypothesis: "Optimises for the system nobody asked for yet — pipelines, taxonomies, the shape of the data; the risk is building the general case before the specific one is proven.",
+      hypothesis: "Optimises for the system nobody asked for yet, pipelines, taxonomies, the shape of the data; the risk is building the general case before the specific one is proven.",
       basis: "Pipeline and schema design decisions; no interview evidence yet.",
       status: "open",
       confidence: 44,
@@ -605,7 +605,7 @@ export const ACME_FOUNDERS: DemoFounder[] = [
     confidence: 52,
     trend: "improving",
     history:
-      "Owns the demo requirements and screenplay — how the product is shown and in what order. Defined what the walkthrough has to prove before it was built.",
+      "Owns the demo requirements and screenplay: how the product is shown and in what order. Defined what the walkthrough has to prove before it was built.",
     axes: [
       { key: "Resilience", full: AXIS_FULL.Resilience, v: 71, conf: 52 },
       { key: "Autonomy", full: AXIS_FULL.Autonomy, v: 74, conf: 55 },
@@ -623,7 +623,7 @@ export const ACME_TEAM = {
     {
       name: "Skill complementarity",
       v: 85,
-      why: "Commercial CEO × technical CTO × operations COO × product lead — four different critical functions, not duplicate strengths.",
+      why: "Commercial CEO, technical CTO, operations COO and product lead: four different critical functions, not duplicate strengths.",
     },
     {
       name: "Decision clarity",
@@ -633,7 +633,7 @@ export const ACME_TEAM = {
     {
       name: "Pressure-tested history",
       v: 45,
-      why: "Conflict handling not yet observed under real pressure — the ceiling-gating component.",
+      why: "Conflict handling not yet observed under real pressure, the ceiling-gating component.",
     },
   ],
   note: "Scored as a team, never as an average of the four founders. Per Wasserman, ~65% of startup failures trace to people problems, so the co-founder dynamic carries its own gated score.",

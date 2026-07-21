@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader, Card, Badge } from "@/components/ui-kit";
-import { INVESTOR } from "@/lib/data";
+import { INVESTOR, STARTUP_USER } from "@/lib/data";
+import { useViewMode } from "@/lib/view-mode";
+import { FileText, MessageSquareText, Globe2 } from "lucide-react";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -41,14 +43,15 @@ const AGENTS = [
 ];
 
 export function SettingsPage() {
+  const { mode } = useViewMode();
   const [thesis, setThesis] = useState<ThesisDoc | null>(null);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/thesis").then((r) => r.json()).then(setThesis).catch(() => {});
-  }, []);
+    if (mode === "investor") fetch("/thesis").then((r) => r.json()).then(setThesis).catch(() => {});
+  }, [mode]);
 
   function startEdit() {
     if (!thesis) return;
@@ -104,6 +107,65 @@ export function SettingsPage() {
         { k: "Risk appetite", v: `${thesis.fund.riskAppetite} · max ${thesis.fund.maxOpenGaps} open gaps at decision` },
       ]
     : [{ k: "Loading", v: "reading thesis.json via /thesis…" }];
+
+  /* The startup side has no fund to configure — showing the investor's
+   * thesis/rubric/agent-roster here would be both meaningless and a real
+   * information leak (a founder previewing "their" settings should never
+   * see the fund's actual screening weights). Account identity only. */
+  if (mode === "startup") {
+    return (
+      <AppShell>
+        <PageHeader
+          eyebrow="Your account"
+          title="Settings"
+          description="Your applicant profile and where to check on your application."
+        />
+        <div className="px-8 py-6 grid lg:grid-cols-2 gap-4">
+          <Card className="p-0">
+            <div className="px-5 py-3.5 border-b border-border text-[13px] font-medium">Profile</div>
+            <div className="divide-y divide-border">
+              <div className="flex items-center gap-3 px-5 py-3.5">
+                <div className="h-9 w-9 rounded-full bg-primary/10 text-primary grid place-items-center text-[11.5px] font-medium">
+                  {STARTUP_USER.initials}
+                </div>
+                <div className="flex-1">
+                  <div className="text-[13px] font-medium">{STARTUP_USER.name}</div>
+                  <div className="text-[11.5px] text-muted-foreground">{STARTUP_USER.role}</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-[140px_1fr] gap-4 px-5 py-3">
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground pt-0.5">Company</div>
+                <div className="text-[12.5px]">{STARTUP_USER.company}</div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-0">
+            <div className="px-5 py-3.5 border-b border-border text-[13px] font-medium">Where to go</div>
+            <div className="divide-y divide-border">
+              {[
+                { to: "/apply", label: "Your application", desc: "Review what you submitted and your screening result", icon: FileText },
+                { to: "/founder-portal", label: "Your feedback", desc: "How you were assessed, and why, once an interview is scored", icon: MessageSquareText },
+                { to: "/founder-world", label: "Founder World", desc: "The research this evaluation is grounded in, plus startup networks and learning resources", icon: Globe2 },
+              ].map((r) => (
+                <Link
+                  key={r.to}
+                  to={r.to as never}
+                  className="flex items-center gap-3 px-5 py-3.5 hover:bg-surface/60 transition-colors"
+                >
+                  <r.icon className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[12.5px] font-medium">{r.label}</div>
+                    <div className="text-[11.5px] text-muted-foreground">{r.desc}</div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </Card>
+        </div>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell>

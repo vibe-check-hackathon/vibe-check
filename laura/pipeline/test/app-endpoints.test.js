@@ -418,6 +418,75 @@ test("GET /my-feedback prefers the hard source_opportunity_id link over a compan
   assert.equal(investorData.interviewFeedback.founderScore, 77);
 });
 
+test("GET /my-feedback exposes the real per-component and per-feature score breakdown, not just the total", async () => {
+  const apply = await fetch(`${BASE}/apply`, {
+    method: "POST",
+    body: JSON.stringify({
+      company: "Breakdown Co",
+      deck: "https://example.com/deck-e.pdf",
+      founderName: "Fin Example",
+      founderEmail: "fin@example.com",
+      linkedin: "https://linkedin.com/in/fin-example",
+    }),
+  });
+  const { opportunityId, founderAccounts } = await apply.json();
+
+  await writeFile(
+    join(interviewsDir, "OPP-MGV-INT-0002-breakdown.md"),
+    [
+      "---",
+      "schema_version: 1",
+      "id: OPP-MGV-INT-0002",
+      'company: "Breakdown Co"',
+      "status: approved",
+      `source_opportunity_id: "${opportunityId}"`,
+      "founder_score: 42",
+      "founder_score_confidence: 55",
+      "---",
+      "",
+      "## Founder Score",
+      "",
+      "Score **42/100** confidence **55/100**.",
+      "",
+      "| Component | Credited points |",
+      "|---|---:|",
+      "| product_shipping | 9.5 |",
+      "| momentum | 3 |",
+      "",
+      "### Feature contributions",
+      "",
+      "| Component | Feature | Raw | Evidence state | Cap | Credited | Claim |",
+      "|---|---|---|---|---|---:|---|",
+      "| product_shipping | product_shipping | 14.6/25 | self_reported | ×0.65 | 9.5 | CLM-001 |",
+      "| momentum | pivot | 4.6/10 | self_reported | ×0.65 | 3 | CLM-002 |",
+      "",
+      "## Evidence ledger",
+      "",
+      "- none",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+
+  const login = await fetch(`${BASE}/auth/login`, {
+    method: "POST",
+    body: JSON.stringify({ email: founderAccounts[0].email, password: founderAccounts[0].password }),
+  });
+  const cookie = sessionCookieFrom(login);
+
+  const feedback = await fetch(`${BASE}/my-feedback`, { headers: { cookie } });
+  const data = await feedback.json();
+  assert.deepEqual(data.interviewFeedback.components, [
+    { component: "product_shipping", credited: 9.5 },
+    { component: "momentum", credited: 3 },
+  ]);
+  assert.equal(data.interviewFeedback.features.length, 2);
+  assert.equal(data.interviewFeedback.features[0].feature, "product_shipping");
+  assert.equal(data.interviewFeedback.features[0].evidenceState, "self_reported");
+  assert.equal(data.interviewFeedback.features[0].credited, 9.5);
+  assert.equal(data.interviewFeedback.features[1].claim, "CLM-002");
+});
+
 test("GET /interview-score requires at least one query parameter", async () => {
   const res = await fetch(`${BASE}/interview-score`, { headers: { cookie: await investorCookie() } });
   assert.equal(res.status, 400);

@@ -32,5 +32,13 @@ export default defineConfig({
   },
   vite: {
     plugins: [lauraOpportunityDb()],
+    // leaflet/react-leaflet touch `window` at module load time, so they must
+    // never be evaluated on the server. Only loaded client-side, behind a
+    // dynamic import in a useEffect (see founder-world.tsx OpportunityMap) —
+    // externalizing keeps the SSR bundler from statically pulling them into
+    // a shared chunk that would otherwise load eagerly on every request.
+    ssr: {
+      external: ["leaflet", "react-leaflet", "@react-leaflet/core"],
+    },
   },
 });

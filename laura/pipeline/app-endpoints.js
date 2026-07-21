@@ -198,6 +198,43 @@ async function readThesisFlat() {
 }
 
 /**
+ * Pulls the "why" behind a founder score straight from the card's own
+ * rendered tables (never re-derived, never guessed) so /my-feedback can
+ * show a founder their real per-component breakdown without exposing the
+ * scoring rubric itself, just the credited result and the evidence state
+ * that produced it.
+ */
+function parseComponentBreakdown(raw) {
+  const m = raw.match(/\| Component \| Credited points \|\n\|---\|---:\|\n([\s\S]*?)\n\n/);
+  if (!m) return [];
+  return m[1]
+    .split("\n")
+    .map((line) => line.match(/^\|\s*([^|]+?)\s*\|\s*([\d.]+)\s*\|$/))
+    .filter(Boolean)
+    .map((mm) => ({ component: mm[1].trim(), credited: Number(mm[2]) }));
+}
+
+function parseFeatureBreakdown(raw) {
+  const m = raw.match(
+    /\| Component \| Feature \| Raw \| Evidence state \| Cap \| Credited \| Claim \|\n\|---\|---\|---\|---\|---\|---:\|---\|\n([\s\S]*?)\n\n/,
+  );
+  if (!m) return [];
+  return m[1]
+    .split("\n")
+    .map((line) => line.match(/^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*×?([^|]+?)\s*\|\s*([\d.]+)\s*\|\s*([^|]+?)\s*\|$/))
+    .filter(Boolean)
+    .map((mm) => ({
+      component: mm[1].trim(),
+      feature: mm[2].trim(),
+      raw: mm[3].trim(),
+      evidenceState: mm[4].trim(),
+      cap: mm[5].trim(),
+      credited: Number(mm[6]),
+      claim: mm[7].trim(),
+    }));
+}
+
+/**
  * Finds the scored interview card for an opportunity: prefers the hard
  * source_opportunity_id link (written when the interview was ingested with
  * --opportunity), falls back to a company-name guess for interviews
@@ -226,6 +263,8 @@ async function findInterviewFeedback({ opportunityId, company }) {
         founderScore: fm.founder_score ? Number(fm.founder_score) : null,
         founderScoreConfidence: fm.founder_score_confidence ? Number(fm.founder_score_confidence) : null,
         status: fm.status ?? null,
+        components: parseComponentBreakdown(raw),
+        features: parseFeatureBreakdown(raw),
       });
       if (opportunityId && fm.source_opportunity_id === opportunityId) return toCard("source_opportunity_id (verified link)");
       if (!fallback && companyLower && String(fm.company ?? "").trim().toLowerCase() === companyLower) {

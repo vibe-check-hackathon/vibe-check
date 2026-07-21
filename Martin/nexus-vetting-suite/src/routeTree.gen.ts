@@ -16,6 +16,7 @@ import { Route as BoardRouteImport } from './routes/board'
 import { Route as DiligenceRouteImport } from './routes/diligence'
 import { Route as FounderRouteImport } from './routes/founder'
 import { Route as FounderPortalRouteImport } from './routes/founder-portal'
+import { Route as FounderWorldRouteImport } from './routes/founder-world'
 import { Route as InterviewsRouteImport } from './routes/interviews'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MemoRouteImport } from './routes/memo'
@@ -57,6 +58,11 @@ const FounderPortalRoute = FounderPortalRouteImport.update({
   path: '/founder-portal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FounderWorldRoute = FounderWorldRouteImport.update({
+  id: '/founder-world',
+  path: '/founder-world',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InterviewsRoute = InterviewsRouteImport.update({
   id: '/interviews',
   path: '/interviews',
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/diligence': typeof DiligenceRoute
   '/founder': typeof FounderRoute
   '/founder-portal': typeof FounderPortalRoute
+  '/founder-world': typeof FounderWorldRoute
   '/interviews': typeof InterviewsRoute
   '/login': typeof LoginRoute
   '/memo': typeof MemoRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByTo {
   '/diligence': typeof DiligenceRoute
   '/founder': typeof FounderRoute
   '/founder-portal': typeof FounderPortalRoute
+  '/founder-world': typeof FounderWorldRoute
   '/interviews': typeof InterviewsRoute
   '/login': typeof LoginRoute
   '/memo': typeof MemoRoute
@@ -120,6 +128,7 @@ export interface FileRoutesById {
   '/diligence': typeof DiligenceRoute
   '/founder': typeof FounderRoute
   '/founder-portal': typeof FounderPortalRoute
+  '/founder-world': typeof FounderWorldRoute
   '/interviews': typeof InterviewsRoute
   '/login': typeof LoginRoute
   '/memo': typeof MemoRoute
@@ -136,6 +145,7 @@ export interface FileRouteTypes {
     | '/diligence'
     | '/founder'
     | '/founder-portal'
+    | '/founder-world'
     | '/interviews'
     | '/login'
     | '/memo'
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/diligence'
     | '/founder'
     | '/founder-portal'
+    | '/founder-world'
     | '/interviews'
     | '/login'
     | '/memo'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/diligence'
     | '/founder'
     | '/founder-portal'
+    | '/founder-world'
     | '/interviews'
     | '/login'
     | '/memo'
@@ -179,6 +191,7 @@ export interface RootRouteChildren {
   DiligenceRoute: typeof DiligenceRoute
   FounderRoute: typeof FounderRoute
   FounderPortalRoute: typeof FounderPortalRoute
+  FounderWorldRoute: typeof FounderWorldRoute
   InterviewsRoute: typeof InterviewsRoute
   LoginRoute: typeof LoginRoute
   MemoRoute: typeof MemoRoute
@@ -237,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FounderPortalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/founder-world': {
+      id: '/founder-world'
+      path: '/founder-world'
+      fullPath: '/founder-world'
+      preLoaderRoute: typeof FounderWorldRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/interviews': {
       id: '/interviews'
       path: '/interviews'
@@ -283,6 +303,7 @@ const rootRouteChildren: RootRouteChildren = {
   DiligenceRoute: DiligenceRoute,
   FounderRoute: FounderRoute,
   FounderPortalRoute: FounderPortalRoute,
+  FounderWorldRoute: FounderWorldRoute,
   InterviewsRoute: InterviewsRoute,
   LoginRoute: LoginRoute,
   MemoRoute: MemoRoute,

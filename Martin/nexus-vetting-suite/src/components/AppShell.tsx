@@ -9,6 +9,8 @@ import {
   Command,
   Bell,
   FileText,
+  MessageSquareText,
+  Globe2,
   CornerDownLeft,
   ChevronDown,
   Check,
@@ -37,6 +39,8 @@ const INVESTOR_NAV: NavItem[] = [
 /** The startup side sees its own application, never the deal flow. */
 const STARTUP_NAV: NavItem[] = [
   { to: "/apply", label: "Your application", icon: FileText },
+  { to: "/founder-portal", label: "Your feedback", icon: MessageSquareText },
+  { to: "/founder-world", label: "Founder World", icon: Globe2 },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 

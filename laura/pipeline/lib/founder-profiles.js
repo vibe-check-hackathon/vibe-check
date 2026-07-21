@@ -65,7 +65,7 @@ export function buildHypotheses(founder, application) {
     },
     {
       axis: "Autonomy",
-      text: `The ${role}decisions at ${company} are actually theirs — scope, hiring and roadmap — not deferred to an advisor or the other founder.`,
+      text: `The ${role}decisions at ${company} are actually theirs (scope, hiring and roadmap) not deferred to an advisor or the other founder.`,
       basis: `Self-reported founder record for a ${round} team.`,
     },
     {

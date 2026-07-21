@@ -11,3 +11,8 @@ laura/pipeline/.service-keys.json
 laura/opportunity-db/founder-profiles/
 # Account credentials (password hashes + salts) — never push
 laura/pipeline/accounts.json
+# Exact founder-evaluation methodology (interview scripts, scoring rubrics) —
+# competitive IP if this launches; keep local only, never push
+laura/Expanded_Founder_Evaluation_Interview_Scorecard.md
+laura/Founder_Conflict_Alignment_Interview_Framework.md
+laura/founder_personality_interview_framework(1).md

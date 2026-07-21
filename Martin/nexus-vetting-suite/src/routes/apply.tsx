@@ -125,9 +125,14 @@ function ApplyPage() {
           <FirstCheckLogo className="h-4 w-auto text-foreground" />
           <span className="text-[13px] text-muted-foreground">· founder application</span>
         </div>
-        <Link to={"/login" as never} className="text-[12px] text-muted-foreground hover:text-foreground">
-          Investor login →
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link to={"/founder-world" as never} className="text-[12px] text-muted-foreground hover:text-foreground">
+            Founder World
+          </Link>
+          <Link to={"/login" as never} className="text-[12px] text-muted-foreground hover:text-foreground">
+            Investor login →
+          </Link>
+        </div>
       </header>
 
       <div className="mx-auto max-w-5xl px-6 py-8 grid lg:grid-cols-3 gap-4">
