@@ -25,7 +25,14 @@ export const Route = createFileRoute("/founder-world")({
  * search links are real, verifiable URLs, not fabricated ones. Per-founder
  * axis plot reuses ACME_FOUNDERS (the team's own consented demo data,
  * already shown on the investor side in founder.tsx) rather than inventing
- * new data or exposing any real applicant's private record on a public page. */
+ * new data or exposing any real applicant's private record on a public page.
+ *
+ * Ported from Martin/nexus-vetting-suite (2026-07-22): that app is TanStack
+ * Start with SSR, this one is a frontend-only static SPA (see
+ * FRONTEND_ONLY_MIGRATION.md / STRUCTURE.md), so unlike the original this
+ * page needs no backend endpoint at all, it only reads ACME_FOUNDERS and its
+ * own local data, which is why the port is a straight copy rather than a
+ * re-architecture. */
 
 const ILLUSTRATIVE = { label: "Illustrative example", axes: [
   { key: "Resilience", v: 78 },
@@ -450,12 +457,11 @@ const HACKNATION_HUBS = [
   { city: "Delhi", lat: 28.61, lon: 77.21 },
 ];
 
-/* Leaflet touches `window` at import time, so an ES module import crashes
- * TanStack Start's server render no matter how it's guarded, the bundler
- * still traces it into a server chunk. Loading it as a plain script tag
- * (self-hosted from public/vendor/leaflet, copied from the npm package)
- * sidesteps module analysis entirely: nothing named "leaflet" ever appears
- * in an import statement, so the server bundle can't pull it in. */
+/* This app has no SSR (see FRONTEND_ONLY_MIGRATION.md), so a static ESM
+ * import of leaflet/react-leaflet would work here, but the script-tag loader
+ * is kept anyway: it is already vendored, already verified, and avoids
+ * adding a new npm dependency to a codebase this port doesn't otherwise
+ * touch. */
 declare global {
   interface Window {
     L?: any;
@@ -468,15 +474,20 @@ function loadLeaflet(): Promise<any> {
   if (window.L) return Promise.resolve(window.L);
   if (leafletLoading) return leafletLoading;
   leafletLoading = new Promise((resolve, reject) => {
+    // This app builds under a GitHub Pages subpath (base: "/vibe-check/" in
+    // vite.config.ts), so an absolute "/vendor/..." path 404s once deployed.
+    // import.meta.env.BASE_URL is Vite's own resolved base, correct in dev,
+    // preview and the deployed subpath alike.
+    const base = import.meta.env.BASE_URL;
     if (!document.querySelector('link[data-leaflet-css]')) {
       const link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href = "/vendor/leaflet/leaflet.css";
+      link.href = `${base}vendor/leaflet/leaflet.css`;
       link.setAttribute("data-leaflet-css", "1");
       document.head.appendChild(link);
     }
     const script = document.createElement("script");
-    script.src = "/vendor/leaflet/leaflet.js";
+    script.src = `${base}vendor/leaflet/leaflet.js`;
     script.async = true;
     script.onload = () => resolve(window.L);
     script.onerror = () => reject(new Error("failed to load leaflet.js"));
